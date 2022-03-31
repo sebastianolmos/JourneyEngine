@@ -1,11 +1,15 @@
 set(JOURNEY_HEADERS
-        application.hpp)
+        application.hpp
+        shaders/shader.h
+        performanceMonitor.h)
 
 set(JOURNEY_SOURCES
         application.cpp)
 
+file(GLOB_RECURSE Shaders  "${CMAKE_SOURCE_DIR}/source/shaders/*")
+source_group("Shaders" FILES ${Shaders})
 
-add_library(JourneyEngine STATIC ${JOURNEY_SOURCES} ${JOURNEY_HEADERS} JourneyEngine.hpp)
+add_library(JourneyEngine STATIC ${JOURNEY_SOURCES} ${JOURNEY_HEADERS} JourneyEngine.hpp ${Shaders})
 
 if (MSVC)
     target_compile_options(JourneyEngine PUBLIC /wd5033)
