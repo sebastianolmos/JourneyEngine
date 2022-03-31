@@ -1,0 +1,9 @@
+function(Add_Game TARGETNAME FILENAME)
+	add_executable(${TARGETNAME} ${FILENAME})
+	set_property(TARGET ${TARGETNAME} PROPERTY CXX_STANDARD 20)
+	set_property(TARGET ${TARGETNAME} PROPERTY FOLDER Games)
+	target_link_libraries(${TARGETNAME} PRIVATE JourneyEngine)
+	target_include_directories(${TARGETNAME} PRIVATE ${JOURNEY_INCLUDE_DIRECTORY} ${THIRD_PARTY_INCLUDE_DIRECTORIES})
+endfunction(Add_Game)
+
+Add_Game(Example1_TestGame example1.cpp)
