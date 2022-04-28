@@ -1,5 +1,4 @@
 #include "window.hpp"
-#include <iostream>
 
 namespace Journey {
 
@@ -20,6 +19,7 @@ namespace Journey {
         // glfw window creation
     // --------------------
         std::string appTitle = "Journey Engine - " + title;
+        mTitle = appTitle;
         mWindowHandle = glfwCreateWindow(width, height, appTitle.c_str(), NULL, NULL);
         if (mWindowHandle == NULL)
         {
@@ -38,6 +38,12 @@ namespace Journey {
             std::cout << "Failed to initialize GLAD" << std::endl;
             return;
         }
+
+        mTimer = 0.0f;
+        mPeriod = 0.5f;
+        mFramesCounter = 0;
+        mFramesPerSecond = 0.0f;
+        mMsPerFrame = 0.0f;
     }
 	
     void Window::ShutDown()
@@ -48,6 +54,7 @@ namespace Journey {
     void Window::SwapBuffers()
     {
         glfwSwapBuffers(mWindowHandle);
+        glfwPollEvents();
     }
 
     bool Window::ShouldClose() const
@@ -65,6 +72,27 @@ namespace Journey {
      void Window::SetWindowDimensions(const glm::ivec2 &dimensions)
      {
          glfwSetWindowSize(mWindowHandle, dimensions.x, dimensions.y);
+     }
+
+     void Window::UpdatePerformanceMonitor(float deltaTime)
+     {
+        mFramesCounter += 1;
+        mTimer += deltaTime;
+
+        if (mTimer > mPeriod)
+        {
+            mFramesPerSecond = mFramesCounter / mTimer;
+            mMsPerFrame = 1000.0 * mTimer / mFramesCounter;
+            mFramesCounter = 0;
+            mTimer = 0.0f;
+        }
+
+        std::stringstream ss;
+        ss << mTitle << " " << std::fixed << std::setprecision(2)
+		<< "[" << mFramesPerSecond << " fps - "
+		<< mMsPerFrame << " ms]";
+
+        glfwSetWindowTitle(mWindowHandle, ss.str().c_str());
      }
 
 }

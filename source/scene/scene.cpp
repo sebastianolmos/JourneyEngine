@@ -35,10 +35,13 @@ namespace Journey {
 			float deltaTime = std::chrono::duration_cast<std::chrono::duration<float>>(frameTime).count();
 			Update(deltaTime);
 		}
+
+        mWindow.ShouldClose();
     }
 
     void Scene::Update(const float deltaTime)
-    {
+    {   
+        mWindow.UpdatePerformanceMonitor(deltaTime);
         //Update input
         mApplication.UserUpdate(*this, deltaTime);
         mWindow.SwapBuffers();
