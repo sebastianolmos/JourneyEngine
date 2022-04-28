@@ -1,10 +1,17 @@
 set(JOURNEY_HEADERS
+        window/window.hpp
+        input/inputController.hpp
+        engine.hpp
         application.hpp
+        scene/scene.hpp
         shaders/shader.h
         performanceMonitor.h)
 
 set(JOURNEY_SOURCES
-        application.cpp)
+        application.cpp
+        window/window.cpp
+        input/inputController.cpp
+        scene/scene.cpp)
 
 file(GLOB_RECURSE Shaders  "${CMAKE_SOURCE_DIR}/source/shaders/*")
 source_group("Shaders" FILES ${Shaders})

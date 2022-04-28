@@ -6,4 +6,4 @@ function(Add_Game TARGETNAME FILENAME)
 	target_include_directories(${TARGETNAME} PRIVATE ${JOURNEY_INCLUDE_DIRECTORY} ${THIRD_PARTY_INCLUDE_DIRECTORIES})
 endfunction(Add_Game)
 
-Add_Game(Example1_TestGame example1.cpp)
+Add_Game(LittleDemo_v0 littleDemo.cpp)
