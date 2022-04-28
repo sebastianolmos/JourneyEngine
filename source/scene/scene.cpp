@@ -7,12 +7,15 @@ namespace Journey {
         //mInputController(),
         mWindow(),
         mApplication(app),
-        mShouldClose(false)
+        mShouldClose(false),
+        mRenderManager(),
+        mEntityManager()
     {
         mWindow.StartUp(mApplication.GetName(), mApplication.GetWindowWith(), mApplication.GetWindowHeight());
         // InputController stratUp
+        mEntityManager.StartUp();
+        mRenderManager.StartUp();
 
-        mApplication = std::move(app);
         mApplication.StartUp(*this);
     }
 
@@ -20,8 +23,10 @@ namespace Journey {
     {
         mApplication.UserShutDown(*this);
 
-        mWindow.ShutDown();
+        mRenderManager.ShutDown();
+        mEntityManager.ShutDown();
 		// ShotDown the Input Controller
+        mWindow.ShutDown();
     }
 
     void Scene::StartMainLoop()
@@ -42,8 +47,12 @@ namespace Journey {
     void Scene::Update(const float deltaTime)
     {   
         mWindow.UpdatePerformanceMonitor(deltaTime);
+        mRenderManager.CleanRenderInfo();
         //Update input
+        std::cout << "DebuG 4" << std::endl;
+        mEntityManager.UpdateEntities(*this, deltaTime);
         mApplication.UserUpdate(*this, deltaTime);
+        mRenderManager.DrawCall(*this);
         mWindow.SwapBuffers();
     }
 
@@ -60,6 +69,36 @@ namespace Journey {
 	void Scene::EndApplication()
     {
         mShouldClose = true;
+    }
+
+    RenderManager& Scene::GetRenderManager()
+    {
+        return mRenderManager;
+    }
+
+    CameraHandler&  Scene::GetCameraHandler()
+    {
+        return mCameraHandler;
+    }
+
+    PointLight&  Scene::GetPointLight()
+    {
+        return mPointLight;
+    }
+
+    void Scene::AddEntity(std::shared_ptr<Entity> parentEntity, std::shared_ptr<Entity> newEntity)
+    {
+        mEntityManager.AddEntity(parentEntity, newEntity);
+    }
+
+    void Scene::AddPrimitiveMeshComponent(std::shared_ptr<Entity> entity, std::shared_ptr<Material> material, EPrimitiveMesh primitiveMesh)
+    {
+        mMeshManager.LoadPrimitiveMeshToEntity(entity, material, primitiveMesh);
+    }
+
+    void Scene::AddSpriteComponent(std::shared_ptr<Entity> entity,  std::shared_ptr<Material> material, std::string spritePath)
+    {
+        mTextureManager.LoadSpriteToEntity(entity, material, spritePath);
     }
 
 }

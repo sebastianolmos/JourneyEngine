@@ -3,12 +3,29 @@ set(JOURNEY_HEADERS
         input/inputController.hpp
         engine.hpp
         application.hpp
+        entity/entity.hpp
+        entity/entityManager.hpp
+        entity/cameraHandler.hpp
+        entity/pointLight.hpp
+        component/component.hpp
+        component/transform.hpp
+        component/sprite.hpp
+        component/staticMesh.hpp
+        rendering/material.hpp
+        rendering/meshManager.hpp
+        rendering/renderManager.hpp
+        rendering/textureManager.hpp
+        rendering/shaders/shader.h
         scene/scene.hpp
-        shaders/shader.h
         performanceMonitor.h)
 
 set(JOURNEY_SOURCES
         application.cpp
+        entity/entityManager.cpp
+        component/transform.cpp
+        rendering/meshManager.cpp
+        rendering/renderManager.cpp
+        rendering/textureManager.cpp
         window/window.cpp
         input/inputController.cpp
         scene/scene.cpp)

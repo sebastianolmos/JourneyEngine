@@ -2,6 +2,7 @@
 
 #include "scene/scene.hpp"
 #include "application.hpp"
+#include <memory>
 
 namespace Journey {
 
