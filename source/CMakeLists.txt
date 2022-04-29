@@ -1,10 +1,34 @@
 set(JOURNEY_HEADERS
+        window/window.hpp
+        input/inputController.hpp
+        engine.hpp
         application.hpp
-        shaders/shader.h
+        entity/entity.hpp
+        entity/entityManager.hpp
+        entity/cameraHandler.hpp
+        entity/pointLight.hpp
+        component/component.hpp
+        component/transform.hpp
+        component/sprite.hpp
+        component/staticMesh.hpp
+        rendering/material.hpp
+        rendering/meshManager.hpp
+        rendering/renderManager.hpp
+        rendering/textureManager.hpp
+        rendering/shaders/shader.h
+        scene/scene.hpp
         performanceMonitor.h)
 
 set(JOURNEY_SOURCES
-        application.cpp)
+        application.cpp
+        entity/entityManager.cpp
+        component/transform.cpp
+        rendering/meshManager.cpp
+        rendering/renderManager.cpp
+        rendering/textureManager.cpp
+        window/window.cpp
+        input/inputController.cpp
+        scene/scene.cpp)
 
 file(GLOB_RECURSE Shaders  "${CMAKE_SOURCE_DIR}/source/shaders/*")
 source_group("Shaders" FILES ${Shaders})

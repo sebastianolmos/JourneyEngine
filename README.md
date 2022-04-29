@@ -27,4 +27,4 @@ Se necesita tener Visual Studio 2019 y CMake
 ¡¡Es importante ejecutar el juego desde el directorio ``build/games/Release``!! Esto para que funcionene correctamente los path a los assets del demo:
 
 - cd build/games/Release
-- ./Example1_TestGame.exe
+- ./LittleDemo_v0.exe
