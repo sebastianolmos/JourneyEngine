@@ -49,10 +49,6 @@ namespace Journey {
 
         PhongColoredShader.setMat4("projection", scene.GetCameraHandler().getProjection());
         PhongColoredShader.setMat4("view", scene.GetCameraHandler().getViewMatrix());
-        glm::mat4 transform1 = glm::mat4(1.0f); 
-        transform1 = glm::translate(transform1, glm::vec3(-0.0f, 0.0f, 0.0f));
-        transform1 = glm::rotate(transform1, glm::radians(35.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-        transform1 = glm::scale(transform1, glm::vec3(10.0f, 7.0f, 0.3f));
         for(auto& renderInfo: mPhongColoredObjects) {
             
             // material properties
@@ -61,7 +57,7 @@ namespace Journey {
             PhongColoredShader.setVec3("material.specular", renderInfo.ks); 
             PhongColoredShader.setFloat("material.shininess", 64.0f);
             
-            PhongColoredShader.setMat4("model", transform1);
+            PhongColoredShader.setMat4("model", renderInfo.model);
             // render 
             glBindVertexArray(renderInfo.VAO);
             glDrawArrays(GL_TRIANGLES, 0, renderInfo.faces);

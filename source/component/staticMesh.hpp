@@ -4,7 +4,7 @@
 
 namespace Journey {
     struct Material;
-    class StaticMeshComponent : Component {
+    class StaticMeshComponent : public Component {
         public:
             StaticMeshComponent() = default;
 

@@ -37,24 +37,29 @@ namespace Journey {
             {   
                 std::cout << "DebuG 9" << std::endl;
                 RenderInfo rInfo;
+                std::cout << "DebuG 101" << std::endl;
                 rInfo.VAO = staticMesh->VAO;
+                std::cout << "DebuG 102" << std::endl;
                 rInfo.VBO = staticMesh->VBO;
+                std::cout << "DebuG 103" << std::endl;
                 rInfo.faces = staticMesh->vertexCount;
+                std::cout << "DebuG 104" << std::endl;
                 switch(staticMesh->material->GetType()) {
                     case EMaterialType::SimpleColored:
-                        rInfo.ks = dynamic_cast<SimpleColoredMaterial*>(staticMesh->material.get())->color;
+                        std::cout << "DebuG 105" << std::endl;
+                        rInfo.ks = dynamic_cast<SimpleColoredMaterial*>((staticMesh->material).get())->color;
                         break;
                     case EMaterialType::SimpleTextured:
                         break;
                     case EMaterialType::FlatColored:
-                        rInfo.ks = dynamic_cast<FlatColoredMaterial*>(staticMesh->material.get())->ks;
-                        rInfo.kd = dynamic_cast<FlatColoredMaterial*>(staticMesh->material.get())->kd;
-                        rInfo.ke = dynamic_cast<FlatColoredMaterial*>(staticMesh->material.get())->ke;
+                        rInfo.ks = dynamic_cast<FlatColoredMaterial*>((staticMesh->material).get())->ks;
+                        rInfo.kd = dynamic_cast<FlatColoredMaterial*>((staticMesh->material).get())->kd;
+                        rInfo.ke = dynamic_cast<FlatColoredMaterial*>((staticMesh->material).get())->ke;
                         break;
                     case EMaterialType::PhongColored:
-                        rInfo.ks = dynamic_cast<PhongColoredMaterial*>(staticMesh->material.get())->ks;
-                        rInfo.kd = dynamic_cast<PhongColoredMaterial*>(staticMesh->material.get())->kd;
-                        rInfo.ke = dynamic_cast<PhongColoredMaterial*>(staticMesh->material.get())->ke;
+                        rInfo.ks = dynamic_cast<PhongColoredMaterial*>((staticMesh->material).get())->ks;
+                        rInfo.kd = dynamic_cast<PhongColoredMaterial*>((staticMesh->material).get())->kd;
+                        rInfo.ke = dynamic_cast<PhongColoredMaterial*>((staticMesh->material).get())->ke;
                         break;
                     case EMaterialType::FlatTextured:
                         rInfo.ks = dynamic_cast<FlatTexturedMaterial*>(staticMesh->material.get())->ks;
@@ -80,15 +85,17 @@ namespace Journey {
             SpriteComponent* sprite = dynamic_cast<SpriteComponent*>((entity->mComponents[EComponentType::SpriteComponent]).get());
             if (sprite != nullptr)
             {   
+                std::cout << "DebuG 100" << std::endl;
                 RenderInfo rInfo;
                 rInfo.VAO = sprite->VAO;
                 rInfo.VBO = sprite->VBO;
                 rInfo.faces = sprite->vertexCount;
                 switch(sprite->material->GetType()) {
                     case EMaterialType::SimpleColored:
-                        rInfo.ks = dynamic_cast<SimpleColoredMaterial*>(sprite->material.get())->color;
+                        rInfo.ks = dynamic_cast<SimpleColoredMaterial*>((sprite->material).get())->color;
                         break;
                     case EMaterialType::SimpleTextured:
+                        rInfo.textureID = sprite->textureID;
                         break;
                     case EMaterialType::FlatColored:
                         rInfo.ks = dynamic_cast<FlatColoredMaterial*>(sprite->material.get())->ks;

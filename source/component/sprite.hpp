@@ -2,10 +2,9 @@
 
 #include "component.hpp"
 
-
 namespace Journey {
     struct Material;
-    class SpriteComponent : Component {
+    class SpriteComponent : public Component {
         public:
             SpriteComponent() = default;
 

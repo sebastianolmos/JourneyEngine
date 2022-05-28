@@ -44,7 +44,8 @@ namespace Journey {
             return;
         
         if (entity->mComponents.count(EComponentType::SpriteComponent) == 0) {
-            SpriteComponent* spriteComp = new SpriteComponent();
+            //SpriteComponent* spriteComp = new SpriteComponent();
+            std::shared_ptr<SpriteComponent> spriteComp = std::make_shared<SpriteComponent>();
             
             float texvertices[] = {
                 -0.5f, 0.0f, -0.5f,  0.0f, 1.0f,
@@ -80,9 +81,9 @@ namespace Journey {
             std::shared_ptr<Texture> texPtr = LoadTexture(spritePath, GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT);
             spriteComp->textureID = texPtr->textureId;
             spriteComp->material = mat; 
+            spriteComp->material->mType = EMaterialType::SimpleTextured;
 
-            std::shared_ptr<SpriteComponent> Ptr = std::shared_ptr<SpriteComponent>(spriteComp);
-            //entity->mComponents.insert({EComponentType::SpriteComponent, std::shared_ptr<Component>spriteComp});
+            entity->mComponents.insert(std::make_pair(EComponentType::SpriteComponent, spriteComp));
         }
     }
 

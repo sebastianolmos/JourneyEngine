@@ -21,32 +21,32 @@ namespace Journey {
         virtual void A() {}
     };
 
-    struct SimpleColoredMaterial : Material {
+    struct SimpleColoredMaterial : public Material {
         glm::fvec3 color;
     };
 
-    struct SimpleTexturedMaterial : Material {
+    struct SimpleTexturedMaterial : public Material {
     };
 
-    struct FlatColoredMaterial : Material {
+    struct FlatColoredMaterial : public Material {
         glm::fvec3 ks;
         glm::fvec3 kd;
         glm::fvec3 ke;
     };
 
-    struct PhongColoredMaterial : Material {
+    struct PhongColoredMaterial : public Material {
         glm::fvec3 ks;
         glm::fvec3 kd;
         glm::fvec3 ke;
     };
 
-    struct FlatTexturedMaterial : Material {
+    struct FlatTexturedMaterial : public Material {
         glm::fvec3 ks;
         glm::fvec3 kd;
         glm::fvec3 ke;
     };
 
-    struct PhongTexturedMaterial : Material {
+    struct PhongTexturedMaterial : public Material {
         glm::fvec3 ks;
         glm::fvec3 kd;
         glm::fvec3 ke;

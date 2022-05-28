@@ -12,9 +12,10 @@ namespace Journey
         if (entity == nullptr || entity->mComponents.count(EComponentType::SpriteComponent) > 0)
             return;
         
-        StaticMeshComponent* meshComp = new StaticMeshComponent();
+        
         switch(primitiveMesh) {
             case EPrimitiveMesh::Cube:
+                std::shared_ptr<StaticMeshComponent> meshComp = std::make_shared<StaticMeshComponent>();
 
                 float vertices[] = {
                     -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
@@ -83,8 +84,8 @@ namespace Journey
                 meshComp->vertexStride = 6;
 
                 meshComp->material = mat; 
-
-
+                meshComp->material->mType = EMaterialType::PhongColored;
+                entity->mComponents.insert(std::make_pair(EComponentType::StaticMeshComponent, meshComp));
                 break;
             }
     }

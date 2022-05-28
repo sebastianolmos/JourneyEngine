@@ -13,7 +13,8 @@ namespace Journey {
             EComponentType GetType() {return mType;}
             virtual void A() {}
 
-        protected:
+            virtual void UpdateComponent() {}
+
             EComponentType mType;        
     };
 
