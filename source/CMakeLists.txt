@@ -23,6 +23,7 @@ set(JOURNEY_SOURCES
         application.cpp
         entity/entityManager.cpp
         component/transform.cpp
+        rendering/material.cpp
         rendering/meshManager.cpp
         rendering/renderManager.cpp
         rendering/textureManager.cpp

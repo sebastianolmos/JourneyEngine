@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 
 namespace Journey {
-
+    struct RenderInfo;
     enum class EMaterialType : uint8_t {
 		SimpleColored,
         SimpleTextured,
@@ -17,18 +17,20 @@ namespace Journey {
         EMaterialType mType;
 
         virtual EMaterialType GetType() = 0;
-        virtual void A() {}
+        virtual void fillRenderInfo(RenderInfo& rInfo) {}
     };
 
     struct SimpleColoredMaterial : public Material {
         glm::fvec3 color;
 
-        virtual EMaterialType GetType() override{ return EMaterialType::SimpleColored;}
+        virtual EMaterialType GetType() override;
+        virtual void fillRenderInfo(RenderInfo& rInfo) override;
     };
 
     struct SimpleTexturedMaterial : public Material {
 
-        virtual EMaterialType GetType() override{ return EMaterialType::SimpleTextured;}
+        virtual EMaterialType GetType() override;
+        virtual void fillRenderInfo(RenderInfo& rInfo) override;
     };
 
     struct FlatColoredMaterial : public Material {
@@ -36,7 +38,8 @@ namespace Journey {
         glm::fvec3 kd;
         glm::fvec3 ke;
 
-        virtual EMaterialType GetType() override{ return EMaterialType::FlatColored;}
+        virtual EMaterialType GetType() override;
+        virtual void fillRenderInfo(RenderInfo& rInfo) override;
     };
 
     struct PhongColoredMaterial : public Material {
@@ -44,7 +47,8 @@ namespace Journey {
         glm::fvec3 kd;
         glm::fvec3 ke;
 
-        virtual EMaterialType GetType() override{ return EMaterialType::PhongColored;}
+        virtual EMaterialType GetType() override;
+        virtual void fillRenderInfo(RenderInfo& rInfo) override;
     };
 
     struct FlatTexturedMaterial : public Material {
@@ -52,7 +56,8 @@ namespace Journey {
         glm::fvec3 kd;
         glm::fvec3 ke;
 
-        virtual EMaterialType GetType() override{ return EMaterialType::PhongColored;}
+        virtual EMaterialType GetType() override;
+        virtual void fillRenderInfo(RenderInfo& rInfo) override;
     };
 
     struct PhongTexturedMaterial : public Material {
@@ -60,7 +65,8 @@ namespace Journey {
         glm::fvec3 kd;
         glm::fvec3 ke;
 
-        virtual EMaterialType GetType() override{ return EMaterialType::PhongTextured;}
+        virtual EMaterialType GetType() override;
+        virtual void fillRenderInfo(RenderInfo& rInfo) override;
     };
 
 }
