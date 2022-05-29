@@ -58,7 +58,7 @@ namespace Journey {
             PhongColoredShader.setMat4("model", renderInfo.model);
             // render 
             glBindVertexArray(renderInfo.VAO);
-            glDrawArrays(GL_TRIANGLES, 0, renderInfo.faces);
+            glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
         }   
 
 
@@ -72,7 +72,7 @@ namespace Journey {
             glBindTexture(GL_TEXTURE_2D, renderInfo.textureID);
             glBindVertexArray(renderInfo.VAO);
             SimpleTexturedShader.setMat4("model", renderInfo.model);
-            glDrawArrays(GL_TRIANGLES, 0, renderInfo.faces);
+            glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
         }   
     }
 

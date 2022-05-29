@@ -34,39 +34,7 @@ namespace Journey {
             if (staticMesh != nullptr)
             {   
                 RenderInfo rInfo;
-                rInfo.VAO = staticMesh->VAO;
-                rInfo.VBO = staticMesh->VBO;
-                rInfo.faces = staticMesh->vertexCount;
-                switch(staticMesh->material->GetType()) {
-                    case EMaterialType::SimpleColored:
-                        rInfo.ks = dynamic_cast<SimpleColoredMaterial*>((staticMesh->material).get())->color;
-                        break;
-                    case EMaterialType::SimpleTextured:
-                        break;
-                    case EMaterialType::FlatColored:
-                        rInfo.ks = dynamic_cast<FlatColoredMaterial*>((staticMesh->material).get())->ks;
-                        rInfo.kd = dynamic_cast<FlatColoredMaterial*>((staticMesh->material).get())->kd;
-                        rInfo.ke = dynamic_cast<FlatColoredMaterial*>((staticMesh->material).get())->ke;
-                        break;
-                    case EMaterialType::PhongColored:
-                        rInfo.ks = dynamic_cast<PhongColoredMaterial*>((staticMesh->material).get())->ks;
-                        rInfo.kd = dynamic_cast<PhongColoredMaterial*>((staticMesh->material).get())->kd;
-                        rInfo.ke = dynamic_cast<PhongColoredMaterial*>((staticMesh->material).get())->ke;
-                        break;
-                    case EMaterialType::FlatTextured:
-                        rInfo.ks = dynamic_cast<FlatTexturedMaterial*>(staticMesh->material.get())->ks;
-                        rInfo.kd = dynamic_cast<FlatTexturedMaterial*>(staticMesh->material.get())->kd;
-                        rInfo.ke = dynamic_cast<FlatTexturedMaterial*>(staticMesh->material.get())->ke;
-                        break;
-                    case EMaterialType::PhongTextured:
-                        rInfo.ks = dynamic_cast<PhongTexturedMaterial*>(staticMesh->material.get())->ks;
-                        rInfo.kd = dynamic_cast<PhongTexturedMaterial*>(staticMesh->material.get())->kd;
-                        rInfo.ke = dynamic_cast<PhongTexturedMaterial*>(staticMesh->material.get())->ke;
-                        break;
-                    default:
-                        // code block
-                        break;
-                }               
+                staticMesh->UpdateRenderInfo(rInfo);      
                 rInfo.model = newTransform;
                 scene.GetRenderManager().AddObjectToRender(staticMesh->material->GetType(), rInfo);
             }
@@ -77,40 +45,7 @@ namespace Journey {
             if (sprite != nullptr)
             {   
                 RenderInfo rInfo;
-                rInfo.VAO = sprite->VAO;
-                rInfo.VBO = sprite->VBO;
-                rInfo.faces = sprite->vertexCount;
-                switch(sprite->material->GetType()) {
-                    case EMaterialType::SimpleColored:
-                        rInfo.ks = dynamic_cast<SimpleColoredMaterial*>((sprite->material).get())->color;
-                        break;
-                    case EMaterialType::SimpleTextured:
-                        rInfo.textureID = sprite->textureID;
-                        break;
-                    case EMaterialType::FlatColored:
-                        rInfo.ks = dynamic_cast<FlatColoredMaterial*>(sprite->material.get())->ks;
-                        rInfo.kd = dynamic_cast<FlatColoredMaterial*>(sprite->material.get())->kd;
-                        rInfo.ke = dynamic_cast<FlatColoredMaterial*>(sprite->material.get())->ke;
-                        break;
-                    case EMaterialType::PhongColored:
-                        rInfo.ks = dynamic_cast<PhongColoredMaterial*>(sprite->material.get())->ks;
-                        rInfo.kd = dynamic_cast<PhongColoredMaterial*>(sprite->material.get())->kd;
-                        rInfo.ke = dynamic_cast<PhongColoredMaterial*>(sprite->material.get())->ke;
-                        break;
-                    case EMaterialType::FlatTextured:
-                        rInfo.ks = dynamic_cast<FlatTexturedMaterial*>(sprite->material.get())->ks;
-                        rInfo.kd = dynamic_cast<FlatTexturedMaterial*>(sprite->material.get())->kd;
-                        rInfo.ke = dynamic_cast<FlatTexturedMaterial*>(sprite->material.get())->ke;
-                        break;
-                    case EMaterialType::PhongTextured:
-                        rInfo.ks = dynamic_cast<PhongTexturedMaterial*>(sprite->material.get())->ks;
-                        rInfo.kd = dynamic_cast<PhongTexturedMaterial*>(sprite->material.get())->kd;
-                        rInfo.ke = dynamic_cast<PhongTexturedMaterial*>(sprite->material.get())->ke;
-                        break;
-                    default:
-                        // code block
-                        break;
-                }               
+                sprite->UpdateRenderInfo(rInfo);
                 rInfo.model = newTransform;
                 scene.GetRenderManager().AddObjectToRender(sprite->material->GetType(), rInfo);
             }

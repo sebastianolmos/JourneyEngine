@@ -2,7 +2,7 @@
 #include <cstdint>
 
 namespace Journey {
-
+    struct RenderInfo;
     enum class EComponentType : uint8_t {
 		StaticMeshComponent,
         SpriteComponent
@@ -10,10 +10,8 @@ namespace Journey {
 
     class Component {
         public:
-            EComponentType GetType() {return mType;}
-            virtual void A() {}
-
-            virtual void UpdateComponent() {}
+            virtual EComponentType GetType() = 0;
+            virtual void UpdateRenderInfo(RenderInfo& rInfo) {}
 
             EComponentType mType;        
     };

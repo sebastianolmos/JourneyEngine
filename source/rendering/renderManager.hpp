@@ -13,7 +13,7 @@ namespace Journey {
         unsigned int VAO;
         unsigned int VBO;
         unsigned int textureID;
-        unsigned int faces;
+        unsigned int vertexCount;
         glm::fvec3 ks;
         glm::fvec3 kd;
         glm::fvec3 ke;   
