@@ -12,6 +12,7 @@ namespace Journey {
         SimpleTexturedShader.StartUp("../../../source/rendering/shaders/SimpleTexturedShader.vs", "../../../source/rendering/shaders/SimpleTexturedShader.fs");
         FlatColoredShader.StartUp("../../../source/rendering/shaders/FlatColoredShader.vs", "../../../source/rendering/shaders/FlatColoredShader.fs");
         PhongColoredShader.StartUp("../../../source/rendering/shaders/PhongColoredShader.vs", "../../../source/rendering/shaders/PhongColoredShader.fs");
+        PhongTexturedShader.StartUp("../../../source/rendering/shaders/PhongTexturedShader.vs", "../../../source/rendering/shaders/PhongTexturedShader.fs");
         // other shaders
         CleanRenderInfo();
 
@@ -95,6 +96,28 @@ namespace Journey {
             PhongColoredShader.setMat4("model", renderInfo.model);
             // render 
             glBindVertexArray(renderInfo.VAO);
+            glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
+        }   
+
+        // <------ PHONG TEXTURED SHADER ------->
+        PhongTexturedShader.use();
+        PhongTexturedShader.setVec3("light.position", scene.GetPointLight().getLightPos());
+        PhongTexturedShader.setVec3("viewPos", scene.GetCameraHandler().getViewPos());
+        PhongTexturedShader.setVec3("light.ambient", scene.GetPointLight().getAmbientColor());
+        PhongTexturedShader.setVec3("light.diffuse", scene.GetPointLight().getDifuseColor());
+        PhongTexturedShader.setVec3("light.specular",scene.GetPointLight().getSpecularColor());
+        PhongTexturedShader.setMat4("projection", scene.GetCameraHandler().getProjection());
+        PhongTexturedShader.setMat4("view", scene.GetCameraHandler().getViewMatrix());
+        for(auto& renderInfo: mPhongTexturedObjects) {
+            // material properties
+            PhongTexturedShader.setVec3("material.ambient", renderInfo.ke);
+            PhongTexturedShader.setVec3("material.diffuse", renderInfo.kd);
+            PhongTexturedShader.setVec3("material.specular", renderInfo.ks); 
+            PhongTexturedShader.setFloat("material.shininess", 64.0f);
+            // bind textures on corresponding texture units
+            glBindTexture(GL_TEXTURE_2D, renderInfo.textureID);
+            glBindVertexArray(renderInfo.VAO);
+            PhongTexturedShader.setMat4("model", renderInfo.model);
             glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
         }   
 
