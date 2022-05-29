@@ -8,8 +8,12 @@
 namespace Journey {
 
     enum class EPrimitiveMesh : uint8_t {
+        Plane,
 		Cube,
-        Sphere
+        Pyramid,
+        Cylinder,
+        Sphere,
+        Capsule
 	};
     
     class Entity;
