@@ -21,8 +21,10 @@ namespace Journey {
 		    const glm::vec3& GetLocalScale() const;
 		    void SetTranslation(const glm::vec3 translation);
 		    void SetRotation(const glm::fquat& rotation);
+            void SetRotation(const glm::vec3& rotation);
             void SetScale(const glm::vec3& scale);
             void Set(const glm::vec3 translation, const glm::fquat& rotation, const glm::vec3& scale);
+            void Set(const glm::vec3 translation, const glm::vec3& rotation, const glm::vec3& scale);
 
             glm::mat4 GetModelMatrix() const;
 

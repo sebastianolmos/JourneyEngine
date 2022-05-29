@@ -9,8 +9,8 @@ class LittleDemo : public Journey::Application {
             floor = std::make_shared<Journey::Entity>();
 
             floor->getTransform().Set(glm::vec3(-0.0f, 0.0f, 0.0f),
-                                    glm::quat(glm::vec3(0.0f, 0.0f, glm::radians(35.0f))),
-                                    glm::vec3(100.0f, 70.0f, 000.3f)
+                                    glm::vec3(0.0f, 0.0f, glm::radians(35.0f)),
+                                    glm::vec3(100.0f, 70.0f, 0.3f)
                                     );
 
             Journey::PhongColoredMaterial* floorMat = new Journey::PhongColoredMaterial();
@@ -24,8 +24,8 @@ class LittleDemo : public Journey::Application {
 
             dog = std::make_shared<Journey::Entity>();
 
-            dog->getTransform().Set(glm::vec3(glm::vec3(0.0f, -0.5f, 1.2f+0.0f)),
-                                    glm::quat(glm::vec3(0.0f, 0.0f, glm::radians(35.0f))),
+            dog->getTransform().Set(glm::vec3(glm::vec3(0.0f, -0.5f, 1.2f)),
+                                    glm::vec3(0.0f, 0.0f, glm::radians(35.0f)),
                                     glm::vec3(0.4f, 1.0f, 0.3f)
                                     );
 
@@ -43,9 +43,8 @@ class LittleDemo : public Journey::Application {
 
         virtual void UserUpdate(Journey::Scene& scene, float deltaTime) override {
             mInnerVar += deltaTime;
-            glm::vec3 tmpTr = dog->getTransform().GetLocalTranslation() + glm::vec3(mInnerVar, 0, 0);
-            dog->getTransform().SetTranslation(glm::vec3(mInnerVar,-0.5f, 1.2f));
-            dog->getTransform().SetRotation(glm::quat(glm::vec3(0.0f, 0.0f, glm::radians(mInnerVar))));
+            dog->getTransform().SetTranslation(glm::vec3(glm::sin(mInnerVar)*2.0,-0.5f, 1.2f));
+            dog->getTransform().SetRotation(glm::vec3(0.0f, 0.0f, glm::radians(35.0f) + mInnerVar));
         }
 
     private:

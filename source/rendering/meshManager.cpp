@@ -84,7 +84,6 @@ namespace Journey
                 meshComp->vertexStride = 6;
 
                 meshComp->material = mat; 
-                meshComp->material->mType = EMaterialType::PhongColored;
                 entity->mComponents.insert(std::make_pair(EComponentType::StaticMeshComponent, meshComp));
                 break;
             }

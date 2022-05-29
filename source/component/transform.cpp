@@ -32,6 +32,11 @@ namespace Journey {
         mLocalRotation = rotation;
     }
 
+    void Transform::SetRotation(const glm::vec3& rotation)
+    {
+        mLocalRotation = glm::quat(rotation);
+    }
+
     glm::mat4 Transform::GetModelMatrix() const {
         const glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), mLocalTranslation);
         const glm::mat4 rotationMatrix = glm::toMat4(mLocalRotation);
@@ -45,6 +50,13 @@ namespace Journey {
         mLocalTranslation = translation;
         mLocalScale = scale;
         mLocalRotation = rotation;
+    }
+
+    void Transform::Set(const glm::vec3 translation, const glm::vec3& rotation, const glm::vec3& scale)
+    {
+        mLocalTranslation = translation;
+        mLocalScale = scale;
+        mLocalRotation = glm::quat(rotation);
     }
 
 }

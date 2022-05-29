@@ -81,7 +81,6 @@ namespace Journey {
             std::shared_ptr<Texture> texPtr = LoadTexture(spritePath, GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT);
             spriteComp->textureID = texPtr->textureId;
             spriteComp->material = mat; 
-            spriteComp->material->mType = EMaterialType::SimpleTextured;
 
             entity->mComponents.insert(std::make_pair(EComponentType::SpriteComponent, spriteComp));
         }
