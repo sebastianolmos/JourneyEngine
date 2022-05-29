@@ -10,6 +10,7 @@ namespace Journey {
     void RenderManager::StartUp() {
         SimpleColoredShader.StartUp("../../../source/rendering/shaders/SimpleColoredShader.vs", "../../../source/rendering/shaders/SimpleColoredShader.fs");
         SimpleTexturedShader.StartUp("../../../source/rendering/shaders/SimpleTexturedShader.vs", "../../../source/rendering/shaders/SimpleTexturedShader.fs");
+        FlatColoredShader.StartUp("../../../source/rendering/shaders/FlatColoredShader.vs", "../../../source/rendering/shaders/FlatColoredShader.fs");
         PhongColoredShader.StartUp("../../../source/rendering/shaders/PhongColoredShader.vs", "../../../source/rendering/shaders/PhongColoredShader.fs");
         // other shaders
         CleanRenderInfo();
@@ -46,8 +47,31 @@ namespace Journey {
         for(auto& renderInfo: mSimpleColoredObjects) {
             // bind textures on corresponding texture units
             glBindVertexArray(renderInfo.VAO);
-            SimpleTexturedShader.setVec3("shapeColor", renderInfo.color);
-            SimpleTexturedShader.setMat4("model", renderInfo.model);
+            SimpleColoredShader.setVec3("shapeColor", renderInfo.color);
+            SimpleColoredShader.setMat4("model", renderInfo.model);
+            glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
+        }   
+
+        // <------ FLAT COLORED SHADER ------->
+        FlatColoredShader.use();
+        FlatColoredShader.setVec3("light.position", scene.GetPointLight().getLightPos());
+        FlatColoredShader.setVec3("viewPos", scene.GetCameraHandler().getViewPos());
+        FlatColoredShader.setVec3("light.ambient", scene.GetPointLight().getAmbientColor());
+        FlatColoredShader.setVec3("light.diffuse", scene.GetPointLight().getDifuseColor());
+        FlatColoredShader.setVec3("light.specular",scene.GetPointLight().getSpecularColor());
+        FlatColoredShader.setMat4("projection", scene.GetCameraHandler().getProjection());
+        FlatColoredShader.setMat4("view", scene.GetCameraHandler().getViewMatrix());
+        for(auto& renderInfo: mFlatColoredObjects) {
+            // material properties
+            FlatColoredShader.setVec3("shapeColor", renderInfo.color);
+            FlatColoredShader.setVec3("material.ambient", renderInfo.ke);
+            FlatColoredShader.setVec3("material.diffuse", renderInfo.kd);
+            FlatColoredShader.setVec3("material.specular", renderInfo.ks); 
+            FlatColoredShader.setFloat("material.shininess", 64.0f);
+            
+            FlatColoredShader.setMat4("model", renderInfo.model);
+            // render 
+            glBindVertexArray(renderInfo.VAO);
             glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
         }   
 
