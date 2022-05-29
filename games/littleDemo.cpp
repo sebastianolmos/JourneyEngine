@@ -6,10 +6,9 @@ class LittleDemo : public Journey::Application {
         ~LittleDemo() = default;
 
         virtual void UserStartUp(Journey::Scene& scene) override {
-            Journey::Entity* floor = new Journey::Entity();
-            std::shared_ptr<Journey::Entity> floorPtr = std::shared_ptr<Journey::Entity>(floor);
+            floor = std::make_shared<Journey::Entity>();
 
-            floorPtr->getTransform().Set(glm::vec3(-0.0f, 0.0f, 0.0f),
+            floor->getTransform().Set(glm::vec3(-0.0f, 0.0f, 0.0f),
                                     glm::quat(glm::vec3(0.0f, 0.0f, glm::radians(35.0f))),
                                     glm::vec3(100.0f, 70.0f, 000.3f)
                                     );
@@ -19,14 +18,13 @@ class LittleDemo : public Journey::Application {
             floorMat->ke = glm::vec3(0.1f, 0.6f, 0.05f);
             floorMat->ks = glm::vec3(0.1f, 0.1f, 0.1f);
 
-            scene.AddPrimitiveMeshComponent(floorPtr, std::shared_ptr<Journey::Material>(floorMat), Journey::EPrimitiveMesh::Cube);
-            scene.AddEntity(nullptr, floorPtr);
+            scene.AddPrimitiveMeshComponent(floor, std::shared_ptr<Journey::Material>(floorMat), Journey::EPrimitiveMesh::Cube);
+            scene.AddEntity(nullptr, floor);
 
 
-            Journey::Entity* dog = new Journey::Entity();
-            std::shared_ptr<Journey::Entity> dogPtr = std::shared_ptr<Journey::Entity>(dog);
+            dog = std::make_shared<Journey::Entity>();
 
-            dogPtr->getTransform().Set(glm::vec3(glm::vec3(0.0f, -0.5f, 1.2f+0.0f)),
+            dog->getTransform().Set(glm::vec3(glm::vec3(0.0f, -0.5f, 1.2f+0.0f)),
                                     glm::quat(glm::vec3(0.0f, 0.0f, glm::radians(35.0f))),
                                     glm::vec3(0.4f, 1.0f, 0.3f)
                                     );
@@ -34,8 +32,8 @@ class LittleDemo : public Journey::Application {
 
             Journey::SimpleTexturedMaterial* dogMat = new Journey::SimpleTexturedMaterial();
 
-            scene.AddSpriteComponent(dogPtr, std::shared_ptr<Journey::Material>(dogMat), "../../../assets/sprites/carpincho.png");
-            scene.AddEntity(nullptr, dogPtr);
+            scene.AddSpriteComponent(dog, std::shared_ptr<Journey::Material>(dogMat), "../../../assets/sprites/carpincho.png");
+            scene.AddEntity(nullptr, dog);
             mInnerVar = 0;
         }
 
@@ -45,12 +43,15 @@ class LittleDemo : public Journey::Application {
 
         virtual void UserUpdate(Journey::Scene& scene, float deltaTime) override {
             mInnerVar += deltaTime;
+            glm::vec3 tmpTr = dog->getTransform().GetLocalTranslation() + glm::vec3(mInnerVar, 0, 0);
+            dog->getTransform().SetTranslation(glm::vec3(mInnerVar,-0.5f, 1.2f));
+            dog->getTransform().SetRotation(glm::quat(glm::vec3(0.0f, 0.0f, glm::radians(mInnerVar))));
         }
 
-
-    
     private:
         float mInnerVar;
+        std::shared_ptr<Journey::Entity> floor;
+        std::shared_ptr<Journey::Entity> dog;
 };
 
 int main()

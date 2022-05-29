@@ -30,23 +30,15 @@ namespace Journey {
         //Check StaticMesh Component
         if ((entity->mComponents).count(EComponentType::StaticMeshComponent) != 0 )
         {
-            
-            std::cout << "DebuG 10" << std::endl;
             StaticMeshComponent* staticMesh = dynamic_cast<StaticMeshComponent*>((entity->mComponents[EComponentType::StaticMeshComponent]).get());
             if (staticMesh != nullptr)
             {   
-                std::cout << "DebuG 9" << std::endl;
                 RenderInfo rInfo;
-                std::cout << "DebuG 101" << std::endl;
                 rInfo.VAO = staticMesh->VAO;
-                std::cout << "DebuG 102" << std::endl;
                 rInfo.VBO = staticMesh->VBO;
-                std::cout << "DebuG 103" << std::endl;
                 rInfo.faces = staticMesh->vertexCount;
-                std::cout << "DebuG 104" << std::endl;
                 switch(staticMesh->material->GetType()) {
                     case EMaterialType::SimpleColored:
-                        std::cout << "DebuG 105" << std::endl;
                         rInfo.ks = dynamic_cast<SimpleColoredMaterial*>((staticMesh->material).get())->color;
                         break;
                     case EMaterialType::SimpleTextured:
@@ -76,7 +68,6 @@ namespace Journey {
                         break;
                 }               
                 rInfo.model = newTransform;
-                std::cout << "DebuG 7" << std::endl;
                 scene.GetRenderManager().AddObjectToRender(staticMesh->material->GetType(), rInfo);
             }
         }
@@ -85,7 +76,6 @@ namespace Journey {
             SpriteComponent* sprite = dynamic_cast<SpriteComponent*>((entity->mComponents[EComponentType::SpriteComponent]).get());
             if (sprite != nullptr)
             {   
-                std::cout << "DebuG 100" << std::endl;
                 RenderInfo rInfo;
                 rInfo.VAO = sprite->VAO;
                 rInfo.VBO = sprite->VBO;
@@ -122,7 +112,6 @@ namespace Journey {
                         break;
                 }               
                 rInfo.model = newTransform;
-                std::cout << "DebuG 8" << std::endl;
                 scene.GetRenderManager().AddObjectToRender(sprite->material->GetType(), rInfo);
             }
         }
@@ -131,7 +120,6 @@ namespace Journey {
         {
             UpdateEntity(scene, element.second, newTransform, deltaTime);
         }
-        std::cout << "DebuG 3" << deltaTime << std::endl;
     }
 
     void EntityManager::UpdateEntities(Scene& scene, float deltaTime)

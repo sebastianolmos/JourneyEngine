@@ -49,7 +49,6 @@ namespace Journey {
         mWindow.UpdatePerformanceMonitor(deltaTime);
         mRenderManager.CleanRenderInfo();
         //Update input
-        std::cout << "DebuG 4" << std::endl;
         mEntityManager.UpdateEntities(*this, deltaTime);
         mApplication.UserUpdate(*this, deltaTime);
         mRenderManager.DrawCall(*this);

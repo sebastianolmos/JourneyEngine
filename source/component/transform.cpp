@@ -19,7 +19,7 @@ namespace Journey {
 
     void Transform::SetTranslation(const glm::vec3 translation)
     {
-        mLocalTranslation;
+        mLocalTranslation = translation;
     }
 
     void Transform::SetScale(const glm::vec3& scale)

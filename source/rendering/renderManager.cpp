@@ -34,8 +34,6 @@ namespace Journey {
 
     void RenderManager::DrawCall(Scene& scene)
     {
-        std::cout << "DebuG 5" << std::endl;
-
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -61,7 +59,6 @@ namespace Journey {
             // render 
             glBindVertexArray(renderInfo.VAO);
             glDrawArrays(GL_TRIANGLES, 0, renderInfo.faces);
-            std::cout << "RENDER A"  << std::endl;
         }   
 
 
