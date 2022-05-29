@@ -46,6 +46,7 @@ namespace Journey {
         for(auto& renderInfo: mSimpleColoredObjects) {
             // bind textures on corresponding texture units
             glBindVertexArray(renderInfo.VAO);
+            SimpleTexturedShader.setVec3("shapeColor", renderInfo.color);
             SimpleTexturedShader.setMat4("model", renderInfo.model);
             glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
         }   
@@ -61,6 +62,7 @@ namespace Journey {
         PhongColoredShader.setMat4("view", scene.GetCameraHandler().getViewMatrix());
         for(auto& renderInfo: mPhongColoredObjects) {
             // material properties
+            PhongColoredShader.setVec3("shapeColor", renderInfo.color);
             PhongColoredShader.setVec3("material.ambient", renderInfo.ke);
             PhongColoredShader.setVec3("material.diffuse", renderInfo.kd);
             PhongColoredShader.setVec3("material.specular", renderInfo.ks); 

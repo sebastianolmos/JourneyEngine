@@ -14,7 +14,8 @@ class LittleDemo : public Journey::Application {
                                     );
 
             Journey::PhongColoredMaterial* floorMat = new Journey::PhongColoredMaterial();
-            floorMat->kd = glm::vec3(0.25f, 0.9f, 0.01f);
+            floorMat->color = glm::vec3(0.25f, 0.9f, 0.01f);
+            floorMat->kd = glm::vec3(0.25f, 0.25f, 0.01f);
             floorMat->ke = glm::vec3(0.1f, 0.6f, 0.05f);
             floorMat->ks = glm::vec3(0.1f, 0.1f, 0.1f);
 

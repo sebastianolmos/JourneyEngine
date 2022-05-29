@@ -22,6 +22,7 @@ in vec3 Normal;
 uniform vec3 viewPos;
 uniform Material material;
 uniform Light light;
+uniform vec3 shapeColor;
 
 void main()
 {
@@ -40,6 +41,6 @@ void main()
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     vec3 specular = light.specular * (spec * material.specular);  
         
-    vec3 result = ambient + diffuse + specular;
+    vec3 result = (ambient + diffuse + specular) * shapeColor;
     FragColor = vec4(result, 1.0);
 } 

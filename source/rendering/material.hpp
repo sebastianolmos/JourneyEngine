@@ -37,6 +37,7 @@ namespace Journey {
         glm::fvec3 ks;
         glm::fvec3 kd;
         glm::fvec3 ke;
+        glm::fvec3 color;
 
         virtual EMaterialType GetType() override;
         virtual void fillRenderInfo(RenderInfo& rInfo) override;
@@ -46,6 +47,7 @@ namespace Journey {
         glm::fvec3 ks;
         glm::fvec3 kd;
         glm::fvec3 ke;
+        glm::fvec3 color;
 
         virtual EMaterialType GetType() override;
         virtual void fillRenderInfo(RenderInfo& rInfo) override;

@@ -21,6 +21,7 @@ namespace Journey {
         rInfo.ks = ks;
         rInfo.kd = kd;
         rInfo.ke = ke;
+        rInfo.color = color;
     }
 
     EMaterialType PhongColoredMaterial::GetType() { 
@@ -30,6 +31,7 @@ namespace Journey {
         rInfo.ks = ks;
         rInfo.kd = kd;
         rInfo.ke = ke;
+        rInfo.color = color;
     }
 
     EMaterialType FlatTexturedMaterial::GetType() { 

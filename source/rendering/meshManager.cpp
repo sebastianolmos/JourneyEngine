@@ -16,7 +16,7 @@ namespace Journey
         switch(primitiveMesh) {
             case EPrimitiveMesh::Cube:
                 std::shared_ptr<StaticMeshComponent> meshComp = std::make_shared<StaticMeshComponent>();
-
+                
                 float vertices[] = {
                     -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
                     0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
