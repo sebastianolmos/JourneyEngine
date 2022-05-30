@@ -87,6 +87,7 @@ namespace Journey {
 
     void Scene::AddEntity(std::shared_ptr<Entity> parentEntity, std::shared_ptr<Entity> newEntity)
     {
+        newEntity->UserStartUp(*this);
         mEntityManager.AddEntity(parentEntity, newEntity);
     }
 

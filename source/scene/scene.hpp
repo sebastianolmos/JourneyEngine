@@ -33,6 +33,7 @@ namespace Journey {
 		    void EndApplication();
             void AddEntity(std::shared_ptr<Entity> parentEntity, std::shared_ptr<Entity> newEntity);
             void AddPrimitiveMeshComponent(std::shared_ptr<Entity> entity, std::shared_ptr<Material> material, EPrimitiveMesh primitiveMesh);
+            
             void AddSpriteComponent(std::shared_ptr<Entity> entity,  std::shared_ptr<Material> material, std::string spritePath);
 
             CameraHandler&  GetCameraHandler();

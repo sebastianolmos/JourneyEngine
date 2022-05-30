@@ -12,7 +12,7 @@ namespace Journey{
     class EntityManager;
     class TextureManager;
     class MeshManager;
-    class Entity{
+    class Entity : public std::enable_shared_from_this<Entity> {
         public:
             enum class EState {
                 Active,
@@ -41,11 +41,10 @@ namespace Journey{
 
         protected:
 
-            Entity(const Entity&) = delete;
-            Entity& operator=(const Entity&) = delete;
-            Entity(Entity&&) = default;
-            Entity& operator=(Entity&&) = default;
-
+            //Entity(const Entity&) = delete;
+            //Entity& operator=(const Entity&) = delete;
+            //Entity(Entity&&) = default;
+            //Entity& operator=(Entity&&) = default;
 
             friend EntityManager;
             friend TextureManager;
