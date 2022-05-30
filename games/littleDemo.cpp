@@ -1,5 +1,10 @@
 #include "JourneyEngine.hpp"
 
+void RegisterInputs(Journey::InputController& input) {
+    input.RegisterKeyAction("Jump", JOURNEY_KEY_SPACE);
+    input.RegisterKeyAction("Test", JOURNEY_KEY_W);
+}
+
 class Carpincho : public Journey::Entity{
     public:
         Carpincho() = default;
@@ -17,9 +22,16 @@ class Carpincho : public Journey::Entity{
             mTimer += deltaTime;
             getTransform().SetTranslation(glm::vec3(0.0f, 0.5f, 1.0f + 0.7*glm::abs(glm::sin(mTimer +0.4))));
         };
+        void insideFuncTest(){
+            std::cout << "Working god!" << std::endl;
+        }
     private:
         float mTimer;
 };
+
+void testo() {
+    std::cout << "LETS GO!!" << std::endl;
+}
 
 class LittleDemo : public Journey::Application {
     public:
@@ -27,8 +39,10 @@ class LittleDemo : public Journey::Application {
         ~LittleDemo() = default;
 
         virtual void UserStartUp(Journey::Scene& scene) override {
-            floor = std::make_shared<Journey::Entity>();
+            RegisterInputs(scene.GetInputController());
+            scene.GetInputController().BindActionOnPressed("Jump", [&]() {this->testo();});
 
+            floor = std::make_shared<Journey::Entity>();
             floor->getTransform().Set(glm::vec3(-0.0f, 0.0f, 0.0f),
                                     glm::vec3(0.0f, 0.0f, glm::radians(35.0f)),
                                     glm::vec3(100.0f, 70.0f, 0.3f)
@@ -57,7 +71,7 @@ class LittleDemo : public Journey::Application {
 
             carpin = std::make_shared<Carpincho>();
             scene.AddEntity(nullptr, carpin);
-
+            scene.GetInputController().BindActionOnReleased("Test", [&]() {carpin->insideFuncTest();});
             mInnerVar = 0;
         }
 
@@ -69,6 +83,10 @@ class LittleDemo : public Journey::Application {
             mInnerVar += deltaTime;
             dog->getTransform().SetTranslation(glm::vec3(glm::sin(mInnerVar)*1.2,-0.5f, 1.2f));
             dog->getTransform().SetRotation(glm::vec3(0.0f, 0.0f, glm::radians(35.0f) + mInnerVar));
+        }
+
+        void testo(){
+            std::cout << "Looking god!" << std::endl;
         }
 
     private:

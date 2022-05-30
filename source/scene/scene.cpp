@@ -4,7 +4,7 @@
 namespace Journey {
 
     Scene::Scene(Application& app) :
-        //mInputController(),
+        mInputController(),
         mWindow(),
         mApplication(app),
         mShouldClose(false),
@@ -48,7 +48,7 @@ namespace Journey {
     {   
         mWindow.UpdatePerformanceMonitor(deltaTime);
         mRenderManager.CleanRenderInfo();
-        //Update input
+        mInputController.PollDevices(mWindow.mWindowHandle);
         mEntityManager.UpdateEntities(*this, deltaTime);
         mApplication.UserUpdate(*this, deltaTime);
         mRenderManager.DrawCall(*this);
