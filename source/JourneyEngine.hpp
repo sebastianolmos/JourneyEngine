@@ -5,6 +5,7 @@
 
 #include "engine.hpp"
 #include "input/keyCodes.hpp"
+#include "input/joystickCodes.hpp"
 #include "application.hpp"
 #include "scene/scene.hpp"
 #include "rendering/meshManager.hpp"

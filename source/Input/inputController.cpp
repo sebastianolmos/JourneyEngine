@@ -145,7 +145,6 @@ namespace Journey {
         {
             mGamePad->buttons[buttonId] = buttons[buttonId] == GLFW_PRESS;
             if (mGamePad->buttons[buttonId]){
-                std::cout << "GamePad Button Pressed:  " << buttonId << std::endl;
             }
         }
 
@@ -157,7 +156,6 @@ namespace Journey {
         {
             mGamePad->axes[axesId] = axes[axesId];
             if (mGamePad->axes[axesId] > 0.5){
-                std::cout << "GamePad Axis Moved:  " << axesId << std::endl;
             }
         }
     }

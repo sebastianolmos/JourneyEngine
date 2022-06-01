@@ -2,6 +2,7 @@ set(JOURNEY_HEADERS
         window/window.hpp
         input/inputController.hpp
         input/keyCodes.hpp
+        input/joystickCodes.hpp
         engine.hpp
         application.hpp
         entity/entity.hpp
