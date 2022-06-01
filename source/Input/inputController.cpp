@@ -2,6 +2,26 @@
 #include <iostream>
 
 namespace Journey {
+
+    void JoystickCallback(int jid, int event) 
+    {
+        if (event == GLFW_CONNECTED)
+        {
+            // The joystick was connected
+            std::cout << "The joystick " << jid << " was connected" << std::endl;
+        }
+        else if (event == GLFW_DISCONNECTED)
+        {
+            // The joystick was disconnected
+            std::cout << "The joystick " << jid << " was disconnected" << std::endl;
+        }
+    }
+    
+    void InputController::StartUp() 
+    {
+        glfwSetJoystickCallback(JoystickCallback);
+    }
+
     void InputController::RegisterKeyAction(std::string actionName, int keyCode)
     {   
         if (mKeyMap.count(actionName) == 0 && mKeyValues.count(keyCode) == 0){

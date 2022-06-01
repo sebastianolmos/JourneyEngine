@@ -12,7 +12,7 @@ namespace Journey {
         mEntityManager()
     {
         mWindow.StartUp(mApplication.GetName(), mApplication.GetWindowWith(), mApplication.GetWindowHeight());
-        // InputController stratUp
+        mInputController.StartUp();
         mEntityManager.StartUp();
         mRenderManager.StartUp();
 
