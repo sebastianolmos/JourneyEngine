@@ -16,6 +16,11 @@ namespace Journey {
         Joystick(std::size_t const numberOfButtons, std::size_t const numberOfAxes):
             buttons(numberOfButtons, false), axes(numberOfAxes, 0.0f)
         {}
+
+        ~Joystick() {
+            buttons.clear();
+            axes.clear();
+        }
     };
 
     class InputController
@@ -44,6 +49,7 @@ namespace Journey {
         std::unordered_map<int, std::vector<std::function<void()>> > mOnReleasedKeyActions;
         std::unordered_map<int, std::vector<std::function<void(bool)>> > mOnToggleKeyActions;
 
+        Joystick* mGamePad;
     };
 
 }

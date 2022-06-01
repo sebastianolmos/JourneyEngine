@@ -1,5 +1,6 @@
 #include "inputController.hpp"
 #include <iostream>
+#include <assert.h> 
 
 namespace Journey {
 
@@ -80,6 +81,7 @@ namespace Journey {
 
     void InputController::PollDevices(GLFWwindow* window) {
         PollKeyboard(window);
+        PollJoystick();
     }
 
     void InputController::PollKeyboard(GLFWwindow* window) {
@@ -109,6 +111,54 @@ namespace Journey {
                 }
             }        
             key.second = bCurrentState;
+        }
+    }
+
+    void InputController::PollJoystick() {
+        int joystickId = GLFW_JOYSTICK_1;
+        int const joystickConnected = glfwJoystickPresent(joystickId);
+
+        if (joystickConnected == GLFW_FALSE) {
+            if (mGamePad!=nullptr) 
+                delete(mGamePad);
+            return;
+        }
+        
+        // At this point we have a joystick with this id.
+        if (mGamePad==nullptr)
+        {
+            /* joystickId has been connected.*/
+            int buttonsCount;
+            glfwGetJoystickButtons(joystickId, &buttonsCount);
+
+            int axesCount;
+            glfwGetJoystickAxes(joystickId, &axesCount);
+
+            mGamePad = new Joystick(buttonsCount, axesCount);
+        }
+
+        int buttonsCount;
+        const unsigned char* buttons = glfwGetJoystickButtons(joystickId, &buttonsCount);
+        assert(mGamePad->buttons.size() == buttonsCount);
+
+        for (int buttonId = 0; buttonId < buttonsCount; ++buttonId)
+        {
+            mGamePad->buttons[buttonId] = buttons[buttonId] == GLFW_PRESS;
+            if (mGamePad->buttons[buttonId]){
+                std::cout << "GamePad Button Pressed:  " << buttonId << std::endl;
+            }
+        }
+
+        int axesCount;
+        const float* axes = glfwGetJoystickAxes(joystickId, &axesCount);
+        assert(mGamePad->axes.size() == axesCount);
+
+        for (int axesId = 0; axesId < axesCount; ++axesId)
+        {
+            mGamePad->axes[axesId] = axes[axesId];
+            if (mGamePad->axes[axesId] > 0.5){
+                std::cout << "GamePad Axis Moved:  " << axesId << std::endl;
+            }
         }
     }
 }
