@@ -43,6 +43,21 @@ namespace Journey {
         }
     }
 
+    void InputController::BindActionToggle(std::string action, std::function<void(bool)> func)
+    {
+        if (mKeyMap.count(action)!=0){
+            int keyCode = mKeyMap[action];
+            if (mOnToggleKeyActions.count(keyCode)==0) {
+                std::vector<std::function<void(bool)>> functionVector;
+                mOnToggleKeyActions.insert(std::make_pair(keyCode, functionVector));
+            }
+            mOnToggleKeyActions[keyCode].push_back(func);
+        }
+        else {
+            std::cout << "Action " << action << "is not registered" << std::endl;
+        }
+    }
+
     void InputController::PollDevices(GLFWwindow* window) {
         PollKeyboard(window);
     }
@@ -50,23 +65,30 @@ namespace Journey {
     void InputController::PollKeyboard(GLFWwindow* window) {
         for (auto& key: mKeyValues) {
             int currentState = glfwGetKey(window, key.first);
-            // Pressed key
-            if (!key.second && currentState && mOnPressedKeyActions.count(key.first)!=0)
-            {
-                for(std::function<void()> func : mOnPressedKeyActions[key.first])  {
-                    func();
-                }
-            }
+            bool bCurrentState = (currentState==GLFW_PRESS)?true:false;
 
-            // Released Key
-            if (key.second && !currentState && mOnReleasedKeyActions.count(key.first)!=0)
-            {
-                for(std::function<void()> func : mOnReleasedKeyActions[key.first])  {
-                    func();
+            // Check if the key status change
+            if (key.second != bCurrentState) {
+                // Toggle Action
+                if (mOnToggleKeyActions.count(key.first)!=0) {
+                    for(std::function<void(bool)> func : mOnToggleKeyActions[key.first])  {
+                        func(bCurrentState);
+                    }
                 }
-            }
-
-            key.second = currentState;
+                // Pressed key 
+                if (bCurrentState && mOnPressedKeyActions.count(key.first)!=0) {
+                    for(std::function<void()> func : mOnPressedKeyActions[key.first])  {
+                        func();
+                    }
+                }
+                //Released key
+                if (!bCurrentState && mOnReleasedKeyActions.count(key.first)!=0) {
+                    for(std::function<void()> func : mOnReleasedKeyActions[key.first])  {
+                        func();
+                    }
+                }
+            }        
+            key.second = bCurrentState;
         }
     }
 }

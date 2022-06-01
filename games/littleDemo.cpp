@@ -3,6 +3,7 @@
 void RegisterInputs(Journey::InputController& input) {
     input.RegisterKeyAction("Jump", JOURNEY_KEY_SPACE);
     input.RegisterKeyAction("Test", JOURNEY_KEY_W);
+    input.RegisterKeyAction("Run", JOURNEY_KEY_LEFT_SHIFT);
 }
 
 class Carpincho : public Journey::Entity{
@@ -28,10 +29,6 @@ class Carpincho : public Journey::Entity{
     private:
         float mTimer;
 };
-
-void testo() {
-    std::cout << "LETS GO!!" << std::endl;
-}
 
 class LittleDemo : public Journey::Application {
     public:
@@ -72,6 +69,8 @@ class LittleDemo : public Journey::Application {
             carpin = std::make_shared<Carpincho>();
             scene.AddEntity(nullptr, carpin);
             scene.GetInputController().BindActionOnReleased("Test", [&]() {carpin->insideFuncTest();});
+            scene.GetInputController().BindActionToggle("Run", [&](bool v) {this->changeRunState(v);});
+
             mInnerVar = 0;
         }
 
@@ -87,6 +86,13 @@ class LittleDemo : public Journey::Application {
 
         void testo(){
             std::cout << "Looking god!" << std::endl;
+        }
+
+        void changeRunState(bool state) {
+            if (state)
+                std::cout << "Start Running!" << std::endl;
+            else 
+                std::cout << "Stop Running!" << std::endl;
         }
 
     private:

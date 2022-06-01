@@ -16,6 +16,7 @@ namespace Journey {
 
         void BindActionOnPressed(std::string action, std::function<void()> func);
         void BindActionOnReleased(std::string action, std::function<void()> func);
+        void BindActionToggle(std::string action, std::function<void(bool)> func);
 
         void PollDevices(GLFWwindow* window);
     private:
@@ -27,7 +28,7 @@ namespace Journey {
 
         std::unordered_map<int, std::vector<std::function<void()>> > mOnPressedKeyActions;
         std::unordered_map<int, std::vector<std::function<void()>> > mOnReleasedKeyActions;
-        std::unordered_map<int, std::vector<std::function<void(bool)>> > mOnKeyToggle;
+        std::unordered_map<int, std::vector<std::function<void(bool)>> > mOnToggleKeyActions;
 
     };
 
