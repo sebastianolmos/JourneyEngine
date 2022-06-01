@@ -30,10 +30,13 @@ namespace Journey {
         InputController() = default;
         
         void RegisterKeyAction(std::string actionName, int keyCode);
+        void RegisterGamepadAction(std::string actionName, int buttonCode);
+        void RegisterGamepadAxis(std::string mapName, int axisCode);
 
         void BindActionOnPressed(std::string action, std::function<void()> func);
         void BindActionOnReleased(std::string action, std::function<void()> func);
         void BindActionToggle(std::string action, std::function<void(bool)> func);
+        void BindAxisMap(std::string mapName, std::function<void(float)> func);
 
     private:
         void StartUp();
@@ -42,6 +45,7 @@ namespace Journey {
         void PollKeyboard(GLFWwindow* window);
         void PollJoystick();
 
+        // Keyboard
         std::unordered_map<std::string, int> mKeyMap;
         std::unordered_map<int, bool> mKeyValues;
 
@@ -49,7 +53,17 @@ namespace Journey {
         std::unordered_map<int, std::vector<std::function<void()>> > mOnReleasedKeyActions;
         std::unordered_map<int, std::vector<std::function<void(bool)>> > mOnToggleKeyActions;
 
+        // Joystick
         Joystick* mGamePad;
+        std::unordered_map<std::string, int> mJoystickMap;
+        std::unordered_map<int, bool> mJoystickValues;
+
+        std::unordered_map<int, std::vector<std::function<void()>> > mOnPressedJoystickActions;
+        std::unordered_map<int, std::vector<std::function<void()>> > mOnReleasedJoystickActions;
+        std::unordered_map<int, std::vector<std::function<void(bool)>> > mOnToggleJoystickActions;
+
+        std::unordered_map<std::string, int> mJoystickAxisMap;
+        std::unordered_map<int, std::vector<std::function<void(float)>> > mOnJoystickAxis;
     };
 
 }

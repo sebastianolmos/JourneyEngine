@@ -34,9 +34,36 @@ namespace Journey {
         }
     }
 
-    void InputController::BindActionOnPressed(std::string action, std::function<void()> func)
+    void InputController::RegisterGamepadAction(std::string actionName, int buttonCode) 
     {
-        if (mKeyMap.count(action)!=0){
+        if (mJoystickMap.count(actionName) == 0 && mJoystickValues.count(buttonCode) == 0){
+            mJoystickMap.insert(std::make_pair(actionName, buttonCode));
+            mJoystickValues.insert(std::make_pair(buttonCode, false));
+        }
+        else {
+            std::cout << "Action " << actionName << " already registered for Gamepad" << std::endl;
+        }
+    }
+
+    void InputController::RegisterGamepadAxis(std::string mapName, int axisCode) 
+    {
+        if (mJoystickAxisMap.count(mapName) == 0){
+            mJoystickAxisMap.insert(std::make_pair(mapName, axisCode));
+        }
+        else {
+            std::cout << "Axis " << mapName << " already registered for Gamepad" << std::endl;
+        }
+    }
+
+    void InputController::BindActionOnPressed(std::string action, std::function<void()> func)
+    {   
+        const bool bKeyMapHasAction = mKeyMap.count(action)!=0;
+        const bool bJoystickMapHasAction = mJoystickMap.count(action)!=0;
+        if (!bKeyMapHasAction && !bJoystickMapHasAction) {
+            std::cout << "Action " << action << "is not registered" << std::endl;
+            return;
+        }
+        if (bKeyMapHasAction){
             int keyCode = mKeyMap[action];
             if (mOnPressedKeyActions.count(keyCode)==0) {
                 std::vector<std::function<void()>> functionVector;
@@ -44,14 +71,25 @@ namespace Journey {
             }
             mOnPressedKeyActions[keyCode].push_back(func);
         }
-        else {
-            std::cout << "Action " << action << "is not registered" << std::endl;
+        if (bJoystickMapHasAction) {
+            int joystickCode = mJoystickMap[action];
+            if (mOnPressedJoystickActions.count(joystickCode)==0) {
+                std::vector<std::function<void()>> functionVector;
+                mOnPressedJoystickActions.insert(std::make_pair(joystickCode, functionVector));
+            }
+            mOnPressedJoystickActions[joystickCode].push_back(func);
         }
     }
 
     void InputController::BindActionOnReleased(std::string action, std::function<void()> func)
     {
-        if (mKeyMap.count(action)!=0){
+        const bool bKeyMapHasAction = mKeyMap.count(action)!=0;
+        const bool bJoystickMapHasAction = mJoystickMap.count(action)!=0;
+        if (!bKeyMapHasAction && !bJoystickMapHasAction) {
+            std::cout << "Action " << action << "is not registered" << std::endl;
+            return;
+        }
+        if (bKeyMapHasAction){
             int keyCode = mKeyMap[action];
             if (mOnReleasedKeyActions.count(keyCode)==0) {
                 std::vector<std::function<void()>> functionVector;
@@ -59,14 +97,25 @@ namespace Journey {
             }
             mOnReleasedKeyActions[keyCode].push_back(func);
         }
-        else {
-            std::cout << "Action " << action << "is not registered" << std::endl;
+        if (bJoystickMapHasAction) {
+            int joystickCode = mJoystickMap[action];
+            if (mOnReleasedJoystickActions.count(joystickCode)==0) {
+                std::vector<std::function<void()>> functionVector;
+                mOnReleasedJoystickActions.insert(std::make_pair(joystickCode, functionVector));
+            }
+            mOnReleasedJoystickActions[joystickCode].push_back(func);
         }
     }
 
     void InputController::BindActionToggle(std::string action, std::function<void(bool)> func)
     {
-        if (mKeyMap.count(action)!=0){
+        const bool bKeyMapHasAction = mKeyMap.count(action)!=0;
+        const bool bJoystickMapHasAction = mJoystickMap.count(action)!=0;
+        if (!bKeyMapHasAction && !bJoystickMapHasAction) {
+            std::cout << "Action " << action << "is not registered" << std::endl;
+            return;
+        }
+        if (bKeyMapHasAction){
             int keyCode = mKeyMap[action];
             if (mOnToggleKeyActions.count(keyCode)==0) {
                 std::vector<std::function<void(bool)>> functionVector;
@@ -74,8 +123,28 @@ namespace Journey {
             }
             mOnToggleKeyActions[keyCode].push_back(func);
         }
+        if (bJoystickMapHasAction) {
+            int joystickCode = mJoystickMap[action];
+            if (mOnToggleJoystickActions.count(joystickCode)==0) {
+                std::vector<std::function<void(bool)>> functionVector;
+                mOnToggleJoystickActions.insert(std::make_pair(joystickCode, functionVector));
+            }
+            mOnToggleJoystickActions[joystickCode].push_back(func);
+        }
+    }
+
+    void InputController::BindAxisMap(std::string mapName, std::function<void(float)> func)
+    {
+        if (mJoystickAxisMap.count(mapName)!=0) {
+            int joystickCode = mJoystickAxisMap[mapName];
+            if (mOnJoystickAxis.count(joystickCode)==0) {
+                std::vector<std::function<void(float)>> functionVector;
+                mOnJoystickAxis.insert(std::make_pair(joystickCode, functionVector));
+            }
+            mOnJoystickAxis[joystickCode].push_back(func);
+        }
         else {
-            std::cout << "Action " << action << "is not registered" << std::endl;
+            std::cout << "Axis " << mapName << "is not registered for GamePad" << std::endl;
         }
     }
 
@@ -119,44 +188,49 @@ namespace Journey {
         int const joystickConnected = glfwJoystickPresent(joystickId);
 
         if (joystickConnected == GLFW_FALSE) {
-            if (mGamePad!=nullptr) 
-                delete(mGamePad);
             return;
-        }
-        
-        // At this point we have a joystick with this id.
-        if (mGamePad==nullptr)
-        {
-            /* joystickId has been connected.*/
-            int buttonsCount;
-            glfwGetJoystickButtons(joystickId, &buttonsCount);
-
-            int axesCount;
-            glfwGetJoystickAxes(joystickId, &axesCount);
-
-            mGamePad = new Joystick(buttonsCount, axesCount);
         }
 
         int buttonsCount;
         const unsigned char* buttons = glfwGetJoystickButtons(joystickId, &buttonsCount);
-        assert(mGamePad->buttons.size() == buttonsCount);
-
-        for (int buttonId = 0; buttonId < buttonsCount; ++buttonId)
-        {
-            mGamePad->buttons[buttonId] = buttons[buttonId] == GLFW_PRESS;
-            if (mGamePad->buttons[buttonId]){
+        // Loop the Joystick buttons
+        for (auto& jButton: mJoystickValues) {
+            if (jButton.first >= buttonsCount)
+                continue;
+            int currentState = buttons[jButton.first];
+            bool bCurrentState = (currentState==GLFW_PRESS)?true:false;
+            
+            // Check if the J button status change
+            if (jButton.second != bCurrentState) {
+                
+                // Toggle Action
+                if (mOnToggleJoystickActions.count(jButton.first)!=0) {
+                    for(std::function<void(bool)> func : mOnToggleKeyActions[jButton.first])
+                        func(bCurrentState);
+                }
+                // Pressed key 
+                if (bCurrentState && mOnPressedJoystickActions.count(jButton.first)!=0) {
+                    for(std::function<void()> func : mOnPressedJoystickActions[jButton.first])  
+                        func();
+                }
+                //Released key
+                 if (!bCurrentState && mOnReleasedJoystickActions.count(jButton.first)!=0) {
+                    for(std::function<void()> func : mOnReleasedJoystickActions[jButton.first])  
+                        func();
+                }
             }
+            jButton.second = bCurrentState;
         }
 
         int axesCount;
         const float* axes = glfwGetJoystickAxes(joystickId, &axesCount);
-        assert(mGamePad->axes.size() == axesCount);
-
-        for (int axesId = 0; axesId < axesCount; ++axesId)
-        {
-            mGamePad->axes[axesId] = axes[axesId];
-            if (mGamePad->axes[axesId] > 0.5){
-            }
+        // Loop the Joystick Axis
+        for (auto& jAxis: mOnJoystickAxis) {
+            if (jAxis.first >= axesCount)
+                continue;
+            float currentValue = axes[jAxis.first];
+            for(std::function<void(float)> func : mOnJoystickAxis[jAxis.first]) 
+                func(currentValue);
         }
     }
 }

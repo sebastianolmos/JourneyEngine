@@ -2,8 +2,9 @@
 
 void RegisterInputs(Journey::InputController& input) {
     input.RegisterKeyAction("Jump", JOURNEY_KEY_SPACE);
-    input.RegisterKeyAction("Test", JOURNEY_KEY_W);
+    input.RegisterGamepadAction("Test", JOURNEY_XBOX_BUTTON_A);
     input.RegisterKeyAction("Run", JOURNEY_KEY_LEFT_SHIFT);
+    input.RegisterGamepadAxis("MoveX", JOURNEY_GAMEPAD_AXIS_LEFT_X);
 }
 
 class Carpincho : public Journey::Entity{
@@ -21,13 +22,19 @@ class Carpincho : public Journey::Entity{
         }
         virtual void UserUpdate(Journey::Scene& scene, float deltaTime) override {
             mTimer += deltaTime;
-            getTransform().SetTranslation(glm::vec3(0.0f, 0.5f, 1.0f + 0.7*glm::abs(glm::sin(mTimer +0.4))));
+            posX += deltaTime * velX;
+            getTransform().SetTranslation(glm::vec3(0.0f + posX, 0.5f, 1.0f + 0.7*glm::abs(glm::sin(mTimer +0.4))));
         };
         void insideFuncTest(){
             std::cout << "Working god!" << std::endl;
         }
+        void move(float dx) {
+            velX = dx;
+        }
     private:
         float mTimer;
+        float velX = 0;
+        float posX = 0.0f;
 };
 
 class LittleDemo : public Journey::Application {
@@ -70,6 +77,7 @@ class LittleDemo : public Journey::Application {
             scene.AddEntity(nullptr, carpin);
             scene.GetInputController().BindActionOnReleased("Test", [&]() {carpin->insideFuncTest();});
             scene.GetInputController().BindActionToggle("Run", [&](bool v) {this->changeRunState(v);});
+            scene.GetInputController().BindAxisMap("MoveX", [&](float dx) {carpin->move(dx);});
 
             mInnerVar = 0;
         }
