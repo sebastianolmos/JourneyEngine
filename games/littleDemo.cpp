@@ -5,6 +5,7 @@ void RegisterInputs(Journey::InputController& input) {
     input.RegisterGamepadAction("Test", JOURNEY_XBOX_BUTTON_A);
     input.RegisterKeyAction("Run", JOURNEY_KEY_LEFT_SHIFT);
     input.RegisterGamepadAxis("MoveX", JOURNEY_GAMEPAD_AXIS_LEFT_X);
+    input.RegisterGamepadAxis("MoveY", JOURNEY_GAMEPAD_AXIS_LEFT_Y);
 }
 
 class Carpincho : public Journey::Entity{
@@ -22,19 +23,27 @@ class Carpincho : public Journey::Entity{
         }
         virtual void UserUpdate(Journey::Scene& scene, float deltaTime) override {
             mTimer += deltaTime;
-            posX += deltaTime * velX;
-            getTransform().SetTranslation(glm::vec3(0.0f + posX, 0.5f, 1.0f + 0.7*glm::abs(glm::sin(mTimer +0.4))));
+            mPosX += deltaTime * mVelX;
+            mPosY += deltaTime * mVelY;
+            getTransform().SetTranslation(glm::vec3(0.0f + mPosX, 
+                                                    0.5f + mPosY, 
+                                                    1.0f + 0.7*glm::abs(glm::sin(mTimer +0.4))));
         };
         void insideFuncTest(){
             std::cout << "Working god!" << std::endl;
         }
-        void move(float dx) {
-            velX = dx;
+        void moveInX(float dx) {
+            mVelX = dx;
+        }
+        void moveInY(float dy) {
+            mVelY = -dy;
         }
     private:
         float mTimer;
-        float velX = 0;
-        float posX = 0.0f;
+        float mVelX = 0;
+        float mVelY = 0;
+        float mPosX = 0.0f;
+        float mPosY = 0.0f;
 };
 
 class LittleDemo : public Journey::Application {
@@ -77,7 +86,8 @@ class LittleDemo : public Journey::Application {
             scene.AddEntity(nullptr, carpin);
             scene.GetInputController().BindActionOnReleased("Test", [&]() {carpin->insideFuncTest();});
             scene.GetInputController().BindActionToggle("Run", [&](bool v) {this->changeRunState(v);});
-            scene.GetInputController().BindAxisMap("MoveX", [&](float dx) {carpin->move(dx);});
+            scene.GetInputController().BindAxisMap("MoveX", [&](float dx) {carpin->moveInX(dx);});
+            scene.GetInputController().BindAxisMap("MoveY", [&](float dy) {carpin->moveInY(dy);});
 
             mInnerVar = 0;
         }
