@@ -20,6 +20,10 @@ class Carpincho : public Journey::Entity{
                                     );
             Journey::SimpleTexturedMaterial* mat = new Journey::SimpleTexturedMaterial();
             scene.AddSpriteComponent(shared_from_this(), std::shared_ptr<Journey::Material>(mat), "../../../assets/sprites/carpincho.png");
+            // Input
+            scene.GetInputController().BindActionOnReleased("Test", [&]() {this->insideFuncTest();});
+            scene.GetInputController().BindAxisMap("MoveX", [&](float dx) {this->moveInX(dx);});
+            scene.GetInputController().BindAxisMap("MoveY", [&](float dy) {this->moveInY(dy);});
         }
         virtual void UserUpdate(Journey::Scene& scene, float deltaTime) override {
             mTimer += deltaTime;
@@ -33,10 +37,12 @@ class Carpincho : public Journey::Entity{
             std::cout << "Working god!" << std::endl;
         }
         void moveInX(float dx) {
-            mVelX = dx;
+            float deathZone = 0.1;
+            mVelX = (dx > deathZone || dx < -deathZone) ? dx : 0.0f;
         }
         void moveInY(float dy) {
-            mVelY = -dy;
+            float deathZone = 0.1;
+            mVelY = (dy > deathZone || dy < -deathZone) ? -dy : 0.0f;
         }
     private:
         float mTimer;
@@ -52,9 +58,12 @@ class LittleDemo : public Journey::Application {
         ~LittleDemo() = default;
 
         virtual void UserStartUp(Journey::Scene& scene) override {
+            // Input 
             RegisterInputs(scene.GetInputController());
             scene.GetInputController().BindActionOnPressed("Jump", [&]() {this->testo();});
+            scene.GetInputController().BindActionToggle("Run", [&](bool v) {this->changeRunState(v);});
 
+            // Floor entity
             floor = std::make_shared<Journey::Entity>();
             floor->getTransform().Set(glm::vec3(-0.0f, 0.0f, 0.0f),
                                     glm::vec3(0.0f, 0.0f, glm::radians(35.0f)),
@@ -70,24 +79,19 @@ class LittleDemo : public Journey::Application {
             scene.AddPrimitiveMeshComponent(floor, std::shared_ptr<Journey::Material>(floorMat), Journey::EPrimitiveMesh::Cube);
             scene.AddEntity(nullptr, floor);
 
-
+            // Entity creation - method 1
             dog = std::make_shared<Journey::Entity>();
             dog->getTransform().Set(glm::vec3(0.0f, -0.5f, 1.2f),
                                     glm::vec3(0.0f, 0.0f, glm::radians(35.0f)),
                                     glm::vec3(0.4f, 1.0f, 0.3f)
                                     );
-
             Journey::SimpleTexturedMaterial* dogMat = new Journey::SimpleTexturedMaterial();
-
             scene.AddSpriteComponent(dog, std::shared_ptr<Journey::Material>(dogMat), "../../../assets/sprites/carpincho.png");
             scene.AddEntity(nullptr, dog);
 
+            // Entity creation - method 2
             carpin = std::make_shared<Carpincho>();
             scene.AddEntity(nullptr, carpin);
-            scene.GetInputController().BindActionOnReleased("Test", [&]() {carpin->insideFuncTest();});
-            scene.GetInputController().BindActionToggle("Run", [&](bool v) {this->changeRunState(v);});
-            scene.GetInputController().BindAxisMap("MoveX", [&](float dx) {carpin->moveInX(dx);});
-            scene.GetInputController().BindAxisMap("MoveY", [&](float dy) {carpin->moveInY(dy);});
 
             mInnerVar = 0;
         }
