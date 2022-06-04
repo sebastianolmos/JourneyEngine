@@ -183,7 +183,7 @@ namespace Journey {
             CheckIfDebug(window, scene);
 
         if (scene.InDebugMode())
-            PollOnDebug(window);
+            PollOnDebug(window, scene);
         else {
             PollKeyboard(window);
             PollJoystick();
@@ -271,10 +271,17 @@ namespace Journey {
         }
     }
 
-    void InputController::PollOnDebug(GLFWwindow* window)
+    void InputController::PollOnDebug(GLFWwindow* window, Scene& scene)
     {
         if (mDebugCam == nullptr)
             return;
+
+        // Keyboard buttons
+        bool bCurrentDrawState = (glfwGetKey(window, GLFW_KEY_SPACE)==GLFW_PRESS)?true:false;
+        if (!mDebugLineMode && bCurrentDrawState) {
+            scene.ToggleDrawMode();
+        }
+        mDebugLineMode = bCurrentDrawState;
 
         // Mouse buttons
         if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)

@@ -54,7 +54,7 @@ namespace Journey {
         void PollKeyboard(GLFWwindow* window);
         void PollJoystick();
 
-        void PollOnDebug(GLFWwindow* window);
+        void PollOnDebug(GLFWwindow* window, Scene& scene);
 
         void CheckIfDebug(GLFWwindow* window, Scene& scene);
         bool debugKeyPressed = false;
@@ -82,6 +82,7 @@ namespace Journey {
         //Debug vars
         std::shared_ptr<Camera> mLastCamera;
         std::shared_ptr<DebugCamera> mDebugCam;
+        bool mDebugLineMode = false;
     };
 
 }

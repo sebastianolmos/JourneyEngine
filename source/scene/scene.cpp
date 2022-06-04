@@ -123,4 +123,9 @@ namespace Journey {
     {
         return bDebugMode;
     }
+
+    void Scene::ToggleDrawMode()
+    {
+        mRenderManager.mDrawLines = !mRenderManager.mDrawLines;
+    }
 }

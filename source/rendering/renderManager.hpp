@@ -24,6 +24,7 @@ namespace Journey {
     class Scene;
     class RenderManager{
         public:
+            friend class Scene;
             RenderManager();
 
             void StartUp();
@@ -48,6 +49,8 @@ namespace Journey {
             std::vector<RenderInfo> mPhongColoredObjects;
             std::vector<RenderInfo> mFlatTexturedObjects;
             std::vector<RenderInfo> mPhongTexturedObjects;
+
+            unsigned int mDrawLines = false;
     };
 
 }

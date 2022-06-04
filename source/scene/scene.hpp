@@ -47,6 +47,7 @@ namespace Journey {
             const bool CanUseDebugMode() const;
             void SetDebugMode(const bool value);
             const bool InDebugMode() const;
+            void ToggleDrawMode();
 
         private:
             Scene(Application& app);
