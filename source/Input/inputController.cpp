@@ -157,6 +157,14 @@ namespace Journey {
         if (!debugKeyPressed && bCurrentState) {
             scene.SetDebugMode(!scene.InDebugMode());
             std::cout << "Debug Mode " << (scene.InDebugMode()?"ON":"OFF") << std::endl;
+
+            if (scene.InDebugMode()) {
+                mLastCamera = scene.GetCameraHandler().getCurrentCamera();
+                scene.GetCameraHandler().setCurrentCamera(mDebugCam);
+            }
+            else {
+                scene.GetCameraHandler().setCurrentCamera(mLastCamera);
+            }
         }
 
         debugKeyPressed = bCurrentState;
@@ -258,5 +266,10 @@ namespace Journey {
     void InputController::PollOnDebug()
     {
 
+    }
+
+    void InputController::StartDebugCamera() 
+    {
+        mDebugCam = std::make_shared<DebugCamera>();
     }
 }

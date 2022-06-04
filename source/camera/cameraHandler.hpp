@@ -24,6 +24,10 @@ namespace Journey{
             void setCurrentCamera(std::shared_ptr<Camera> newCamera) {
                 mCurrentCamera = newCamera;
             }
+
+            std::shared_ptr<Camera> getCurrentCamera() {
+                return mCurrentCamera;
+            }
         
         private:
             std::shared_ptr<Camera> mCurrentCamera;

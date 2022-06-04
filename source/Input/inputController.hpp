@@ -8,6 +8,10 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
+#include "../camera/cameraHandler.hpp"
+#include "../camera/debugCamera.hpp"
+#include "../camera/followCamera.hpp"
+
 namespace Journey {
     class Scene;
     // A simple struct handling all axes and button inputs of a joystick. 
@@ -41,6 +45,8 @@ namespace Journey {
         void BindActionToggle(std::string action, std::function<void(bool)> func);
         void BindAxisMap(std::string mapName, std::function<void(float)> func);
 
+        void StartDebugCamera();
+
     private:
         void StartUp();
         void PollDevices(GLFWwindow* window, Scene& scene);
@@ -72,6 +78,10 @@ namespace Journey {
 
         std::unordered_map<std::string, int> mJoystickAxisMap;
         std::unordered_map<int, std::vector<std::function<void(float)>> > mOnJoystickAxis;
+
+        //Debug vars
+        std::shared_ptr<Camera> mLastCamera;
+        std::shared_ptr<DebugCamera> mDebugCam;
     };
 
 }
