@@ -3,10 +3,25 @@
 #include "camera.hpp"
 
 namespace Journey {
+
+    enum ECameraMovement {
+        FORWARD,
+        BACKWARD,
+        LEFT,
+        RIGHT,
+        ORIGIN
+    };
+
+    enum ECameraRotation {
+        AZIM_UP,
+        AZIM_DOWN,
+        ZEN_LEFT,
+        ZEN_RIGHT
+    };
+
     class DebugCamera : public Camera {
         
     public:
-
         DebugCamera(const unsigned int screenWidth, const unsigned int screenHeight);
 
         virtual glm::mat4 getProjection() override;
@@ -20,6 +35,8 @@ namespace Journey {
         void SetVerticalDrag(bool value);
         void SetCurrentMousePos(float xPos, float yPos);
         void ProcessMouseScroll(float yoffset);
+        void ProcessKeyboardMovement(ECameraMovement direction, float deltaTime);
+        void ProcessKeyboardRotation(ECameraRotation direction, float deltaTime);
 
     private:
         unsigned int mScrWidth;
@@ -42,8 +59,10 @@ namespace Journey {
         bool mCenterDrag = false;
         bool mRotDrag = false;
         bool mVertDrag = false;
-        float mRotSensitivity = 60.0f;
-        float mCenterSensitivty = 2.0f;
+        float mRotSensitivity = 55.0f;
+        float mCenterSensitivty = 8.0f;
+        float mMovementSpeed = 15.0f;
+        float mRotationSpeed = 75.0f;
         glm::vec2 mCurrentMousePos = glm::vec2(0.0f);
 
         void updateCameraVectors();

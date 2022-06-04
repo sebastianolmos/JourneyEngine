@@ -177,13 +177,13 @@ namespace Journey {
         debugKeyPressed = bCurrentState;
     }
 
-    void InputController::PollDevices(GLFWwindow* window, Scene& scene) {
+    void InputController::PollDevices(GLFWwindow* window, Scene& scene, float deltaTime) {
         glfwPollEvents();
         if (scene.CanUseDebugMode())
             CheckIfDebug(window, scene);
 
         if (scene.InDebugMode())
-            PollOnDebug(window, scene);
+            PollOnDebug(window, scene, deltaTime);
         else {
             PollKeyboard(window);
             PollJoystick();
@@ -271,17 +271,39 @@ namespace Journey {
         }
     }
 
-    void InputController::PollOnDebug(GLFWwindow* window, Scene& scene)
+    void InputController::PollOnDebug(GLFWwindow* window, Scene& scene, float deltaTime)
     {
         if (mDebugCam == nullptr)
             return;
 
         // Keyboard buttons
+
+        // Space to toggle the draw lines mode
         bool bCurrentDrawState = (glfwGetKey(window, GLFW_KEY_SPACE)==GLFW_PRESS)?true:false;
         if (!mDebugLineMode && bCurrentDrawState) {
             scene.ToggleDrawMode();
         }
         mDebugLineMode = bCurrentDrawState;
+
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+            mDebugCam->ProcessKeyboardMovement(ECameraMovement::FORWARD, deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+            mDebugCam->ProcessKeyboardMovement(ECameraMovement::BACKWARD, deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+            mDebugCam->ProcessKeyboardMovement(ECameraMovement::LEFT, deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+            mDebugCam->ProcessKeyboardMovement(ECameraMovement::RIGHT, deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
+            mDebugCam->ProcessKeyboardMovement(ECameraMovement::ORIGIN, deltaTime);
+
+        if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+            mDebugCam->ProcessKeyboardRotation(ECameraRotation::AZIM_UP, deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+            mDebugCam->ProcessKeyboardRotation(ECameraRotation::AZIM_DOWN, deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+            mDebugCam->ProcessKeyboardRotation(ECameraRotation::ZEN_LEFT, deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+            mDebugCam->ProcessKeyboardRotation(ECameraRotation::ZEN_RIGHT, deltaTime);
 
         // Mouse buttons
         if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)

@@ -84,6 +84,60 @@ namespace Journey {
             mRadius = 100.0f;
     }
 
+    void DebugCamera::ProcessKeyboardMovement(ECameraMovement direction, float deltaTime)
+    {
+        float velocity = mMovementSpeed * deltaTime;
+        switch (direction)
+        {
+            case ECameraMovement::FORWARD:
+                mCenter += mMovFront * velocity;
+                break;
+            case ECameraMovement::BACKWARD:
+                mCenter -= mMovFront * velocity;
+                break;
+            case ECameraMovement::LEFT:
+                mCenter -= mMovRight * velocity;
+                break;
+            case ECameraMovement::RIGHT:
+                mCenter += mMovRight * velocity;
+                break;
+            case ECameraMovement::ORIGIN:
+                mCenter = glm::vec3(0.0f);
+                break;
+            default:
+                break;
+        }
+    }
+    
+    void DebugCamera::ProcessKeyboardRotation(ECameraRotation direction, float deltaTime)
+    {
+        float velocity = mRotationSpeed * deltaTime;
+
+        switch (direction)
+        {
+            case ECameraRotation::AZIM_UP:
+                mTheta -= velocity;
+                break;
+            case ECameraRotation::AZIM_DOWN:
+                mTheta += velocity;
+                break;
+            case ECameraRotation::ZEN_LEFT:
+                mPhi -= velocity;
+                break;
+            case ECameraRotation::ZEN_RIGHT:
+                mPhi += velocity;
+                break;
+            default:
+                break;
+        }
+        if (mTheta > 179.0f)
+            mTheta = 179.0f;
+        if (mTheta < 01.0f)
+            mTheta = 01.0f;
+
+        updateCameraVectors();
+    }
+
     void DebugCamera::updateCameraVectors()
     {
         // calculate the new Front vector

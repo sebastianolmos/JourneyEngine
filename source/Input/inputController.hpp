@@ -50,12 +50,12 @@ namespace Journey {
 
     private:
         void StartUp(GLFWwindow* window);
-        void PollDevices(GLFWwindow* window, Scene& scene);
+        void PollDevices(GLFWwindow* window, Scene& scene, float deltaTime);
 
         void PollKeyboard(GLFWwindow* window);
         void PollJoystick();
 
-        void PollOnDebug(GLFWwindow* window, Scene& scene);
+        void PollOnDebug(GLFWwindow* window, Scene& scene, float deltaTime);
 
         void CheckIfDebug(GLFWwindow* window, Scene& scene);
         bool debugKeyPressed = false;

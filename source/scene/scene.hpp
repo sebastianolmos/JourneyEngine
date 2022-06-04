@@ -67,7 +67,6 @@ namespace Journey {
             PointLight mPointLight;
             bool bAbleToUseDebugMode = false; 
             bool bDebugMode = false; 
-
     };
 
 }
