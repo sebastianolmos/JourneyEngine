@@ -14,6 +14,7 @@ namespace Journey {
         unsigned int VBO;
         unsigned int textureID;
         unsigned int vertexCount;
+        bool usingIndices = false;
         glm::fvec3 ks;
         glm::fvec3 kd;
         glm::fvec3 ke;   
@@ -51,7 +52,11 @@ namespace Journey {
             std::vector<RenderInfo> mPhongTexturedObjects;
 
             unsigned int mDrawLines = false;
-            unsigned int mFrustrumVAO;
+            std::vector<RenderInfo> mDebugObjects;
+            void CreateDebugObjects();
+            void CreateDebugFrustrumObject();
+            void CreateDebugAxisObject();
+            void DrawDebugObjects(Shader shaderProgram, Scene& scene);
     };
 
 }

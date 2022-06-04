@@ -22,53 +22,6 @@ namespace Journey {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_DEPTH_TEST);  
-
-        // Debug Lines
-        unsigned int tmpVBO;
-        unsigned int tmpEBO;
-        float vertices[] = {
-            // positions           
-            -1.0f,-1.0f,  -1.0f,      
-            1.0f, -1.0f,  -1.0f,      
-            1.0f , 1.0f, -1.0f,     
-            -1.0f, 1.0f, -1.0f,     
-             
-            -1.0f, -1.0f, 1.0f, 
-            1.0f, -1.0f,  1.0f, 
-            1.0f, 1.0f, 1.0f, 
-            -1.0f,1.0f, 1.0f
-        };
-
-        unsigned int indices[] = {  // note that we start from 0!
-            0, 1,   4, 5,
-            1, 2,   5, 6,
-            2, 3,   6, 7,
-            3, 0,   7, 4,
-
-            0, 4,
-            1, 5,
-            2, 6,
-            3, 7
-        };
-
-        glGenVertexArrays(1, &mFrustrumVAO);
-        glGenBuffers(1, &tmpVBO);
-        glGenBuffers(1, &tmpEBO);
-        // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-        glBindVertexArray(mFrustrumVAO);
-
-        glBindBuffer(GL_ARRAY_BUFFER, tmpVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tmpEBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-        // position attribute
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0);
-        
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
     }
 
     void RenderManager::ShutDown(){
@@ -94,6 +47,11 @@ namespace Journey {
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         else
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+          
+        // Drawing Guide lines for the Debug mode
+        if (scene.InDebugMode())
+            DrawDebugObjects(SimpleColoredShader, scene);
         
         // <------ SIMPLE COLORED SHADER ------->
         SimpleColoredShader.use();
@@ -105,15 +63,7 @@ namespace Journey {
             SimpleColoredShader.setVec3("shapeColor", renderInfo.color);
             SimpleColoredShader.setMat4("model", renderInfo.model);
             glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
-        }   
-        if (scene.InDebugMode()) {
-            glm::mat4 frustrumTr = glm::inverse(scene.GetInputController().GetLastCamera()->getProjection() * scene.GetInputController().GetLastCamera()->getViewMatrix());
-            SimpleColoredShader.setVec3("shapeColor", glm::vec3(1.0f, 1.0f, 0.0f));
-            SimpleColoredShader.setMat4("model", frustrumTr);
-            glBindVertexArray(mFrustrumVAO);
-            glDrawElements(GL_LINES, 24, GL_UNSIGNED_INT, 0);
-            glBindVertexArray(0);
-        }
+        }  
 
         // <------ FLAT COLORED SHADER ------->
         FlatColoredShader.use();
@@ -153,7 +103,7 @@ namespace Journey {
             PhongColoredShader.setVec3("material.ambient", renderInfo.ke);
             PhongColoredShader.setVec3("material.diffuse", renderInfo.kd);
             PhongColoredShader.setVec3("material.specular", renderInfo.ks); 
-            PhongColoredShader.setFloat("material.shininess", 64.0f);
+            PhongColoredShader.setFloat("material.shininess", 164.0f);
             
             PhongColoredShader.setMat4("model", renderInfo.model);
             // render 
@@ -245,5 +195,95 @@ namespace Journey {
                 // code block
                 break;
         }               
+    }
+
+    void RenderManager::CreateDebugObjects()
+    {
+        CreateDebugFrustrumObject();
+        CreateDebugAxisObject();
+    }
+
+    void RenderManager::CreateDebugFrustrumObject()
+    {
+        // Debug Lines
+        RenderInfo rInfo;
+        unsigned int tmpVBO;
+        unsigned int tmpEBO;
+        float vertices[] = {
+            // positions           
+            -1.0f,-1.0f,  -1.0f,      
+            1.0f, -1.0f,  -1.0f,      
+            1.0f , 1.0f, -1.0f,     
+            -1.0f, 1.0f, -1.0f,     
+             
+            -1.0f, -1.0f, 1.0f, 
+            1.0f, -1.0f,  1.0f, 
+            1.0f, 1.0f, 1.0f, 
+            -1.0f,1.0f, 1.0f
+        };
+
+        unsigned int indices[] = {  // note that we start from 0!
+            0, 1,   4, 5,
+            1, 2,   5, 6,
+            2, 3,   6, 7,
+            3, 0,   7, 4,
+
+            0, 4,
+            1, 5,
+            2, 6,
+            3, 7
+        };
+
+        glGenVertexArrays(1, &rInfo.VAO);
+        glGenBuffers(1, &tmpVBO);
+        glGenBuffers(1, &tmpEBO);
+        // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+        glBindVertexArray(rInfo.VAO);
+
+        glBindBuffer(GL_ARRAY_BUFFER, tmpVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tmpEBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+        // position attribute
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+        
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+        rInfo.vertexCount = 24;
+        rInfo.usingIndices = true;
+        mDebugObjects.push_back(rInfo);
+    }
+    
+    void RenderManager::CreateDebugAxisObject()
+    {
+
+    }
+    
+    void RenderManager::DrawDebugObjects(Shader shaderProgram, Scene& scene)
+    {
+        if (mDebugObjects.size() > 0)
+        {
+           mDebugObjects.at(0).model = glm::inverse(scene.GetInputController().GetLastCamera()->getProjection() * scene.GetInputController().GetLastCamera()->getViewMatrix());
+        }
+
+        shaderProgram.use();
+        shaderProgram.setMat4("projection", scene.GetCameraHandler().getProjection());
+        shaderProgram.setMat4("view", scene.GetCameraHandler().getViewMatrix());
+        for(auto& renderInfo: mDebugObjects) {   
+            shaderProgram.setVec3("shapeColor", glm::vec3(1.0f, 1.0f, 0.0f));
+            shaderProgram.setMat4("model", renderInfo.model);
+            if (renderInfo.usingIndices){
+                glBindVertexArray(renderInfo.VAO);
+                glDrawElements(GL_LINES, renderInfo.vertexCount, GL_UNSIGNED_INT, 0);
+                glBindVertexArray(0);
+            }
+            else {
+                glBindVertexArray(renderInfo.VAO);
+                glDrawArrays(GL_LINES, 0, renderInfo.vertexCount);
+            }
+        }
     }
 }
