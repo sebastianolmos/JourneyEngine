@@ -71,7 +71,7 @@ class LittleDemo : public Journey::Application {
 
             // Floor entity
             floor = std::make_shared<Journey::Entity>();
-            floor->getTransform().Set(glm::vec3(-0.0f, 0.0f, 0.0f),
+            floor->getTransform().Set(glm::vec3(-0.0f, 0.0f, -0.2f),
                                     glm::vec3(0.0f, 0.0f, glm::radians(35.0f)),
                                     glm::vec3(100.0f, 70.0f, 0.3f)
                                     );

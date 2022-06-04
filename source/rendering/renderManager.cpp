@@ -254,12 +254,54 @@ namespace Journey {
         glBindVertexArray(0);
         rInfo.vertexCount = 24;
         rInfo.usingIndices = true;
+        rInfo.color = glm::vec3(1.0f, 1.0f, 0.0f);
         mDebugObjects.push_back(rInfo);
+    }
+
+    RenderInfo createAxisObject(glm::vec3 axis) {
+        // Debug Lines
+        RenderInfo rInfo;
+        unsigned int tmpVBO;
+        unsigned int tmpEBO;
+        float vertices[] = {
+            // positions           
+            0.0f, 0.0f,  0.0f,      
+            axis.x * 2.0f, axis.y*2.0f, axis.z*2.0f
+        };
+
+        unsigned int indices[] = {  // note that we start from 0!
+            0, 1
+        };
+
+        glGenVertexArrays(1, &rInfo.VAO);
+        glGenBuffers(1, &tmpVBO);
+        glGenBuffers(1, &tmpEBO);
+        glBindVertexArray(rInfo.VAO);
+
+        glBindBuffer(GL_ARRAY_BUFFER, tmpVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tmpEBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+        // position attribute
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+        
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+        rInfo.vertexCount = 2;
+        rInfo.usingIndices = true;
+        rInfo.color = axis;
+        rInfo.model = glm::mat4(1.0f);
+        return rInfo;
     }
     
     void RenderManager::CreateDebugAxisObject()
     {
-
+        mDebugObjects.push_back(createAxisObject(glm::vec3(1.0f, 0.0f, 0.0f)));
+        mDebugObjects.push_back(createAxisObject(glm::vec3(0.0f, 1.0f, 0.0f)));
+        mDebugObjects.push_back(createAxisObject(glm::vec3(0.0f, 0.0f, 1.0f)));
     }
     
     void RenderManager::DrawDebugObjects(Shader shaderProgram, Scene& scene)
@@ -268,13 +310,17 @@ namespace Journey {
         {
            mDebugObjects.at(0).model = glm::inverse(scene.GetInputController().GetLastCamera()->getProjection() * scene.GetInputController().GetLastCamera()->getViewMatrix());
         }
-
         shaderProgram.use();
         shaderProgram.setMat4("projection", scene.GetCameraHandler().getProjection());
         shaderProgram.setMat4("view", scene.GetCameraHandler().getViewMatrix());
-        for(auto& renderInfo: mDebugObjects) {   
-            shaderProgram.setVec3("shapeColor", glm::vec3(1.0f, 1.0f, 0.0f));
+        for(std::size_t i = 0; i < mDebugObjects.size(); ++i) {
+            RenderInfo renderInfo = mDebugObjects[i];
+            shaderProgram.setVec3("shapeColor", renderInfo.color);
             shaderProgram.setMat4("model", renderInfo.model);
+
+            if (i == 1)
+                glLineWidth(3.0);
+
             if (renderInfo.usingIndices){
                 glBindVertexArray(renderInfo.VAO);
                 glDrawElements(GL_LINES, renderInfo.vertexCount, GL_UNSIGNED_INT, 0);
@@ -285,5 +331,7 @@ namespace Journey {
                 glDrawArrays(GL_LINES, 0, renderInfo.vertexCount);
             }
         }
+
+        glLineWidth(1.0);
     }
 }
