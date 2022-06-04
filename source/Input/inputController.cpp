@@ -151,7 +151,8 @@ namespace Journey {
     }
 
     void InputController::CheckIfDebug(GLFWwindow* window, Scene& scene) {
-        bool bCurrentState = (glfwGetKey(window, GLFW_KEY_D)==GLFW_PRESS)?true:false;
+        bool bCurrentState = (glfwGetKey(window, GLFW_KEY_D)==GLFW_PRESS &&
+                              glfwGetKey(window, GLFW_KEY_LEFT_CONTROL)==GLFW_PRESS)?true:false;
 
         if (!debugKeyPressed && bCurrentState) {
             scene.SetDebugMode(!scene.InDebugMode());
