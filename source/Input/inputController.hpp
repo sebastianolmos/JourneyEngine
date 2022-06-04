@@ -48,13 +48,13 @@ namespace Journey {
         void StartDebugCamera();
 
     private:
-        void StartUp();
+        void StartUp(GLFWwindow* window);
         void PollDevices(GLFWwindow* window, Scene& scene);
 
         void PollKeyboard(GLFWwindow* window);
         void PollJoystick();
 
-        void PollOnDebug();
+        void PollOnDebug(GLFWwindow* window);
 
         void CheckIfDebug(GLFWwindow* window, Scene& scene);
         bool debugKeyPressed = false;

@@ -5,6 +5,7 @@
 #include <assert.h> 
 
 namespace Journey {
+    double scrollOffset;
 
     void JoystickCallback(int jid, int event) 
     {
@@ -19,10 +20,16 @@ namespace Journey {
             std::cout << "The joystick " << jid << " was disconnected" << std::endl;
         }
     }
+
+    void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+    {
+        scrollOffset = yoffset;
+    }
     
-    void InputController::StartUp() 
+    void InputController::StartUp(GLFWwindow* window) 
     {
         glfwSetJoystickCallback(JoystickCallback);
+        glfwSetScrollCallback(window, scrollCallback);
     }
 
     void InputController::RegisterKeyAction(std::string actionName, int keyCode)
@@ -175,7 +182,7 @@ namespace Journey {
             CheckIfDebug(window, scene);
 
         if (scene.InDebugMode())
-            PollOnDebug();
+            PollOnDebug(window);
         else {
             PollKeyboard(window);
             PollJoystick();
@@ -263,8 +270,19 @@ namespace Journey {
         }
     }
 
-    void InputController::PollOnDebug()
+    void InputController::PollOnDebug(GLFWwindow* window)
     {
+        // Mouse buttons
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+            std::cout << "MOUSE_BUTTON_LEFT " << std::endl;
+
+        // Mouse Position
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        //std::cout << xpos << "  -  " << ypos << std::endl;
+
+        // Mouse Scroll
+        std::cout << scrollOffset << std::endl;
 
     }
 
