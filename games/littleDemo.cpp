@@ -54,7 +54,11 @@ class Carpincho : public Journey::Entity{
 
 class LittleDemo : public Journey::Application {
     public:
-        LittleDemo() = default;
+        LittleDemo() {
+            mName = "Little Demo :3";
+            mWidth = 1200;
+            mHeight = 800;
+        }
         ~LittleDemo() = default;
 
         virtual void UserStartUp(Journey::Scene& scene) override {
