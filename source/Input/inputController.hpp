@@ -45,7 +45,7 @@ namespace Journey {
         void BindActionToggle(std::string action, std::function<void(bool)> func);
         void BindAxisMap(std::string mapName, std::function<void(float)> func);
 
-        void StartDebugCamera();
+        void StartDebugCamera(const unsigned int screenWidth, const unsigned int screenHeight);
 
     private:
         void StartUp(GLFWwindow* window);

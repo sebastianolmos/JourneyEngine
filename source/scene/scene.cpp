@@ -106,7 +106,7 @@ namespace Journey {
     void Scene::DebugModeEnabled()
     {
         bAbleToUseDebugMode = true;
-        mInputController.StartDebugCamera();
+        mInputController.StartDebugCamera(mApplication.mWidth, mApplication.mHeight);
     }
 
     const bool Scene::CanUseDebugMode() const 

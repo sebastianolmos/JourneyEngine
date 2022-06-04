@@ -178,6 +178,7 @@ namespace Journey {
     }
 
     void InputController::PollDevices(GLFWwindow* window, Scene& scene) {
+        glfwPollEvents();
         if (scene.CanUseDebugMode())
             CheckIfDebug(window, scene);
 
@@ -272,22 +273,37 @@ namespace Journey {
 
     void InputController::PollOnDebug(GLFWwindow* window)
     {
+        if (mDebugCam == nullptr)
+            return;
+
         // Mouse buttons
         if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-            std::cout << "MOUSE_BUTTON_LEFT " << std::endl;
+            mDebugCam->SetRotDrag(true);
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
+            mDebugCam->SetRotDrag(false);
+
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+            mDebugCam->SetCenterDrag(true);
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE)
+            mDebugCam->SetCenterDrag(false);
+
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS)
+            mDebugCam->SetVerticalDrag(true);
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_RELEASE)
+            mDebugCam->SetVerticalDrag(false);
 
         // Mouse Position
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
-        //std::cout << xpos << "  -  " << ypos << std::endl;
+        mDebugCam->SetCurrentMousePos(xpos, ypos);
 
         // Mouse Scroll
-        std::cout << scrollOffset << std::endl;
-
+        mDebugCam->ProcessMouseScroll(scrollOffset);
+        scrollOffset = 0.0f;
     }
 
-    void InputController::StartDebugCamera() 
+    void InputController::StartDebugCamera(const unsigned int screenWidth, const unsigned int screenHeight) 
     {
-        mDebugCam = std::make_shared<DebugCamera>();
+        mDebugCam = std::make_shared<DebugCamera>(screenWidth, screenHeight);
     }
 }
