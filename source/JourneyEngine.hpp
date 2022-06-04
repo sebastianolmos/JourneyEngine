@@ -10,6 +10,8 @@
 #include "scene/scene.hpp"
 #include "rendering/meshManager.hpp"
 #include "rendering/textureManager.hpp"
+#include "camera/followCamera.hpp"
+#include "camera/cameraHandler.hpp"
 #include <memory>
 
 #endif

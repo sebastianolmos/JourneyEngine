@@ -99,6 +99,10 @@ class LittleDemo : public Journey::Application {
             carpin = std::make_shared<Carpincho>();
             scene.AddEntity(nullptr, carpin);
 
+            // Set Camera
+            std::shared_ptr<Journey::FollowCamera> mainCamera = std::make_shared<Journey::FollowCamera>(mWidth, mHeight);
+            scene.GetCameraHandler().setCurrentCamera(mainCamera);
+
             mInnerVar = 0;
         }
 

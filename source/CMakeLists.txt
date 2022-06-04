@@ -7,8 +7,11 @@ set(JOURNEY_HEADERS
         application.hpp
         entity/entity.hpp
         entity/entityManager.hpp
-        entity/cameraHandler.hpp
         entity/pointLight.hpp
+        camera/camera.hpp
+        camera/debugCamera.hpp
+        camera/followCamera.hpp
+        camera/cameraHandler.hpp
         component/component.hpp
         component/transform.hpp
         component/sprite.hpp
@@ -27,6 +30,8 @@ set(JOURNEY_SOURCES
         scene/scene.cpp
         application.cpp
         entity/entityManager.cpp
+        camera/debugCamera.cpp
+        camera/followCamera.cpp
         component/transform.cpp
         rendering/material.cpp
         rendering/meshManager.cpp

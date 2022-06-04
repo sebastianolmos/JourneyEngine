@@ -5,8 +5,8 @@
 
 #include "../entity/entity.hpp"
 #include "../entity/entityManager.hpp"
-#include "../entity/cameraHandler.hpp"
 #include "../entity/pointLight.hpp"
+#include "../camera/cameraHandler.hpp"
 #include "../component/transform.hpp"
 #include "../component/component.hpp"
 #include "../component/staticMesh.hpp"
