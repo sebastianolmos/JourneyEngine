@@ -1,8 +1,11 @@
 #pragma once
+
 #include <memory>
 #include <vector>
 #include <unordered_map>
 #include <functional>
+
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 namespace Journey {
@@ -40,10 +43,15 @@ namespace Journey {
 
     private:
         void StartUp();
-        void PollDevices(GLFWwindow* window);
+        void PollDevices(GLFWwindow* window, Scene& scene);
 
         void PollKeyboard(GLFWwindow* window);
         void PollJoystick();
+
+        void PollOnDebug();
+
+        void CheckIfDebug(GLFWwindow* window, Scene& scene);
+        bool debugKeyPressed = false;
 
         // Keyboard
         std::unordered_map<std::string, int> mKeyMap;

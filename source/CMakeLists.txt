@@ -22,16 +22,16 @@ set(JOURNEY_HEADERS
         performanceMonitor.h)
 
 set(JOURNEY_SOURCES
+        window/window.cpp
+        input/inputController.cpp
+        scene/scene.cpp
         application.cpp
         entity/entityManager.cpp
         component/transform.cpp
         rendering/material.cpp
         rendering/meshManager.cpp
         rendering/renderManager.cpp
-        rendering/textureManager.cpp
-        window/window.cpp
-        input/inputController.cpp
-        scene/scene.cpp)
+        rendering/textureManager.cpp)
 
 file(GLOB_RECURSE Shaders  "${CMAKE_SOURCE_DIR}/source/shaders/*")
 source_group("Shaders" FILES ${Shaders})

@@ -48,7 +48,7 @@ namespace Journey {
     {   
         mWindow.UpdatePerformanceMonitor(deltaTime);
         mRenderManager.CleanRenderInfo();
-        mInputController.PollDevices(mWindow.mWindowHandle);
+        mInputController.PollDevices(mWindow.mWindowHandle, *this);
         mEntityManager.UpdateEntities(*this, deltaTime);
         mApplication.UserUpdate(*this, deltaTime);
         mRenderManager.DrawCall(*this);
@@ -101,4 +101,23 @@ namespace Journey {
         mTextureManager.LoadSpriteToEntity(entity, material, spritePath);
     }
 
+    void Scene::DebugModeEnabled()
+    {
+        bAbleToUseDebugMode = true;
+    }
+
+    const bool Scene::CanUseDebugMode() const 
+    {
+        return bAbleToUseDebugMode;
+    }
+
+    void Scene::SetDebugMode(const bool value)
+    {
+        bDebugMode = value;
+    }
+    
+    const bool Scene::InDebugMode() const
+    {
+        return bDebugMode;
+    }
 }

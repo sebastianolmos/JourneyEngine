@@ -1,4 +1,6 @@
 #include "inputController.hpp"
+#include "../scene/scene.hpp"
+
 #include <iostream>
 #include <assert.h> 
 
@@ -148,9 +150,27 @@ namespace Journey {
         }
     }
 
-    void InputController::PollDevices(GLFWwindow* window) {
-        PollKeyboard(window);
-        PollJoystick();
+    void InputController::CheckIfDebug(GLFWwindow* window, Scene& scene) {
+        bool bCurrentState = (glfwGetKey(window, GLFW_KEY_D)==GLFW_PRESS)?true:false;
+
+        if (!debugKeyPressed && bCurrentState) {
+            scene.SetDebugMode(!scene.InDebugMode());
+            std::cout << "Debug Mode " << (scene.InDebugMode()?"ON":"OFF") << std::endl;
+        }
+
+        debugKeyPressed = bCurrentState;
+    }
+
+    void InputController::PollDevices(GLFWwindow* window, Scene& scene) {
+        if (scene.CanUseDebugMode())
+            CheckIfDebug(window, scene);
+
+        if (scene.InDebugMode())
+            PollOnDebug();
+        else {
+            PollKeyboard(window);
+            PollJoystick();
+        }
     }
 
     void InputController::PollKeyboard(GLFWwindow* window) {
@@ -232,5 +252,10 @@ namespace Journey {
             for(std::function<void(float)> func : mOnJoystickAxis[jAxis.first]) 
                 func(currentValue);
         }
+    }
+
+    void InputController::PollOnDebug()
+    {
+
     }
 }

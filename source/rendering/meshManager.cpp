@@ -1,4 +1,5 @@
 #include "meshManager.hpp"
+#include <glad/glad.h>
 
 #include "../entity/entity.hpp"
 #include "../component/staticMesh.hpp"

@@ -1,4 +1,5 @@
 #include "window.hpp"
+#include <glad/glad.h>
 
 namespace Journey {
 

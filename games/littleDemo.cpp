@@ -62,6 +62,8 @@ class LittleDemo : public Journey::Application {
         ~LittleDemo() = default;
 
         virtual void UserStartUp(Journey::Scene& scene) override {
+            scene.DebugModeEnabled();
+
             // Input 
             RegisterInputs(scene.GetInputController());
             scene.GetInputController().BindActionOnPressed("Jump", [&]() {this->testo();});

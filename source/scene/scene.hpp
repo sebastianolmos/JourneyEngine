@@ -1,4 +1,7 @@
 #pragma once
+#ifndef SCENE_H
+#define SCENE_H
+
 
 #include "../entity/entity.hpp"
 #include "../entity/entityManager.hpp"
@@ -39,6 +42,12 @@ namespace Journey {
             CameraHandler&  GetCameraHandler();
             PointLight&  GetPointLight();
 
+            // Debug methods
+            void DebugModeEnabled();
+            const bool CanUseDebugMode() const;
+            void SetDebugMode(const bool value);
+            const bool InDebugMode() const;
+
         private:
             Scene(Application& app);
             ~Scene();
@@ -55,7 +64,11 @@ namespace Journey {
             MeshManager mMeshManager;
             CameraHandler mCameraHandler;
             PointLight mPointLight;
+            bool bAbleToUseDebugMode = false; 
+            bool bDebugMode = false; 
 
     };
 
 }
+
+#endif

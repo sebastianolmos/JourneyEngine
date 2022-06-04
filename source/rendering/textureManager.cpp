@@ -1,4 +1,6 @@
 #include "textureManager.hpp"
+#include <glad/glad.h>
+
 #include <stb_image.h>
 #include <iostream>
 
@@ -7,8 +9,8 @@
 #include "material.hpp"
 
 namespace Journey {
-    std::shared_ptr<Texture> TextureManager::LoadTexture(const std::string filePath, GLint magFilter, GLint minFilter,
-                                                        GLint sWrapMode,  GLint tWrapMode)
+    std::shared_ptr<Texture> TextureManager::LoadTexture(const std::string filePath, int magFilter, int minFilter,
+                                                        int sWrapMode,  int tWrapMode)
     {
         unsigned int texture;
         glGenTextures(1, &texture);

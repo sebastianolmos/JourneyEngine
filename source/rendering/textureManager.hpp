@@ -1,7 +1,6 @@
 #pragma once
 #include <memory>
 #include <string>
-#include <glad/glad.h>
 
 namespace Journey {
 
@@ -19,8 +18,8 @@ namespace Journey {
 
             TextureManager() = default;
             
-            std::shared_ptr<Texture> LoadTexture(const std::string filePath, GLint magFilter, GLint minFilter,
-                                                            GLint sWrapMode, GLint tWrapMode);
+            std::shared_ptr<Texture> LoadTexture(const std::string filePath, int magFilter, int minFilter,
+                                                            int sWrapMode, int tWrapMode);
 
             void LoadSpriteToEntity(std::shared_ptr<Entity> entity, std::shared_ptr<Material> mat, std::string spritePath);
     };
