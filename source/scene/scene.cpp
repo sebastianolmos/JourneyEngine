@@ -47,10 +47,12 @@ namespace Journey {
     void Scene::Update(const float deltaTime)
     {   
         mWindow.UpdatePerformanceMonitor(deltaTime);
-        mRenderManager.CleanRenderInfo();
         mInputController.PollDevices(mWindow.mWindowHandle, *this);
-        mEntityManager.UpdateEntities(*this, deltaTime);
-        mApplication.UserUpdate(*this, deltaTime);
+        if (!InDebugMode()) {
+            mRenderManager.CleanRenderInfo();
+            mEntityManager.UpdateEntities(*this, deltaTime);
+            mApplication.UserUpdate(*this, deltaTime);
+        }
         mRenderManager.DrawCall(*this);
         mWindow.SwapBuffers();
     }
