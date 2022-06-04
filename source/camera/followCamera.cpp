@@ -10,7 +10,7 @@ namespace Journey {
 
     glm::mat4 FollowCamera::getProjection()
     {
-        return glm::perspective(glm::radians(60.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        return glm::perspective(glm::radians(60.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 1.0f, 30.0f);
     }
 
     glm::mat4 FollowCamera::getViewMatrix()

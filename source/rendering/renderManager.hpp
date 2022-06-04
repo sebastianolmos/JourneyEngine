@@ -51,6 +51,7 @@ namespace Journey {
             std::vector<RenderInfo> mPhongTexturedObjects;
 
             unsigned int mDrawLines = false;
+            unsigned int mFrustrumVAO;
     };
 
 }

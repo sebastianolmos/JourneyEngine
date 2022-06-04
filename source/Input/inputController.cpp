@@ -313,4 +313,9 @@ namespace Journey {
     {
         mDebugCam = std::make_shared<DebugCamera>(screenWidth, screenHeight);
     }
+
+    std::shared_ptr<Camera> InputController::GetLastCamera()
+    {
+        return mLastCamera;
+    }
 }

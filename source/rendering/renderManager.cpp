@@ -1,6 +1,7 @@
 #include "renderManager.hpp"
 #include <glad/glad.h>
 #include "../scene/scene.hpp"
+#include "../input/inputController.hpp"
 
 
 namespace Journey {
@@ -21,6 +22,53 @@ namespace Journey {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_DEPTH_TEST);  
+
+        // Debug Lines
+        unsigned int tmpVBO;
+        unsigned int tmpEBO;
+        float vertices[] = {
+            // positions           
+            -1.0f,-1.0f,  -1.0f,      
+            1.0f, -1.0f,  -1.0f,      
+            1.0f , 1.0f, -1.0f,     
+            -1.0f, 1.0f, -1.0f,     
+             
+            -1.0f, -1.0f, 1.0f, 
+            1.0f, -1.0f,  1.0f, 
+            1.0f, 1.0f, 1.0f, 
+            -1.0f,1.0f, 1.0f
+        };
+
+        unsigned int indices[] = {  // note that we start from 0!
+            0, 1,   4, 5,
+            1, 2,   5, 6,
+            2, 3,   6, 7,
+            3, 0,   7, 4,
+
+            0, 4,
+            1, 5,
+            2, 6,
+            3, 7
+        };
+
+        glGenVertexArrays(1, &mFrustrumVAO);
+        glGenBuffers(1, &tmpVBO);
+        glGenBuffers(1, &tmpEBO);
+        // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+        glBindVertexArray(mFrustrumVAO);
+
+        glBindBuffer(GL_ARRAY_BUFFER, tmpVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tmpEBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+        // position attribute
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+        
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
     }
 
     void RenderManager::ShutDown(){
@@ -58,6 +106,14 @@ namespace Journey {
             SimpleColoredShader.setMat4("model", renderInfo.model);
             glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
         }   
+        if (scene.InDebugMode()) {
+            glm::mat4 frustrumTr = glm::inverse(scene.GetInputController().GetLastCamera()->getProjection() * scene.GetInputController().GetLastCamera()->getViewMatrix());
+            SimpleColoredShader.setVec3("shapeColor", glm::vec3(1.0f, 1.0f, 0.0f));
+            SimpleColoredShader.setMat4("model", frustrumTr);
+            glBindVertexArray(mFrustrumVAO);
+            glDrawElements(GL_LINES, 24, GL_UNSIGNED_INT, 0);
+            glBindVertexArray(0);
+        }
 
         // <------ FLAT COLORED SHADER ------->
         FlatColoredShader.use();

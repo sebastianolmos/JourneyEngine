@@ -46,6 +46,7 @@ namespace Journey {
         void BindAxisMap(std::string mapName, std::function<void(float)> func);
 
         void StartDebugCamera(const unsigned int screenWidth, const unsigned int screenHeight);
+        std::shared_ptr<Camera> GetLastCamera();
 
     private:
         void StartUp(GLFWwindow* window);
