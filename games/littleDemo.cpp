@@ -6,6 +6,7 @@ void RegisterInputs(Journey::InputController& input) {
     input.RegisterKeyAction("Run", JOURNEY_KEY_LEFT_SHIFT);
     input.RegisterGamepadAxis("MoveX", JOURNEY_GAMEPAD_AXIS_LEFT_X);
     input.RegisterGamepadAxis("MoveY", JOURNEY_GAMEPAD_AXIS_LEFT_Y);
+    input.RegisterGamepadAxis("RotX", JOURNEY_GAMEPAD_AXIS_RIGHT_X);
 }
 
 class Carpincho : public Journey::Entity{
@@ -24,15 +25,17 @@ class Carpincho : public Journey::Entity{
             scene.GetInputController().BindActionOnReleased("Test", [&]() {this->insideFuncTest();});
             scene.GetInputController().BindAxisMap("MoveX", [&](float dx) {this->moveInX(dx);});
             scene.GetInputController().BindAxisMap("MoveY", [&](float dy) {this->moveInY(dy);});
+            scene.GetInputController().BindAxisMap("RotX", [&](float dx) {this->RotInX(dx);});
         }
         virtual void UserUpdate(Journey::Scene& scene, float deltaTime) override {
             mTimer += deltaTime;
             mPosX += deltaTime * mVelX;
             mPosY += deltaTime * mVelY;
+            mTheta += deltaTime * mRotXVel* 30.0f;
             getTransform().SetTranslation(glm::vec3(0.0f + mPosX, 
                                                     0.5f + mPosY, 
                                                     1.0f + 0.7*glm::abs(glm::sin(mTimer +0.4))));
-            getTransform().SetRotation(glm::vec3(0.0f, 0.0f, mTheta));
+            getTransform().SetRotation(glm::vec3(0.0f, 0.0f, glm::radians(mTheta)));
         };
         void insideFuncTest(){
             std::cout << "Working god!" << std::endl;
@@ -45,6 +48,10 @@ class Carpincho : public Journey::Entity{
             float deathZone = 0.1;
             mVelY = (dy > deathZone || dy < -deathZone) ? -dy : 0.0f;
         }
+        void RotInX(float dx) {
+            float deathZone = 0.1;
+            mRotXVel = (dx > deathZone || dx < -deathZone) ? dx : 0.0f;
+        }
         float mTheta = 0.0f;
     private:
         float mTimer;
@@ -52,6 +59,7 @@ class Carpincho : public Journey::Entity{
         float mVelY = 0;
         float mPosX = 0.0f;
         float mPosY = 0.0f;
+        float mRotXVel = 0;
 };
 
 class RandRotEntity : public Journey::Entity{
