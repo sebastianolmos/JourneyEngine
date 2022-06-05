@@ -78,8 +78,8 @@ class LittleDemo : public Journey::Application {
 
             Journey::PhongColoredMaterial* floorMat = new Journey::PhongColoredMaterial();
             floorMat->color = glm::vec3(0.25f, 0.9f, 0.01f);
-            floorMat->kd = glm::vec3(0.25f, 0.25f, 0.01f);
-            floorMat->ke = glm::vec3(0.3f, 0.7f, 0.1f);
+            floorMat->kd = glm::vec3(0.1f, 0.1f, 0.1f);
+            floorMat->ke = glm::vec3(0.2f, 0.3f, 0.1f);
             floorMat->ks = glm::vec3(0.2f, 0.2f, 0.2f);
 
             scene.AddPrimitiveMeshComponent(floor, std::shared_ptr<Journey::Material>(floorMat), Journey::EPrimitiveMesh::Cube);
@@ -114,6 +114,22 @@ class LittleDemo : public Journey::Application {
             plane1Mat->color = glm::vec3(0.25f, 0.1f, 0.9f);
             scene.AddPrimitiveMeshComponent(plane1, std::shared_ptr<Journey::Material>(plane1Mat), Journey::EPrimitiveMesh::Plane);
             scene.AddEntity(nullptr, plane1);
+
+            // Plane2 Test 
+            std::shared_ptr<Journey::Entity> plane2 = std::make_shared<Journey::Entity>();
+            plane2->getTransform().Set(glm::vec3(10.0f, -10.0f, 0.3f),
+                                    glm::vec3(0.0f, 0.0f, glm::radians(35.0f)),
+                                    glm::vec3(2.0f, 2.0f, 1.0f)
+                                    );
+
+            Journey::PhongColoredMaterial* plane2Mat = new Journey::PhongColoredMaterial;
+            plane2Mat->color = glm::vec3(0.95f, 0.6f, 0.2f);
+            plane2Mat->kd = glm::vec3(0.6f, 0.6f, 0.6f);
+            plane2Mat->ke = glm::vec3(0.5f, 0.5f, 0.5f);
+            plane2Mat->ks = glm::vec3(1.0f, 0.8f, 0.8f);
+
+            scene.AddPrimitiveMeshComponent(plane2, std::shared_ptr<Journey::Material>(plane2Mat), Journey::EPrimitiveMesh::Plane);
+            scene.AddEntity(nullptr, plane2);
 
             mInnerVar = 0;
         }

@@ -8,10 +8,10 @@ namespace Journey{
         public: 
             PointLight() = default;
 
-            glm::vec3 lightPos = glm::vec3(1.5f, 1.0f, 2.5f);
-            glm::vec3 diffuseColor = glm::vec3(0.6f); // decrease the influence
-            glm::vec3 ambientColor = glm::vec3(0.3f);
-            glm::vec3 specularColor = glm::vec3(0.6f, 0.6f, 0.6f);
+            glm::vec3 lightPos = glm::vec3(1.5f, 1.0f, 5.5f);
+            glm::vec3 diffuseColor = glm::vec3(1.0f); // decrease the influence
+            glm::vec3 ambientColor = glm::vec3(1.0f);
+            glm::vec3 specularColor = glm::vec3(1.0f);
 
             glm::vec3 getLightPos() {
                 return lightPos;
