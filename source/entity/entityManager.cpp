@@ -11,7 +11,9 @@
 
 
 namespace Journey {
-    EntityManager::EntityManager(){
+    EntityManager::EntityManager(Scene& scene)
+    :mSceneRef(scene) 
+    {
         mEntitiesCount = 0;
     }
 
@@ -34,7 +36,7 @@ namespace Journey {
             if (staticMesh != nullptr)
             {   
                 RenderInfo rInfo;
-                staticMesh->UpdateRenderInfo(rInfo);      
+                staticMesh->UpdateRenderInfo(rInfo);
                 rInfo.model = newTransform;
                 scene.GetRenderManager().AddObjectToRender(staticMesh->material->GetType(), rInfo);
             }
@@ -66,7 +68,8 @@ namespace Journey {
     }
 
     void EntityManager::AddEntity(std::shared_ptr<Entity> parentEntity, std::shared_ptr<Entity> newEntity)
-    {
+    {   
+        newEntity->StartUp(mSceneRef, shared_from_this());
         if (parentEntity == nullptr)
         {
             mEntities.insert({mEntitiesCount, newEntity});

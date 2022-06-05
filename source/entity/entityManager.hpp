@@ -12,9 +12,9 @@
 namespace Journey {
 
     class Scene;
-    class EntityManager {
+    class EntityManager : public std::enable_shared_from_this<EntityManager>{
         public:
-            EntityManager();
+            EntityManager(Scene& scene);
 
             void StartUp();
             void ShutDown();
@@ -28,8 +28,7 @@ namespace Journey {
             std::unordered_map<int, std::shared_ptr<Entity>> mEntities;
 
             void UpdateEntity(Scene& scene, std::shared_ptr<Entity> entity, glm::mat4 parentTransform, float deltaTime);
-            
-
+            Scene& mSceneRef;
     };
 
 }

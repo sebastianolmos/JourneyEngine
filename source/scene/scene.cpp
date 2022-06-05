@@ -8,12 +8,12 @@ namespace Journey {
         mWindow(),
         mApplication(app),
         mShouldClose(false),
-        mRenderManager(),
-        mEntityManager()
-    {
+        mRenderManager()
+    {   
+        mEntityManager = std::make_shared<EntityManager>(*this);
         mWindow.StartUp(mApplication.GetName(), mApplication.GetWindowWith(), mApplication.GetWindowHeight());
         mInputController.StartUp(mWindow.mWindowHandle);
-        mEntityManager.StartUp();
+        mEntityManager->StartUp();
         mRenderManager.StartUp();
 
         mApplication.StartUp(*this);
@@ -24,7 +24,7 @@ namespace Journey {
         mApplication.UserShutDown(*this);
 
         mRenderManager.ShutDown();
-        mEntityManager.ShutDown();
+        mEntityManager->ShutDown();
 		// ShotDown the Input Controller
         mWindow.ShutDown();
     }
@@ -50,7 +50,7 @@ namespace Journey {
         mInputController.PollDevices(mWindow.mWindowHandle, *this, deltaTime);
         if (!InDebugMode()) {
             mRenderManager.CleanRenderInfo();
-            mEntityManager.UpdateEntities(*this, deltaTime);
+            mEntityManager->UpdateEntities(*this, deltaTime);
             mApplication.UserUpdate(*this, deltaTime);
         }
         mRenderManager.DrawCall(*this);
@@ -89,8 +89,7 @@ namespace Journey {
 
     void Scene::AddEntity(std::shared_ptr<Entity> parentEntity, std::shared_ptr<Entity> newEntity)
     {
-        newEntity->UserStartUp(*this);
-        mEntityManager.AddEntity(parentEntity, newEntity);
+        mEntityManager->AddEntity(parentEntity, newEntity);
     }
 
     void Scene::AddPrimitiveMeshComponent(std::shared_ptr<Entity> entity, std::shared_ptr<Material> material, EPrimitiveMesh primitiveMesh)

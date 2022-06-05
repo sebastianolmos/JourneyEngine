@@ -45,7 +45,7 @@ namespace Journey {
 
     void ControlledEntity::RotInX(float dx) {
         float deathZone = 0.1;
-        mRotXVel = (dx > deathZone || dx < -deathZone) ? dx : 0.0f;
+        mRotXVel = (dx > deathZone || dx < -deathZone) ? -dx : 0.0f;
     }
 
     void ControlledEntity::jump() {

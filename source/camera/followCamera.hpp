@@ -21,11 +21,6 @@ namespace Journey {
         void setNear(float value);
         void setFar(float value);
         void setThetaAngle(float value);
-
-        float x = 0.0;
-        float y = -0.5;
-        float z = 1.2;
-        glm::vec3 camDir = glm::vec3(0.0f, 0.6, -0.3);
     
     private:
         unsigned int mScrWidth;

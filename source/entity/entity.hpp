@@ -24,9 +24,10 @@ namespace Journey{
             Entity() : mCurrentState(EState::Active) {}
             virtual ~Entity() {};
 
-            void StartUp(Scene& scene)  
+            void StartUp(Scene& scene, std::shared_ptr<EntityManager> manager)  
             { 
                 UserStartUp(scene);
+                mManager = manager;
             };
 
             void Update(Scene& scene, float deltaTime) {
@@ -59,6 +60,7 @@ namespace Journey{
 
             std::unordered_map<int, std::shared_ptr<Entity>> mChildren;
             std::shared_ptr<Entity> mParent;
+            std::shared_ptr<EntityManager> mManager;
 
     };
 

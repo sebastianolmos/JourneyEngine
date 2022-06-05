@@ -59,7 +59,7 @@ namespace Journey {
             Window mWindow;
             Application& mApplication;
             bool mShouldClose;
-            EntityManager mEntityManager;
+            std::shared_ptr<EntityManager> mEntityManager;
             RenderManager mRenderManager;
             TextureManager mTextureManager;
             MeshManager mMeshManager;
