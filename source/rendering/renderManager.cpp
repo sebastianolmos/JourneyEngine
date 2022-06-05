@@ -266,7 +266,7 @@ namespace Journey {
         float vertices[] = {
             // positions           
             0.0f, 0.0f,  0.0f,      
-            axis.x * 2.0f, axis.y*2.0f, axis.z*2.0f
+            axis.x * 100.0f, axis.y*100.0f, axis.z*100.0f
         };
 
         unsigned int indices[] = {  // note that we start from 0!
@@ -296,12 +296,61 @@ namespace Journey {
         rInfo.model = glm::mat4(1.0f);
         return rInfo;
     }
+
+    RenderInfo CreateGridLines(int n, float d)
+    {
+        RenderInfo rInfo;
+
+        glm::vec2 leftUpCorner = glm::vec2(-n*d, n*d);
+        glm::vec2 rightDownCorner = glm::vec2(n*d, -n*d);
+        unsigned int lines = 2*n +1;
+        std::vector<float> vertices;
+
+        for (unsigned int i = 0; i < lines; i++) 
+        {
+            float v[6] = {leftUpCorner.x + i*d, leftUpCorner.y, 0.0f,
+                          leftUpCorner.x + i*d, rightDownCorner.y, 0.0
+            };
+            vertices.insert(vertices.end(), std::begin(v), std::end(v));
+        }
+        for (unsigned int j = 0; j < lines; j++)
+        {
+            float v[6] = {leftUpCorner.x, rightDownCorner.y + j*d, 0.0f,
+                          rightDownCorner.x, rightDownCorner.y + j*d, 0.0
+            };
+            vertices.insert(vertices.end(), std::begin(v), std::end(v));
+        }
+        float* vert = &vertices[0];
+        // first, configure the cube's VAO (and VBO)
+        glGenVertexArrays(1, &rInfo.VAO);
+        glGenBuffers(1, &rInfo.VBO);
+
+        glBindBuffer(GL_ARRAY_BUFFER, rInfo.VBO);
+        glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(float), vert, GL_STATIC_DRAW);
+
+        glBindVertexArray(rInfo.VAO);
+
+        // position attribute
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+
+        rInfo.vertexCount = vertices.size()/3;
+        rInfo.usingIndices = false;
+        rInfo.color = glm::vec3(0.6f);
+        rInfo.model = glm::mat4(1.0f);
+        return rInfo;
+    }
     
     void RenderManager::CreateDebugAxisObject()
     {
         mDebugObjects.push_back(createAxisObject(glm::vec3(1.0f, 0.0f, 0.0f)));
         mDebugObjects.push_back(createAxisObject(glm::vec3(0.0f, 1.0f, 0.0f)));
         mDebugObjects.push_back(createAxisObject(glm::vec3(0.0f, 0.0f, 1.0f)));
+
+        mDebugObjects.push_back(CreateGridLines(20, 5.0f));
     }
     
     void RenderManager::DrawDebugObjects(Shader shaderProgram, Scene& scene)
@@ -318,8 +367,12 @@ namespace Journey {
             shaderProgram.setVec3("shapeColor", renderInfo.color);
             shaderProgram.setMat4("model", renderInfo.model);
 
-            if (i == 1)
-                glLineWidth(3.0);
+            if (i == 0)
+                glLineWidth(2.0);
+            else if (i == 1)
+                glLineWidth(2.0);
+            else if (i == 4)
+                glLineWidth(1.0);
 
             if (renderInfo.usingIndices){
                 glBindVertexArray(renderInfo.VAO);
