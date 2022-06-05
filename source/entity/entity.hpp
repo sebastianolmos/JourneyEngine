@@ -26,8 +26,8 @@ namespace Journey{
 
             void StartUp(Scene& scene, std::shared_ptr<EntityManager> manager)  
             { 
-                UserStartUp(scene);
                 mManager = manager;
+                UserStartUp(scene);
             };
 
             void Update(Scene& scene, float deltaTime) {
@@ -39,6 +39,7 @@ namespace Journey{
             virtual void UserUpdate(Scene& scene, float deltaTime) {};
             virtual void UserStartUp(Scene& scene){};
             const EState GetState() const { return mCurrentState; }
+            
 
         protected:
 

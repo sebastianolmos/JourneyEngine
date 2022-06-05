@@ -12,15 +12,25 @@ void RegisterInputs(Journey::InputController& input) {
 
 class ProjectileEntity : public Journey::Entity {
 public:
-    ProjectileEntity(glm::vec3 spawnPos, float timeToDelete, float speed, glm::vec3 direction) {
+    ProjectileEntity(glm::vec3 spawnPos, float timeToDelete, float speed, glm::vec3 direction, float size) {
         mTimer = 0.0f;
         mDeleteTime = timeToDelete;
         mSpeed = speed;
         mDirection = direction;
         mPos = spawnPos;
+        mSize = size;
     }
     ~ProjectileEntity() = default;
-    virtual void UserStartUp(Journey::Scene& scene) override {}
+    virtual void UserStartUp(Journey::Scene& scene) override {
+        getTransform().SetTranslation(mPos);
+        getTransform().SetScale(glm::vec3(mSize));
+        Journey::PhongColoredMaterial* mat = new Journey::PhongColoredMaterial();
+        mat->color = glm::vec3(1.0f, 0.9f, 0.0f);
+        mat->kd = glm::vec3(0.5f, 0.5f, 0.5f);
+        mat->ke = glm::vec3(0.5f, 0.5f, 0.5f);
+        mat->ks = glm::vec3(1.0f, 0.8f, 0.8f);
+        scene.AddPrimitiveMeshComponent(shared_from_this(), std::shared_ptr<Journey::Material>(mat), Journey::EPrimitiveMesh::Sphere);
+    }
     virtual void UserUpdate(Journey::Scene& scene, float deltaTime) override {
         mPos += mDirection * mSpeed * deltaTime;
         getTransform().SetTranslation(mPos);
@@ -32,7 +42,7 @@ public:
 private:
     float mTimer;
     float mDeleteTime;
-    float mSpeed;
+    float mSpeed, mSize;
     glm::vec3 mDirection;
     glm::vec3 mPos;
 };
@@ -55,13 +65,17 @@ public:
         scene.GetInputController().BindAxisMap("MoveY", [&](float dy) {this->moveInY(dy);});
         scene.GetInputController().BindAxisMap("RotX", [&](float dx) {this->RotInX(dx);});
         scene.GetInputController().BindActionOnReleased("Jump", [&]() {this->jump();});
+        scene.GetInputController().BindActionOnReleased("Throw", [&]() {this->throwProjectile();});
         mCamera->setCenterHeight(0.9f);
         mCamera->setDistanceRadius(4.0f);
         mCamera->setThetaAngle(85.0f);
         mCamera->setFov(55.0f);
     }
     void throwProjectile() {
-
+        std::shared_ptr<ProjectileEntity> projectile = std::make_shared<ProjectileEntity>(
+            mPos + mUp*mHeight, 3.0f, 8.0f, mVel, 0.2f
+        );
+        mManager->AddEntity(nullptr, projectile);
     }
 };
 
