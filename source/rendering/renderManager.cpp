@@ -59,10 +59,18 @@ namespace Journey {
         SimpleColoredShader.setMat4("view", scene.GetCameraHandler().getViewMatrix());
         for(auto& renderInfo: mSimpleColoredObjects) {
             // bind textures on corresponding texture units
-            glBindVertexArray(renderInfo.VAO);
             SimpleColoredShader.setVec3("shapeColor", renderInfo.color);
             SimpleColoredShader.setMat4("model", renderInfo.model);
-            glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
+            if (renderInfo.usingIndices){
+                glBindVertexArray(renderInfo.VAO);
+                glDrawElements(GL_TRIANGLES, renderInfo.vertexCount, GL_UNSIGNED_INT, 0);
+                glBindVertexArray(0);
+            }
+            else {
+                glBindVertexArray(renderInfo.VAO);
+                glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
+            }
+            
         }  
 
         // <------ FLAT COLORED SHADER ------->
@@ -84,8 +92,15 @@ namespace Journey {
             
             FlatColoredShader.setMat4("model", renderInfo.model);
             // render 
-            glBindVertexArray(renderInfo.VAO);
-            glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
+            if (renderInfo.usingIndices){
+                glBindVertexArray(renderInfo.VAO);
+                glDrawElements(GL_TRIANGLES, renderInfo.vertexCount, GL_UNSIGNED_INT, 0);
+                glBindVertexArray(0);
+            }
+            else {
+                glBindVertexArray(renderInfo.VAO);
+                glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
+            }
         }   
 
         // <------ PHONG COLORED SHADER ------->
@@ -107,8 +122,16 @@ namespace Journey {
             
             PhongColoredShader.setMat4("model", renderInfo.model);
             // render 
-            glBindVertexArray(renderInfo.VAO);
-            glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
+            if (renderInfo.usingIndices){
+                glBindVertexArray(renderInfo.VAO);
+                glDrawElements(GL_TRIANGLES, renderInfo.vertexCount, GL_UNSIGNED_INT, 0);
+                glBindVertexArray(0);
+            }
+            else {
+                glBindVertexArray(renderInfo.VAO);
+                glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
+            }
+            
         }   
 
         // <------ FLAT TEXTURED SHADER ------->
@@ -126,11 +149,18 @@ namespace Journey {
             FlatTexturedShader.setVec3("material.diffuse", renderInfo.kd);
             FlatTexturedShader.setVec3("material.specular", renderInfo.ks); 
             FlatTexturedShader.setFloat("material.shininess", 64.0f);
-            // bind textures on corresponding texture units
-            glBindTexture(GL_TEXTURE_2D, renderInfo.textureID);
-            glBindVertexArray(renderInfo.VAO);
             FlatTexturedShader.setMat4("model", renderInfo.model);
-            glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
+            glBindTexture(GL_TEXTURE_2D, renderInfo.textureID);
+            // bind textures on corresponding texture units
+            if (renderInfo.usingIndices){
+                glBindVertexArray(renderInfo.VAO);
+                glDrawElements(GL_TRIANGLES, renderInfo.vertexCount, GL_UNSIGNED_INT, 0);
+                glBindVertexArray(0);
+            }
+            else {
+                glBindVertexArray(renderInfo.VAO);
+                glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
+            }
         }   
 
         // <------ PHONG TEXTURED SHADER ------->
@@ -148,11 +178,18 @@ namespace Journey {
             PhongTexturedShader.setVec3("material.diffuse", renderInfo.kd);
             PhongTexturedShader.setVec3("material.specular", renderInfo.ks); 
             PhongTexturedShader.setFloat("material.shininess", 64.0f);
+            PhongTexturedShader.setMat4("model", renderInfo.model);
             // bind textures on corresponding texture units
             glBindTexture(GL_TEXTURE_2D, renderInfo.textureID);
-            glBindVertexArray(renderInfo.VAO);
-            PhongTexturedShader.setMat4("model", renderInfo.model);
-            glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
+            if (renderInfo.usingIndices){
+                glBindVertexArray(renderInfo.VAO);
+                glDrawElements(GL_TRIANGLES, renderInfo.vertexCount, GL_UNSIGNED_INT, 0);
+                glBindVertexArray(0);
+            }
+            else {
+                glBindVertexArray(renderInfo.VAO);
+                glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
+            }
         }   
 
         // <------ SIMPLE TEXTURED SHADER ------->
@@ -160,11 +197,18 @@ namespace Journey {
         SimpleTexturedShader.setMat4("projection", scene.GetCameraHandler().getProjection());
         SimpleTexturedShader.setMat4("view", scene.GetCameraHandler().getViewMatrix());
         for(auto& renderInfo: mSimpleTexturedObjects) {
+            SimpleTexturedShader.setMat4("model", renderInfo.model);
             // bind textures on corresponding texture units
             glBindTexture(GL_TEXTURE_2D, renderInfo.textureID);
-            glBindVertexArray(renderInfo.VAO);
-            SimpleTexturedShader.setMat4("model", renderInfo.model);
-            glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
+            if (renderInfo.usingIndices){
+                glBindVertexArray(renderInfo.VAO);
+                glDrawElements(GL_TRIANGLES, renderInfo.vertexCount, GL_UNSIGNED_INT, 0);
+                glBindVertexArray(0);
+            }
+            else {
+                glBindVertexArray(renderInfo.VAO);
+                glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
+            }
         }   
     }
 

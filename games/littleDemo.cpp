@@ -103,6 +103,18 @@ class LittleDemo : public Journey::Application {
             std::shared_ptr<Journey::FollowCamera> mainCamera = std::make_shared<Journey::FollowCamera>(mWidth, mHeight);
             scene.GetCameraHandler().setCurrentCamera(mainCamera);
 
+            // Plane1 Test 
+            std::shared_ptr<Journey::Entity> plane1 = std::make_shared<Journey::Entity>();
+            plane1->getTransform().Set(glm::vec3(10.0f, 10.0f, 2.2f),
+                                    glm::vec3(0.0f, 0.0f, glm::radians(35.0f)),
+                                    glm::vec3(2.0f, 2.0f, 1.0f)
+                                    );
+
+            Journey::SimpleColoredMaterial* plane1Mat = new Journey::SimpleColoredMaterial;
+            plane1Mat->color = glm::vec3(0.25f, 0.1f, 0.9f);
+            scene.AddPrimitiveMeshComponent(plane1, std::shared_ptr<Journey::Material>(plane1Mat), Journey::EPrimitiveMesh::Plane);
+            scene.AddEntity(nullptr, plane1);
+
             mInnerVar = 0;
         }
 

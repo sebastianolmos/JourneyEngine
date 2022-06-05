@@ -30,7 +30,21 @@ namespace Journey
                 break;
                 }
             case EPrimitiveMesh::Plane: {
-                std::cout << "Primitive mesh NOT Implemented yet" << std::endl;
+                if (mat->GetType() == EMaterialType::SimpleColored) {
+                    std::shared_ptr<StaticMeshComponent> meshComp = std::make_shared<StaticMeshComponent>();
+                    mMeshGenerator.GeneratePlane(meshComp, false);
+                    meshComp->material = mat; 
+                    entity->mComponents.insert(std::make_pair(EComponentType::StaticMeshComponent, meshComp));
+                } 
+                else if (mat->GetType() == EMaterialType::PhongColored || mat->GetType() == EMaterialType::FlatColored) {
+                    std::shared_ptr<StaticMeshComponent> meshComp = std::make_shared<StaticMeshComponent>();
+                    mMeshGenerator.GeneratePlane(meshComp, true);
+                    meshComp->material = mat; 
+                    entity->mComponents.insert(std::make_pair(EComponentType::StaticMeshComponent, meshComp));
+                } 
+                else {
+                    std::cout << "Material not alowed with PrimitiveMEsh" << std::endl;
+                }
                 break;
                 }
             case EPrimitiveMesh::Pyramid: {

@@ -6,7 +6,7 @@ namespace Journey {
         return EMaterialType::SimpleColored;
     }
     void SimpleColoredMaterial::fillRenderInfo(RenderInfo& rInfo) {
-        rInfo.ks = color;
+        rInfo.color = color;
     }
 
     EMaterialType SimpleTexturedMaterial::GetType() { 

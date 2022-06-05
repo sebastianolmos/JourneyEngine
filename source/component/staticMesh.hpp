@@ -16,6 +16,7 @@ namespace Journey {
             unsigned int VAO;
             unsigned int VBO;
             unsigned textureID;
+            bool usingIndicesToRender = false;
 
             std::shared_ptr<Material> material;
 
@@ -26,6 +27,7 @@ namespace Journey {
                 rInfo.VAO = VAO;
                 rInfo.VBO = VBO;
                 rInfo.vertexCount = vertexCount;
+                rInfo.usingIndices = usingIndicesToRender;
                 material->fillRenderInfo(rInfo);
             }
     };
