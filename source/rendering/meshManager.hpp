@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include "meshGenerator.hpp"
 
 namespace Journey {
 
@@ -23,5 +24,8 @@ namespace Journey {
             MeshManager() = default;
 
             void LoadPrimitiveMeshToEntity(std::shared_ptr<Entity> entity, std::shared_ptr<Material> mat, EPrimitiveMesh primitiveMesh);
+
+        private:
+            MeshGenerator mMeshGenerator;
     };
 }

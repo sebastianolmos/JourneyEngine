@@ -21,6 +21,7 @@ set(JOURNEY_HEADERS
         rendering/renderManager.hpp
         rendering/textureManager.hpp
         rendering/shaders/shader.h
+        rendering/meshGenerator.hpp
         scene/scene.hpp
         performanceMonitor.h)
 
@@ -36,7 +37,8 @@ set(JOURNEY_SOURCES
         rendering/material.cpp
         rendering/meshManager.cpp
         rendering/renderManager.cpp
-        rendering/textureManager.cpp)
+        rendering/textureManager.cpp
+        rendering/meshGenerator.cpp)
 
 file(GLOB_RECURSE Shaders  "${CMAKE_SOURCE_DIR}/source/shaders/*")
 source_group("Shaders" FILES ${Shaders})
