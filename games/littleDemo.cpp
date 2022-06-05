@@ -15,7 +15,7 @@ class Carpincho : public Journey::Entity{
         virtual void UserStartUp(Journey::Scene& scene) override {
             mTimer = 0.0f;
             this->getTransform().Set(glm::vec3(-2.0f, -2.5f, 1.0f),
-                                    glm::vec3(0.0f, 0.0f, glm::radians(15.0f)),
+                                    glm::vec3(0.0f, 0.0f, 0.0f),
                                     glm::vec3(0.65f, 1.0f, 0.42f)
                                     );
             Journey::SimpleTexturedMaterial* mat = new Journey::SimpleTexturedMaterial();
@@ -32,6 +32,7 @@ class Carpincho : public Journey::Entity{
             getTransform().SetTranslation(glm::vec3(0.0f + mPosX, 
                                                     0.5f + mPosY, 
                                                     1.0f + 0.7*glm::abs(glm::sin(mTimer +0.4))));
+            getTransform().SetRotation(glm::vec3(0.0f, 0.0f, mTheta));
         };
         void insideFuncTest(){
             std::cout << "Working god!" << std::endl;
@@ -44,6 +45,7 @@ class Carpincho : public Journey::Entity{
             float deathZone = 0.1;
             mVelY = (dy > deathZone || dy < -deathZone) ? -dy : 0.0f;
         }
+        float mTheta = 0.0f;
     private:
         float mTimer;
         float mVelX = 0;
@@ -128,7 +130,7 @@ class LittleDemo : public Journey::Application {
             scene.AddEntity(nullptr, carpin);
 
             // Set Camera
-            std::shared_ptr<Journey::FollowCamera> mainCamera = std::make_shared<Journey::FollowCamera>(mWidth, mHeight);
+            mainCamera = std::make_shared<Journey::FollowCamera>(mWidth, mHeight);
             scene.GetCameraHandler().setCurrentCamera(mainCamera);
 
             // Plane Colored
@@ -301,6 +303,9 @@ class LittleDemo : public Journey::Application {
             mInnerVar += deltaTime;
             dog->getTransform().SetTranslation(glm::vec3(glm::sin(mInnerVar)*1.2,-0.5f, 1.2f));
             dog->getTransform().SetRotation(glm::vec3(0.0f, 0.0f, glm::radians(35.0f) + mInnerVar));
+            auto carpinPos = carpin->getTransform().GetLocalTranslation();
+            mainCamera->setFollowPoint(glm::vec3(carpinPos.x, carpinPos.y, 1.0f));
+            mainCamera->setFollowRot(carpin->mTheta-90.0f);
         }
 
         void testo(){
@@ -319,6 +324,7 @@ class LittleDemo : public Journey::Application {
         std::shared_ptr<Journey::Entity> floor;
         std::shared_ptr<Journey::Entity> dog;
         std::shared_ptr<Carpincho> carpin;
+        std::shared_ptr<Journey::FollowCamera> mainCamera;
 };
 
 int main()

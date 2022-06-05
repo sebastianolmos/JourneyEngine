@@ -4,23 +4,36 @@ namespace Journey {
 
     FollowCamera::FollowCamera(const unsigned int screenWidth, const unsigned int screenHeight)
     {
-        SCR_WIDTH = screenWidth;
-        SCR_HEIGHT = screenHeight;
+        mScrWidth = screenWidth;
+        mScrHeight = screenHeight;
     }
 
     glm::mat4 FollowCamera::getProjection()
     {
-        return glm::perspective(glm::radians(60.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 1.0f, 30.0f);
+        return glm::perspective(glm::radians(mFov), (float)mScrWidth / (float)mScrHeight, mNear, mFar);
     }
 
     glm::mat4 FollowCamera::getViewMatrix()
     {
-        return glm::lookAt(glm::vec3(x, y , z) - camDir * 2.0f, glm::vec3(x, y , z), glm::vec3(0.0, 0.0, 1.0f));
-
+        mCenter = mFollowPoint + mWorldUp * mCenterHeight;
+        mPosition.x = mCenter.x + mRadius * cos(glm::radians(mPhi)) * sin(glm::radians(mTheta));
+        mPosition.y = mCenter.y + mRadius * sin(glm::radians(mPhi)) * sin(glm::radians(mTheta));
+        mPosition.z = mCenter.z + mRadius * cos(glm::radians(mTheta));
+        return glm::lookAt(mPosition, mCenter, mWorldUp);
     }
 
     glm::vec3 FollowCamera::getViewPos()
     {
-        return  glm::vec3(x, y, z) - camDir * 2.0f;
+        return  mPosition;
+    }
+
+    void FollowCamera::setFollowPoint(glm::vec3 point)
+    {
+        mFollowPoint = point;
+    }
+    
+    void FollowCamera::setFollowRot(float rot)
+    {
+        mPhi = rot;
     }
 }
