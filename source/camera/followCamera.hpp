@@ -15,6 +15,12 @@ namespace Journey {
 
         void setFollowPoint(glm::vec3 point);
         void setFollowRot(float rot);
+        void setCenterHeight(float value);
+        void setDistanceRadius(float value);
+        void setFov(float value);
+        void setNear(float value);
+        void setFar(float value);
+        void setThetaAngle(float value);
 
         float x = 0.0;
         float y = -0.5;

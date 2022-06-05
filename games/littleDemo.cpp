@@ -9,63 +9,30 @@ void RegisterInputs(Journey::InputController& input) {
     input.RegisterGamepadAction("Jump", JOURNEY_XBOX_BUTTON_A);
 }
 
-class Carpincho : public Journey::Entity{
-    public:
-        Carpincho() = default;
-        ~Carpincho() = default;
-        virtual void UserStartUp(Journey::Scene& scene) override {
-            this->getTransform().Set(glm::vec3(-2.0f, -2.5f, 1.0f),
-                                    glm::vec3(0.0f, 0.0f, 0.0f),
-                                    glm::vec3(0.65f, 1.0f, 0.42f)
-                                    );
-            Journey::SimpleTexturedMaterial* mat = new Journey::SimpleTexturedMaterial();
-            scene.AddSpriteComponent(shared_from_this(), std::shared_ptr<Journey::Material>(mat), "../../../assets/sprites/carpincho.png");
-            // Input
-            scene.GetInputController().BindAxisMap("MoveX", [&](float dx) {this->moveInX(dx);});
-            scene.GetInputController().BindAxisMap("MoveY", [&](float dy) {this->moveInY(dy);});
-            scene.GetInputController().BindAxisMap("RotX", [&](float dx) {this->RotInX(dx);});
-            scene.GetInputController().BindActionOnReleased("Jump", [&]() {this->jump();});
-        }
-        virtual void UserUpdate(Journey::Scene& scene, float deltaTime) override {
-            mTheta += deltaTime * mRotXVel* 50.0f;
-            glm::vec3 finalVel = glm::rotate(mVel, glm::radians(mTheta), mUp);
-            mPos += deltaTime * finalVel * 3.0f;
-            if (mPos.z > 0.0f)
-                mVel.z -= mGravity * deltaTime;
-            else {
-                mPos.z = 0.0f;
-                mVel.z = 0.0f;
-            }
-            getTransform().SetTranslation(glm::vec3(mPos.x, 
-                                                    mPos.y, 
-                                                    mHeight + mPos.z));
-            getTransform().SetRotation(glm::vec3(0.0f, 0.0f, glm::radians(mTheta)));
-        };
-        void moveInX(float dx) {
-            float deathZone = 0.1;
-            mVel.x = (dx > deathZone || dx < -deathZone) ? dx : 0.0f;
-        }
-        void moveInY(float dy) {
-            float deathZone = 0.1;
-            mVel.y = (dy > deathZone || dy < -deathZone) ? -dy : 0.0f;
-        }
-        void RotInX(float dx) {
-            float deathZone = 0.1;
-            mRotXVel = (dx > deathZone || dx < -deathZone) ? dx : 0.0f;
-        }
-        void jump() {
-            if (mPos.z <= 0.0f)
-                mVel.z += 1.0f;
-        }
+class Carpincho : public Journey::ControlledEntity{
 
-        float mTheta = 0.0f;
-    private:
-        glm::vec3 mPos = glm::vec3(0.0f);
-        glm::vec3 mVel = glm::vec3(0.0f);
-        glm::vec3 mUp = glm::vec3(0.0f, 0.0f, 1.0f);
-        float mRotXVel = 0;
-        float mHeight = 1.0f;
-        float mGravity = 1.0f;
+public:
+    Carpincho(std::shared_ptr<Journey::FollowCamera> mainCamera)
+    : Journey::ControlledEntity(mainCamera)
+    {}
+    ~Carpincho() = default;
+    virtual void UserStartUp(Journey::Scene& scene) override {
+        this->getTransform().Set(glm::vec3(-2.0f, -2.5f, 1.0f),
+                                glm::vec3(0.0f, 0.0f, 0.0f),
+                                glm::vec3(0.65f, 1.0f, 0.42f)
+                                );
+        Journey::SimpleTexturedMaterial* mat = new Journey::SimpleTexturedMaterial();
+        scene.AddSpriteComponent(shared_from_this(), std::shared_ptr<Journey::Material>(mat), "../../../assets/sprites/carpincho.png");
+        // Input
+        scene.GetInputController().BindAxisMap("MoveX", [&](float dx) {this->moveInX(dx);});
+        scene.GetInputController().BindAxisMap("MoveY", [&](float dy) {this->moveInY(dy);});
+        scene.GetInputController().BindAxisMap("RotX", [&](float dx) {this->RotInX(dx);});
+        scene.GetInputController().BindActionOnReleased("Jump", [&]() {this->jump();});
+        mCamera->setCenterHeight(0.9f);
+        mCamera->setDistanceRadius(4.0f);
+        mCamera->setThetaAngle(85.0f);
+        mCamera->setFov(55.0f);
+    }
 };
 
 class RandRotEntity : public Journey::Entity{
@@ -139,13 +106,13 @@ class LittleDemo : public Journey::Application {
             scene.AddSpriteComponent(dog, std::shared_ptr<Journey::Material>(dogMat), "../../../assets/sprites/carpincho.png");
             scene.AddEntity(nullptr, dog);
 
-            // Entity creation - method 2
-            carpin = std::make_shared<Carpincho>();
-            scene.AddEntity(nullptr, carpin);
-
             // Set Camera
             mainCamera = std::make_shared<Journey::FollowCamera>(mWidth, mHeight);
             scene.GetCameraHandler().setCurrentCamera(mainCamera);
+
+            // Entity creation - method 2
+            carpin = std::make_shared<Carpincho>(mainCamera);
+            scene.AddEntity(nullptr, carpin);
 
             // Plane Colored
             std::shared_ptr<RandRotEntity> plane1 = std::make_shared<RandRotEntity>();
@@ -317,9 +284,6 @@ class LittleDemo : public Journey::Application {
             mInnerVar += deltaTime;
             dog->getTransform().SetTranslation(glm::vec3(glm::sin(mInnerVar)*1.2,-0.5f, 1.2f));
             dog->getTransform().SetRotation(glm::vec3(0.0f, 0.0f, glm::radians(35.0f) + mInnerVar));
-            auto carpinPos = carpin->getTransform().GetLocalTranslation();
-            mainCamera->setFollowPoint(glm::vec3(carpinPos.x, carpinPos.y, 1.0f));
-            mainCamera->setFollowRot(carpin->mTheta-90.0f);
         }
 
         void testo(){

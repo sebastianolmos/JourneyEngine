@@ -12,6 +12,7 @@
 #include "rendering/textureManager.hpp"
 #include "camera/followCamera.hpp"
 #include "camera/cameraHandler.hpp"
+#include "entity/entities/controlledEntity.hpp"
 #include <memory>
 #include <stdlib.h>
 #include <ctime>

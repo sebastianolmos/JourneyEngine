@@ -36,4 +36,35 @@ namespace Journey {
     {
         mPhi = rot;
     }
+
+    void FollowCamera::setCenterHeight(float value)
+    {
+        mCenterHeight = value;
+    }
+
+    void FollowCamera::setDistanceRadius(float value)
+    {
+        mRadius = value;
+    }   
+
+    void FollowCamera::setFov(float value)
+    {
+        mFov = value;
+    }
+
+    void FollowCamera::setNear(float value)
+    {
+        mNear = value;
+    }
+
+    void FollowCamera::setFar(float value)
+    {
+        mFar = value;
+    }
+
+    void FollowCamera::setThetaAngle(float value)
+    {
+        mTheta = value;
+    }
+
 }
