@@ -1,12 +1,12 @@
 #include "JourneyEngine.hpp"
 
 void RegisterInputs(Journey::InputController& input) {
-    input.RegisterKeyAction("Jump", JOURNEY_KEY_SPACE);
-    input.RegisterGamepadAction("Test", JOURNEY_XBOX_BUTTON_A);
+    input.RegisterKeyAction("Test", JOURNEY_KEY_SPACE);
     input.RegisterKeyAction("Run", JOURNEY_KEY_LEFT_SHIFT);
     input.RegisterGamepadAxis("MoveX", JOURNEY_GAMEPAD_AXIS_LEFT_X);
     input.RegisterGamepadAxis("MoveY", JOURNEY_GAMEPAD_AXIS_LEFT_Y);
     input.RegisterGamepadAxis("RotX", JOURNEY_GAMEPAD_AXIS_RIGHT_X);
+    input.RegisterGamepadAction("Jump", JOURNEY_XBOX_BUTTON_A);
 }
 
 class Carpincho : public Journey::Entity{
@@ -14,7 +14,6 @@ class Carpincho : public Journey::Entity{
         Carpincho() = default;
         ~Carpincho() = default;
         virtual void UserStartUp(Journey::Scene& scene) override {
-            mTimer = 0.0f;
             this->getTransform().Set(glm::vec3(-2.0f, -2.5f, 1.0f),
                                     glm::vec3(0.0f, 0.0f, 0.0f),
                                     glm::vec3(0.65f, 1.0f, 0.42f)
@@ -22,44 +21,51 @@ class Carpincho : public Journey::Entity{
             Journey::SimpleTexturedMaterial* mat = new Journey::SimpleTexturedMaterial();
             scene.AddSpriteComponent(shared_from_this(), std::shared_ptr<Journey::Material>(mat), "../../../assets/sprites/carpincho.png");
             // Input
-            scene.GetInputController().BindActionOnReleased("Test", [&]() {this->insideFuncTest();});
             scene.GetInputController().BindAxisMap("MoveX", [&](float dx) {this->moveInX(dx);});
             scene.GetInputController().BindAxisMap("MoveY", [&](float dy) {this->moveInY(dy);});
             scene.GetInputController().BindAxisMap("RotX", [&](float dx) {this->RotInX(dx);});
+            scene.GetInputController().BindActionOnReleased("Jump", [&]() {this->jump();});
         }
         virtual void UserUpdate(Journey::Scene& scene, float deltaTime) override {
-            mTimer += deltaTime;
-            mPosX += deltaTime * mVelX;
-            mPosY += deltaTime * mVelY;
-            mTheta += deltaTime * mRotXVel* 30.0f;
-            getTransform().SetTranslation(glm::vec3(0.0f + mPosX, 
-                                                    0.5f + mPosY, 
-                                                    1.0f + 0.7*glm::abs(glm::sin(mTimer +0.4))));
+            mTheta += deltaTime * mRotXVel* 50.0f;
+            glm::vec3 finalVel = glm::rotate(mVel, glm::radians(mTheta), mUp);
+            mPos += deltaTime * finalVel * 3.0f;
+            if (mPos.z > 0.0f)
+                mVel.z -= mGravity * deltaTime;
+            else {
+                mPos.z = 0.0f;
+                mVel.z = 0.0f;
+            }
+            getTransform().SetTranslation(glm::vec3(mPos.x, 
+                                                    mPos.y, 
+                                                    mHeight + mPos.z));
             getTransform().SetRotation(glm::vec3(0.0f, 0.0f, glm::radians(mTheta)));
         };
-        void insideFuncTest(){
-            std::cout << "Working god!" << std::endl;
-        }
         void moveInX(float dx) {
             float deathZone = 0.1;
-            mVelX = (dx > deathZone || dx < -deathZone) ? dx : 0.0f;
+            mVel.x = (dx > deathZone || dx < -deathZone) ? dx : 0.0f;
         }
         void moveInY(float dy) {
             float deathZone = 0.1;
-            mVelY = (dy > deathZone || dy < -deathZone) ? -dy : 0.0f;
+            mVel.y = (dy > deathZone || dy < -deathZone) ? -dy : 0.0f;
         }
         void RotInX(float dx) {
             float deathZone = 0.1;
             mRotXVel = (dx > deathZone || dx < -deathZone) ? dx : 0.0f;
         }
+        void jump() {
+            if (mPos.z <= 0.0f)
+                mVel.z += 1.0f;
+        }
+
         float mTheta = 0.0f;
     private:
-        float mTimer;
-        float mVelX = 0;
-        float mVelY = 0;
-        float mPosX = 0.0f;
-        float mPosY = 0.0f;
+        glm::vec3 mPos = glm::vec3(0.0f);
+        glm::vec3 mVel = glm::vec3(0.0f);
+        glm::vec3 mUp = glm::vec3(0.0f, 0.0f, 1.0f);
         float mRotXVel = 0;
+        float mHeight = 1.0f;
+        float mGravity = 1.0f;
 };
 
 class RandRotEntity : public Journey::Entity{
@@ -104,7 +110,7 @@ class LittleDemo : public Journey::Application {
 
             // Input 
             RegisterInputs(scene.GetInputController());
-            scene.GetInputController().BindActionOnPressed("Jump", [&]() {this->testo();});
+            scene.GetInputController().BindActionOnPressed("Test", [&]() {this->testo();});
             scene.GetInputController().BindActionToggle("Run", [&](bool v) {this->changeRunState(v);});
 
             // Floor entity
