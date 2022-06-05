@@ -13,5 +13,7 @@
 #include "camera/followCamera.hpp"
 #include "camera/cameraHandler.hpp"
 #include <memory>
+#include <stdlib.h>
+#include <ctime>
 
 #endif
