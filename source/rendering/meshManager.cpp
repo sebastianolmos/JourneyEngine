@@ -17,13 +17,13 @@ namespace Journey
             case EPrimitiveMesh::Cube: {
                 if (mat->GetType() == EMaterialType::SimpleColored) {
                     std::shared_ptr<StaticMeshComponent> meshComp = std::make_shared<StaticMeshComponent>();
-                    mMeshGenerator.GeneratePlane(meshComp, false);
+                    mMeshGenerator.GenerateCube(meshComp, false);
                     meshComp->material = mat; 
                     entity->mComponents.insert(std::make_pair(EComponentType::StaticMeshComponent, meshComp));
                 } 
                 else if (mat->GetType() == EMaterialType::PhongColored || mat->GetType() == EMaterialType::FlatColored) {
                     std::shared_ptr<StaticMeshComponent> meshComp = std::make_shared<StaticMeshComponent>();
-                    mMeshGenerator.GeneratePlane(meshComp, true);
+                    mMeshGenerator.GenerateCube(meshComp, true);
                     meshComp->material = mat; 
                     entity->mComponents.insert(std::make_pair(EComponentType::StaticMeshComponent, meshComp));
                 } 

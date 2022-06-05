@@ -37,7 +37,7 @@ void main()
     vec3 ambient = light.ambient * material.ambient;
 
     // diffuse 
-    vec3 norm = normalize(aNormal);
+    vec3 norm = normalize(mat3(transpose(inverse(model))) * aNormal);
     vec3 lightDir = normalize(light.position - vertexPos);
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = light.diffuse * (diff * material.diffuse);

@@ -175,7 +175,7 @@ class LittleDemo : public Journey::Application {
             std::shared_ptr<RandRotEntity> cube1 = std::make_shared<RandRotEntity>();
             cube1->getTransform().Set(glm::vec3(-9.0f, 20.0f, 2.2f),
                                     glm::vec3(0.0f, 0.0f, 0.0f),
-                                    glm::vec3(2.0f, 2.0f, 1.0f)
+                                    glm::vec3(2.0f, 2.0f, 2.0f)
                                     );
             Journey::SimpleColoredMaterial* cube1Mat = new Journey::SimpleColoredMaterial;
             cube1Mat->color = glm::vec3(0.0f, 0.5f, 1.0f);
@@ -186,7 +186,7 @@ class LittleDemo : public Journey::Application {
             std::shared_ptr<RandRotEntity> cube2 = std::make_shared<RandRotEntity>();
             cube2->getTransform().Set(glm::vec3(-6.0f, 20.0f, 2.2f),
                                     glm::vec3(0.0f, glm::radians(-55.0f), glm::radians(-35.0f)),
-                                    glm::vec3(2.0f, 2.0f, 1.0f)
+                                    glm::vec3(2.0f, 2.0f, 2.0f)
                                     );
             Journey::FlatColoredMaterial* cube2Mat = new Journey::FlatColoredMaterial;
             cube2Mat->color = glm::vec3(1.0f, 1.0f, 0.0f);
@@ -200,7 +200,7 @@ class LittleDemo : public Journey::Application {
             std::shared_ptr<RandRotEntity> cube3 = std::make_shared<RandRotEntity>();
             cube3->getTransform().Set(glm::vec3(-3.0f, 20.0f, 2.2f),
                                     glm::vec3(0.0f, glm::radians(-55.0f), glm::radians(-35.0f)),
-                                    glm::vec3(2.0f, 2.0f, 1.0f)
+                                    glm::vec3(2.0f, 2.0f, 2.0f)
                                     );
             Journey::PhongColoredMaterial* cube3Mat = new Journey::PhongColoredMaterial;
             cube3Mat->color = glm::vec3(0.0f, 0.0f, 1.0f);
@@ -215,7 +215,7 @@ class LittleDemo : public Journey::Application {
             std::shared_ptr<RandRotEntity> cylinder1 = std::make_shared<RandRotEntity>();
             cylinder1->getTransform().Set(glm::vec3(3.0f, 20.0f, 2.2f),
                                     glm::vec3(0.0f, 0.0f, 0.0f),
-                                    glm::vec3(2.0f, 2.0f, 1.0f)
+                                    glm::vec3(2.0f, 2.0f, 2.0f)
                                     );
             Journey::SimpleColoredMaterial* cylinder1Mat = new Journey::SimpleColoredMaterial;
             cylinder1Mat->color = glm::vec3(0.5f, 1.0f, 0.0f);
@@ -226,7 +226,7 @@ class LittleDemo : public Journey::Application {
             std::shared_ptr<RandRotEntity> cylinder2 = std::make_shared<RandRotEntity>();
             cylinder2->getTransform().Set(glm::vec3(6.0f, 20.0f, 2.2f),
                                     glm::vec3(0.0f, glm::radians(-55.0f), glm::radians(-35.0f)),
-                                    glm::vec3(2.0f, 2.0f, 1.0f)
+                                    glm::vec3(2.0f, 2.0f, 2.0f)
                                     );
             Journey::FlatColoredMaterial* cylinder2Mat = new Journey::FlatColoredMaterial;
             cylinder2Mat->color = glm::vec3(0.5f, 0.0f, 1.0f);
@@ -240,7 +240,7 @@ class LittleDemo : public Journey::Application {
             std::shared_ptr<RandRotEntity> cylinder3 = std::make_shared<RandRotEntity>();
             cylinder3->getTransform().Set(glm::vec3(9.0f, 20.0f, 2.2f),
                                     glm::vec3(0.0f, glm::radians(-55.0f), glm::radians(-35.0f)),
-                                    glm::vec3(2.0f, 2.0f, 1.0f)
+                                    glm::vec3(2.0f, 2.0f, 2.0f)
                                     );
             Journey::PhongColoredMaterial* cylinder3Mat = new Journey::PhongColoredMaterial;
             cylinder3Mat->color = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -255,7 +255,7 @@ class LittleDemo : public Journey::Application {
             std::shared_ptr<RandRotEntity> sphere1 = std::make_shared<RandRotEntity>();
             sphere1->getTransform().Set(glm::vec3(12.0f, 20.0f, 2.2f),
                                     glm::vec3(0.0f, 0.0f, 0.0f),
-                                    glm::vec3(2.0f, 2.0f, 1.0f)
+                                    glm::vec3(2.0f, 2.0f, 2.0f)
                                     );
             Journey::SimpleColoredMaterial* sphere1Mat = new Journey::SimpleColoredMaterial;
             sphere1Mat->color = glm::vec3(1.0f, 0.0f, 1.0f);
@@ -266,7 +266,7 @@ class LittleDemo : public Journey::Application {
             std::shared_ptr<RandRotEntity> sphere2 = std::make_shared<RandRotEntity>();
             sphere2->getTransform().Set(glm::vec3(15.0f, 20.0f, 2.2f),
                                     glm::vec3(0.0f, glm::radians(-55.0f), glm::radians(-35.0f)),
-                                    glm::vec3(2.0f, 2.0f, 1.0f)
+                                    glm::vec3(2.0f, 2.0f, 2.0f)
                                     );
             Journey::FlatColoredMaterial* sphere2Mat = new Journey::FlatColoredMaterial;
             sphere2Mat->color = glm::vec3(0.0f, 0.5f, 0.5f);
@@ -280,7 +280,7 @@ class LittleDemo : public Journey::Application {
             std::shared_ptr<RandRotEntity> sphere3 = std::make_shared<RandRotEntity>();
             sphere3->getTransform().Set(glm::vec3(18.0f, 20.0f, 2.2f),
                                     glm::vec3(0.0f, glm::radians(-55.0f), glm::radians(-35.0f)),
-                                    glm::vec3(2.0f, 2.0f, 1.0f)
+                                    glm::vec3(2.0f, 2.0f, 2.0f)
                                     );
             Journey::PhongColoredMaterial* sphere3Mat = new Journey::PhongColoredMaterial;
             sphere3Mat->color = glm::vec3(1.0f, 0.0f, 0.5f);
