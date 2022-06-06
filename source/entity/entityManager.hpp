@@ -21,7 +21,7 @@ namespace Journey {
 
             void UpdateEntities(Scene& scene, float deltaTime);
             void AddEntity(std::shared_ptr<Entity> parentEntity, std::shared_ptr<Entity> newEntity);
-
+            void DeleteEntity(std::shared_ptr<Entity> entity);
 
         private:
             int mEntitiesCount;

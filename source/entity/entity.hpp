@@ -39,7 +39,7 @@ namespace Journey{
             virtual void UserUpdate(Scene& scene, float deltaTime) {};
             virtual void UserStartUp(Scene& scene){};
             const EState GetState() const { return mCurrentState; }
-            
+
 
         protected:
 
@@ -58,7 +58,7 @@ namespace Journey{
             EState mCurrentState;
 
             std::unordered_map<EComponentType, std::shared_ptr<Component>> mComponents;
-
+            int mId;
             std::unordered_map<int, std::shared_ptr<Entity>> mChildren;
             std::shared_ptr<Entity> mParent;
             std::shared_ptr<EntityManager> mManager;

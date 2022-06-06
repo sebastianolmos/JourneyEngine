@@ -25,10 +25,10 @@ public:
         getTransform().SetTranslation(mPos);
         getTransform().SetScale(glm::vec3(mSize));
         Journey::PhongColoredMaterial* mat = new Journey::PhongColoredMaterial();
-        mat->color = glm::vec3(1.0f, 0.9f, 0.0f);
+        mat->color = glm::vec3(1.0f, 0.5f, 0.0f);
         mat->kd = glm::vec3(0.5f, 0.5f, 0.5f);
-        mat->ke = glm::vec3(0.5f, 0.5f, 0.5f);
-        mat->ks = glm::vec3(1.0f, 0.8f, 0.8f);
+        mat->ke = glm::vec3(0.3f, 0.3f, 0.3f);
+        mat->ks = glm::vec3(0.3f, 0.3f, 0.3f);
         scene.AddPrimitiveMeshComponent(shared_from_this(), std::shared_ptr<Journey::Material>(mat), Journey::EPrimitiveMesh::Sphere);
     }
     virtual void UserUpdate(Journey::Scene& scene, float deltaTime) override {
@@ -36,8 +36,8 @@ public:
         getTransform().SetTranslation(mPos);
 
         mTimer += deltaTime;
-        //if (mTimer > mDeleteTime)
-        //    DeleteOnject
+        if (mTimer > mDeleteTime)
+            mManager->DeleteEntity(shared_from_this());
     }
 private:
     float mTimer;
@@ -73,7 +73,7 @@ public:
     }
     void throwProjectile() {
         std::shared_ptr<ProjectileEntity> projectile = std::make_shared<ProjectileEntity>(
-            mPos + mUp*mHeight, 3.0f, 8.0f, mVel, 0.2f
+            mPos + mUp*mHeight, 1.0f, 8.0f, mVel, 0.2f
         );
         mManager->AddEntity(nullptr, projectile);
     }

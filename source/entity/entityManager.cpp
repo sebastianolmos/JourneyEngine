@@ -70,14 +70,32 @@ namespace Journey {
     void EntityManager::AddEntity(std::shared_ptr<Entity> parentEntity, std::shared_ptr<Entity> newEntity)
     {   
         newEntity->StartUp(mSceneRef, shared_from_this());
+        newEntity->mId = mEntitiesCount;
         if (parentEntity == nullptr)
         {
             mEntities.insert({mEntitiesCount, newEntity});
         }
         else 
-        {
+        {   
+            newEntity->mParent = parentEntity;
             parentEntity->mChildren.insert({mEntitiesCount, newEntity});
         }
         mEntitiesCount++;
+    }
+
+    void EntityManager::DeleteEntity(std::shared_ptr<Entity> entity) 
+    {
+        if (entity->mParent == nullptr) {
+            if (mEntities.count(entity->mId) > 0){
+                mEntities.erase(entity->mId);
+                entity->ShutDown();
+            }
+        }
+        else {
+            if (entity->mParent->mChildren.count(entity->mId) > 0) {
+                entity->mParent->mChildren.erase(entity->mId);
+                entity->ShutDown();
+            }
+        }
     }
 }
