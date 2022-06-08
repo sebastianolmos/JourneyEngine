@@ -8,7 +8,7 @@ Se necesita tener Visual Studio 2019 y CMake
 
 - Clonar el repositorio
 - Dentro del repositorio escribir el comando ``git submodule update --init --recursive``
-- Compilar cada libreria en release dentro de una carpeta build al lado de la carpeta source (solo glfw y glad nesecitan compilacion).
+- Compilar cada libreria en release dentro de una carpeta build al lado de la carpeta source (solo glfw, glad y Assimp nesecitan compilacion).
     - mkdir libs\glfw\build
     - cd libs\glfw\build
     - cmake ..\source\glfw\ .
@@ -17,7 +17,7 @@ Se necesita tener Visual Studio 2019 y CMake
     - Codigo quedara linkeado a libs\glfw\build\Release\glfw.lib
     - Repetir con las otras librerias necesarias.
 - Compilar y ejecutar el juego de ejemplo
-    - Desde la carpeta del reppsitorio ingresar : ``mkdir build``
+    - Desde la carpeta del repositorio ingresar : ``mkdir build``
     - cd build
     - cmake ..\ .
     - Abrir el .sln dentro de build

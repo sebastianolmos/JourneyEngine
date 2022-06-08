@@ -23,6 +23,8 @@ set(JOURNEY_HEADERS
         rendering/textureManager.hpp
         rendering/shaders/shader.h
         rendering/meshGenerator.hpp
+        rendering/mesh.hpp
+        rendering/model.hpp
         scene/scene.hpp
         performanceMonitor.h)
 

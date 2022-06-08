@@ -14,4 +14,5 @@ endfunction()
 
 add_subdirectory_with_folder("libs" glad/opengl3.3/source/glad)
 add_subdirectory_with_folder("libs" glfw/source/glfw)
+add_subdirectory_with_folder("libs" assimp/source/assimp)
 add_subdirectory_with_folder("libs" stb)
