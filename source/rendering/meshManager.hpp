@@ -21,11 +21,20 @@ namespace Journey {
     class MeshManager{
         public:
 
-            MeshManager() = default;
+            static MeshManager& getInstance() {
+                static MeshManager instance;
+                return instance;
+            }
 
-            void LoadPrimitiveMeshToEntity(std::shared_ptr<Entity> entity, std::shared_ptr<Material> mat, EPrimitiveMesh primitiveMesh);
+            MeshManager(MeshManager const&) = delete;    //Dont Implement!
+            void operator=(MeshManager const&) = delete; //Dont Implement!
+
+            void AddPrimitiveMeshComponent(std::shared_ptr<Entity> entity, std::shared_ptr<Material> mat, EPrimitiveMesh primitiveMesh);
 
         private:
+            MeshManager() {}
+
             MeshGenerator mMeshGenerator;
+
     };
 }

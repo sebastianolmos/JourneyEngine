@@ -8,7 +8,7 @@
 namespace Journey
 {
 
-    void MeshManager::LoadPrimitiveMeshToEntity(std::shared_ptr<Entity> entity, std::shared_ptr<Material> mat, EPrimitiveMesh primitiveMesh)
+    void MeshManager::AddPrimitiveMeshComponent(std::shared_ptr<Entity> entity, std::shared_ptr<Material> mat, EPrimitiveMesh primitiveMesh)
     {
         if (entity == nullptr || entity->mComponents.count(EComponentType::SpriteComponent) > 0)
             return;

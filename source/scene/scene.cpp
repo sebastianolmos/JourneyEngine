@@ -1,6 +1,8 @@
 #include "scene.hpp"
 #include <chrono>
 
+#include "../rendering/meshManager.hpp"
+
 namespace Journey {
 
     Scene::Scene(Application& app) :
@@ -90,11 +92,6 @@ namespace Journey {
     void Scene::AddEntity(std::shared_ptr<Entity> parentEntity, std::shared_ptr<Entity> newEntity)
     {
         mEntityManager->AddEntity(parentEntity, newEntity);
-    }
-
-    void Scene::AddPrimitiveMeshComponent(std::shared_ptr<Entity> entity, std::shared_ptr<Material> material, EPrimitiveMesh primitiveMesh)
-    {
-        mMeshManager.LoadPrimitiveMeshToEntity(entity, material, primitiveMesh);
     }
 
     void Scene::AddSpriteComponent(std::shared_ptr<Entity> entity,  std::shared_ptr<Material> material, std::string spritePath, bool transparency)
