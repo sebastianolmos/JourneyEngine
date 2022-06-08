@@ -4,9 +4,11 @@
 #include "../component/staticMesh.hpp"
 #include "../component/sprite.hpp"
 #include "../rendering/material.hpp"
+#include  <glm/gtx/norm.hpp>
 
 #include <iostream>
 #include <unordered_map>
+#include <utility>   
 #include <memory>
 
 
@@ -49,7 +51,13 @@ namespace Journey {
                 RenderInfo rInfo;
                 sprite->UpdateRenderInfo(rInfo);
                 rInfo.model = newTransform;
-                scene.GetRenderManager().AddObjectToRender(sprite->material->GetType(), rInfo);
+                if (sprite->transparency) {
+                    glm::vec3 position = glm::vec3(newTransform[3]);
+                    float dist2 = glm::distance2(position, scene.GetCameraHandler().getViewPos());
+                    scene.GetRenderManager().AddTransparentObjectToRender(dist2, rInfo);
+                }
+                else
+                    scene.GetRenderManager().AddObjectToRender(sprite->material->GetType(), rInfo);
             }
         }
 

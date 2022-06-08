@@ -36,6 +36,8 @@ namespace Journey {
         mPhongColoredObjects.clear();
         mFlatTexturedObjects.clear();
         mPhongTexturedObjects.clear();
+        if (!mTransparentObjects.empty())
+            std::cout << " Something wrong, tranaperency queue isnt empty" << std::endl;
     }
 
     void RenderManager::DrawCall(Scene& scene)
@@ -134,6 +136,25 @@ namespace Journey {
             
         }   
 
+        // <------ SIMPLE TEXTURED SHADER ------->
+        SimpleTexturedShader.use();
+        SimpleTexturedShader.setMat4("projection", scene.GetCameraHandler().getProjection());
+        SimpleTexturedShader.setMat4("view", scene.GetCameraHandler().getViewMatrix());
+        for(auto& renderInfo: mSimpleTexturedObjects) {
+            SimpleTexturedShader.setMat4("model", renderInfo.model);
+            // bind textures on corresponding texture units
+            glBindTexture(GL_TEXTURE_2D, renderInfo.textureID);
+            if (renderInfo.usingIndices){
+                glBindVertexArray(renderInfo.VAO);
+                glDrawElements(GL_TRIANGLES, renderInfo.vertexCount, GL_UNSIGNED_INT, 0);
+                glBindVertexArray(0);
+            }
+            else {
+                glBindVertexArray(renderInfo.VAO);
+                glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
+            }
+        }   
+
         // <------ FLAT TEXTURED SHADER ------->
         FlatTexturedShader.use();
         FlatTexturedShader.setVec3("light.position", scene.GetPointLight().getLightPos());
@@ -192,11 +213,13 @@ namespace Journey {
             }
         }   
 
-        // <------ SIMPLE TEXTURED SHADER ------->
         SimpleTexturedShader.use();
         SimpleTexturedShader.setMat4("projection", scene.GetCameraHandler().getProjection());
         SimpleTexturedShader.setMat4("view", scene.GetCameraHandler().getViewMatrix());
-        for(auto& renderInfo: mSimpleTexturedObjects) {
+        // Textures with transparency renderer by order
+        while (!mTransparentObjects.empty()) {
+            TransparentInfo trparent = mTransparentObjects.top();
+            RenderInfo renderInfo = trparent.second;
             SimpleTexturedShader.setMat4("model", renderInfo.model);
             // bind textures on corresponding texture units
             glBindTexture(GL_TEXTURE_2D, renderInfo.textureID);
@@ -209,7 +232,8 @@ namespace Journey {
                 glBindVertexArray(renderInfo.VAO);
                 glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
             }
-        }   
+            mTransparentObjects.pop();
+        }
     }
 
     
@@ -239,6 +263,11 @@ namespace Journey {
                 // code block
                 break;
         }               
+    }
+
+    void RenderManager::AddTransparentObjectToRender(float distanceToCam, RenderInfo renderInfo)
+    {
+        mTransparentObjects.push(std::make_pair(distanceToCam, renderInfo));
     }
 
     void RenderManager::CreateDebugObjects()

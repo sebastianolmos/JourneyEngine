@@ -17,6 +17,7 @@ namespace Journey {
             unsigned int VAO;
             unsigned int VBO;
             unsigned textureID;
+            bool transparency;
 
             std::shared_ptr<Material> material;
 

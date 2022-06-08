@@ -97,9 +97,9 @@ namespace Journey {
         mMeshManager.LoadPrimitiveMeshToEntity(entity, material, primitiveMesh);
     }
 
-    void Scene::AddSpriteComponent(std::shared_ptr<Entity> entity,  std::shared_ptr<Material> material, std::string spritePath)
+    void Scene::AddSpriteComponent(std::shared_ptr<Entity> entity,  std::shared_ptr<Material> material, std::string spritePath, bool transparency)
     {
-        mTextureManager.LoadSpriteToEntity(entity, material, spritePath);
+        mTextureManager.LoadSpriteToEntity(entity, material, spritePath, transparency);
     }
 
     void Scene::DebugModeEnabled()

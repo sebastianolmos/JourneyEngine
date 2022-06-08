@@ -21,7 +21,7 @@ namespace Journey {
             std::shared_ptr<Texture> LoadTexture(const std::string filePath, int magFilter, int minFilter,
                                                             int sWrapMode, int tWrapMode);
 
-            void LoadSpriteToEntity(std::shared_ptr<Entity> entity, std::shared_ptr<Material> mat, std::string spritePath);
+            void LoadSpriteToEntity(std::shared_ptr<Entity> entity, std::shared_ptr<Material> mat, std::string spritePath, bool transparency=false);
     };
 
 }

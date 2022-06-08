@@ -3,6 +3,7 @@
 #include "material.hpp"
 
 #include <vector>
+#include <queue>
 #include <glm/glm.hpp>
 
 #include "shaders/shader.h"
@@ -20,9 +21,19 @@ namespace Journey {
         glm::fvec3 ke;   
         glm::fvec3 color;
         glm::mat4 model;    
-    };
 
+        bool operator < (const RenderInfo& rInfo)const noexcept {
+            return this->VAO < rInfo.VAO;
+        }
+
+        bool operator>(const RenderInfo& rInfo)const noexcept {
+            return this->VAO > rInfo.VAO;
+        }
+    };
+    
+    typedef std::pair<float, RenderInfo> TransparentInfo;
     class Scene;
+
     class RenderManager{
         public:
             friend class Scene;
@@ -35,6 +46,7 @@ namespace Journey {
             void DrawCall(Scene& scene);
 
             void AddObjectToRender(EMaterialType materialType, RenderInfo renderInfo);
+            void AddTransparentObjectToRender(float distanceToCam, RenderInfo renderInfo);
 
         private:	
             Shader SimpleColoredShader;
@@ -50,6 +62,7 @@ namespace Journey {
             std::vector<RenderInfo> mPhongColoredObjects;
             std::vector<RenderInfo> mFlatTexturedObjects;
             std::vector<RenderInfo> mPhongTexturedObjects;
+            std::priority_queue<TransparentInfo> mTransparentObjects;
 
             unsigned int mDrawLines = false;
             std::vector<RenderInfo> mDebugObjects;

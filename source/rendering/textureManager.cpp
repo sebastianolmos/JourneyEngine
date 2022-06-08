@@ -40,7 +40,7 @@ namespace Journey {
         return texturePtr;
     }
 
-    void TextureManager::LoadSpriteToEntity(std::shared_ptr<Entity> entity, std::shared_ptr<Material> mat, std::string spritePath)
+    void TextureManager::LoadSpriteToEntity(std::shared_ptr<Entity> entity, std::shared_ptr<Material> mat, std::string spritePath, bool transparency)
     {
         if (entity == nullptr)
             return;
@@ -80,6 +80,7 @@ namespace Journey {
                 spriteComp->vertices = texvertices;
                 spriteComp->vertexCount = 6;
                 spriteComp->vertexStride = 5;
+                spriteComp->transparency = transparency;
 
                 std::shared_ptr<Texture> texPtr = LoadTexture(spritePath, GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT);
                 spriteComp->textureID = texPtr->textureId;
