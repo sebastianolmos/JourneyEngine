@@ -59,7 +59,7 @@ public:
                                 glm::vec3(0.65f, 1.0f, 0.42f)
                                 );
         Journey::SimpleTexturedMaterial* mat = new Journey::SimpleTexturedMaterial();
-        scene.AddSpriteComponent(shared_from_this(), std::shared_ptr<Journey::Material>(mat), "../../../assets/sprites/carpincho.png", true);
+        Journey::TextureManager::getInstance().AddSpriteComponent(shared_from_this(), std::shared_ptr<Journey::Material>(mat), "../../../assets/sprites/carpincho.png", true);
         // Input
         scene.GetInputController().BindAxisMap("MoveX", [&](float dx) {this->moveInX(dx);});
         scene.GetInputController().BindAxisMap("MoveY", [&](float dy) {this->moveInY(dy);});
@@ -147,7 +147,9 @@ public:
                                 glm::vec3(0.4f, 1.0f, 0.3f)
                                 );
         Journey::SimpleTexturedMaterial* dogMat = new Journey::SimpleTexturedMaterial();
-        scene.AddSpriteComponent(dog, std::shared_ptr<Journey::Material>(dogMat), "../../../assets/sprites/carpincho.png", true);
+
+        auto& textureManager = Journey::TextureManager::getInstance();
+        textureManager.AddSpriteComponent(dog, std::shared_ptr<Journey::Material>(dogMat), "../../../assets/sprites/carpincho.png", true);
         scene.AddEntity(nullptr, dog);
 
         // Set Camera

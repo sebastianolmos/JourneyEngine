@@ -12,7 +12,6 @@
 #include "../component/staticMesh.hpp"
 #include "../component/sprite.hpp"
 #include "../rendering/material.hpp"
-#include "../rendering/textureManager.hpp"
 #include "../rendering/renderManager.hpp"
 #include "../window/window.hpp"
 #include "../input/inputController.hpp"
@@ -34,9 +33,6 @@ namespace Journey {
 		    Window& GetWindow();
 		    void EndApplication();
             void AddEntity(std::shared_ptr<Entity> parentEntity, std::shared_ptr<Entity> newEntity);
-            
-            void AddSpriteComponent(std::shared_ptr<Entity> entity,  std::shared_ptr<Material> material, std::string spritePath, bool transparency=false);
-
             CameraHandler&  GetCameraHandler();
             PointLight&  GetPointLight();
 
@@ -59,7 +55,6 @@ namespace Journey {
             bool mShouldClose;
             std::shared_ptr<EntityManager> mEntityManager;
             RenderManager mRenderManager;
-            TextureManager mTextureManager;
             CameraHandler mCameraHandler;
             PointLight mPointLight;
             bool bAbleToUseDebugMode = false; 

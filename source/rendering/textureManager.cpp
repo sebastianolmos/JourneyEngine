@@ -40,7 +40,7 @@ namespace Journey {
         return texturePtr;
     }
 
-    void TextureManager::LoadSpriteToEntity(std::shared_ptr<Entity> entity, std::shared_ptr<Material> mat, std::string spritePath, bool transparency)
+    void TextureManager::AddSpriteComponent(std::shared_ptr<Entity> entity, std::shared_ptr<Material> mat, std::string spritePath, bool transparency)
     {
         if (entity == nullptr)
             return;

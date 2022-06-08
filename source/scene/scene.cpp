@@ -1,8 +1,6 @@
 #include "scene.hpp"
 #include <chrono>
 
-#include "../rendering/meshManager.hpp"
-
 namespace Journey {
 
     Scene::Scene(Application& app) :
@@ -92,11 +90,6 @@ namespace Journey {
     void Scene::AddEntity(std::shared_ptr<Entity> parentEntity, std::shared_ptr<Entity> newEntity)
     {
         mEntityManager->AddEntity(parentEntity, newEntity);
-    }
-
-    void Scene::AddSpriteComponent(std::shared_ptr<Entity> entity,  std::shared_ptr<Material> material, std::string spritePath, bool transparency)
-    {
-        mTextureManager.LoadSpriteToEntity(entity, material, spritePath, transparency);
     }
 
     void Scene::DebugModeEnabled()

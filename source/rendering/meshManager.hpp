@@ -15,17 +15,15 @@ namespace Journey {
         Sphere,
         Capsule
 	};
-    
     class Entity;
     struct Material;
+
     class MeshManager{
         public:
-
             static MeshManager& getInstance() {
                 static MeshManager instance;
                 return instance;
             }
-
             MeshManager(MeshManager const&) = delete;    //Dont Implement!
             void operator=(MeshManager const&) = delete; //Dont Implement!
 
