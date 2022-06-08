@@ -7,6 +7,7 @@
 #include <glm/glm.hpp>
 
 #include "shaders/shader.h"
+#include "model.hpp"
 
 namespace Journey {
 
@@ -70,6 +71,7 @@ namespace Journey {
             void CreateDebugFrustrumObject();
             void CreateDebugAxisObject();
             void DrawDebugObjects(Shader shaderProgram, Scene& scene);
+            Model* Testmodel;
     };
 
 }

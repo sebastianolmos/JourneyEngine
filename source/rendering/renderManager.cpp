@@ -18,6 +18,8 @@ namespace Journey {
         // other shaders
         CleanRenderInfo();
 
+        Testmodel = new Model("../../../assets/backpack/backpack.obj");
+
             //Enabling transparencies
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -211,7 +213,13 @@ namespace Journey {
                 glBindVertexArray(renderInfo.VAO);
                 glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
             }
-        }   
+        }
+        PhongTexturedShader.setVec3("material.ambient", glm::vec3(0.3f));
+        PhongTexturedShader.setVec3("material.diffuse", glm::vec3(0.6f));
+        PhongTexturedShader.setVec3("material.specular", glm::vec3(0.5f)); 
+        PhongTexturedShader.setFloat("material.shininess", 64.0f);
+        PhongTexturedShader.setMat4("model", glm::mat4(1.0f));
+        Testmodel->Draw(PhongTexturedShader);
 
         SimpleTexturedShader.use();
         SimpleTexturedShader.setMat4("projection", scene.GetCameraHandler().getProjection());

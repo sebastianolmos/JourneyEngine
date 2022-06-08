@@ -4,7 +4,7 @@
 
 namespace Journey {
 
-    struct Texture
+    struct TextureRep
     {
         unsigned int textureId;
         int width;
@@ -20,9 +20,9 @@ namespace Journey {
                 return instance;
             }
             TextureManager(TextureManager const&) = delete;
-            void operator=(Texture const&) = delete;
+            void operator=(TextureManager const&) = delete;
             
-            std::shared_ptr<Texture> LoadTexture(const std::string filePath, int magFilter, int minFilter,
+            std::shared_ptr<TextureRep> LoadTexture(const std::string filePath, int magFilter, int minFilter,
                                                             int sWrapMode, int tWrapMode);
 
             void AddSpriteComponent(std::shared_ptr<Entity> entity, std::shared_ptr<Material> mat, std::string spritePath, bool transparency=false);

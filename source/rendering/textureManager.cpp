@@ -9,7 +9,7 @@
 #include "material.hpp"
 
 namespace Journey {
-    std::shared_ptr<Texture> TextureManager::LoadTexture(const std::string filePath, int magFilter, int minFilter,
+    std::shared_ptr<TextureRep> TextureManager::LoadTexture(const std::string filePath, int magFilter, int minFilter,
                                                         int sWrapMode,  int tWrapMode)
     {
         unsigned int texture;
@@ -35,8 +35,8 @@ namespace Journey {
         }
         stbi_image_free(data);
 
-        Texture* returnTexture = new Texture{texture, width, height};
-        std::shared_ptr<Texture> texturePtr = std::shared_ptr<Texture>(returnTexture);
+        TextureRep* returnTexture = new TextureRep{texture, width, height};
+        std::shared_ptr<TextureRep> texturePtr = std::shared_ptr<TextureRep>(returnTexture);
         return texturePtr;
     }
 
@@ -82,7 +82,7 @@ namespace Journey {
                 spriteComp->vertexStride = 5;
                 spriteComp->transparency = transparency;
 
-                std::shared_ptr<Texture> texPtr = LoadTexture(spritePath, GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT);
+                std::shared_ptr<TextureRep> texPtr = LoadTexture(spritePath, GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT);
                 spriteComp->textureID = texPtr->textureId;
                 spriteComp->material = mat; 
                 entity->mComponents.insert(std::make_pair(EComponentType::SpriteComponent, spriteComp));

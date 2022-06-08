@@ -42,7 +42,9 @@ set(JOURNEY_SOURCES
         rendering/meshManager.cpp
         rendering/renderManager.cpp
         rendering/textureManager.cpp
-        rendering/meshGenerator.cpp)
+        rendering/meshGenerator.cpp
+        rendering/mesh.cpp
+        rendering/model.cpp)
 
 file(GLOB_RECURSE Shaders  "${CMAKE_SOURCE_DIR}/source/shaders/*")
 source_group("Shaders" FILES ${Shaders})

@@ -8,6 +8,7 @@ set(THIRD_PARTY_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/libs/glad/openg
 									"${CMAKE_CURRENT_SOURCE_DIR}/libs/glfw/source/glfw/include"
 									"${CMAKE_CURRENT_SOURCE_DIR}/libs/glm/source/glm"
 									"${CMAKE_CURRENT_SOURCE_DIR}/libs/assimp/source/assimp/include"
+									"${CMAKE_CURRENT_SOURCE_DIR}/libs/assimp/build/include"
 									"${CMAKE_CURRENT_SOURCE_DIR}/libs/stb")
 
 set(JOURNEY_INCLUDE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/source")
