@@ -46,5 +46,5 @@ void main()
     vec4 fragOriginalColor = texture(texture_diffuse0, FragTexCoords);
 
     vec3 result = (ambient + diffuse + specular) * fragOriginalColor.rgb;
-    FragColor = vec4(result, 1.0);
+    FragColor = vec4(result, fragOriginalColor[3]);
 } 

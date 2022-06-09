@@ -28,3 +28,9 @@ Se necesita tener Visual Studio 2019 y CMake
 
 - cd build/games/Release
 - ./LittleDemo_v0.exe
+
+
+Modelos usados:
+- "Shiba Inu Dog" (https://skfb.ly/6QYIW) by Ida Faber is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+- "Cute Cloud" (https://skfb.ly/6WWBw) by mehdiafshar is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+- "Terrain" (https://skfb.ly/QIs9) by densel is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).

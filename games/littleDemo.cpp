@@ -13,6 +13,7 @@ void RegisterMeshes(Journey::MeshManager& manager) {
     manager.LoadPrimitiveMesh("floorMesh", Journey::EPrimitiveMesh::Cube, true);
     manager.LoadModelMesh("shibaMesh", "../../../assets/shiba/shiba.obj");
     manager.LoadModelMesh("cloudMesh", "../../../assets/cloud/cloudy.obj");
+    manager.LoadModelMesh("terrainMesh", "../../../assets/farm/farm.fbx");
 }
 
 void RegisterTextures(Journey::TextureManager& manager) {
@@ -36,10 +37,10 @@ public:
         getTransform().SetScale(glm::vec3(mSize));
         getTransform().SetRotation(glm::vec3(glm::radians(90.0f), 0.0f, mRotation));
         Journey::PhongColoredMaterial* mat = new Journey::PhongColoredMaterial();
-        mat->color = glm::vec3(1.0f, 1.0f, 1.0f);
-        mat->kd = glm::vec3(0.5f, 0.5f, 0.7f);
-        mat->ke = glm::vec3(0.3f, 0.3f, 0.4f);
-        mat->ks = glm::vec3(0.3f, 0.3f, 0.4f);
+        mat->color = glm::vec3(0.95f, 0.95f, 0.95f);
+        mat->kd = glm::vec3(0.5f, 0.5f, 0.56f);
+        mat->ke = glm::vec3(0.3f, 0.3f, 0.35f);
+        mat->ks = glm::vec3(0.3f, 0.3f, 0.35f);
         Journey::MeshManager::getInstance().AddMeshComponent(shared_from_this(), std::shared_ptr<Journey::Material>(mat), "cloudMesh");
     }
     virtual void UserUpdate(Journey::Scene& scene, float deltaTime) override {
@@ -139,22 +140,19 @@ public:
         RegisterMeshes(Journey::MeshManager::getInstance());
         RegisterTextures(Journey::TextureManager::getInstance());
 
-        // Floor entity
-        floor = std::make_shared<Journey::Entity>();
-        floor->getTransform().Set(glm::vec3(-0.0f, 0.0f, -0.2f),
-                                glm::vec3(0.0f, 0.0f, glm::radians(35.0f)),
-                                glm::vec3(100.0f, 70.0f, 0.3f)
-                                );
-
-        Journey::PhongColoredMaterial* floorMat = new Journey::PhongColoredMaterial();
-        floorMat->color = glm::vec3(0.25f, 0.9f, 0.01f);
-        floorMat->kd = glm::vec3(0.3f, 0.3f, 0.3f);
-        floorMat->ke = glm::vec3(0.2f, 0.2f, 0.2f);
-        floorMat->ks = glm::vec3(0.2f, 0.2f, 0.2f);
-
         auto& meshManager = Journey::MeshManager::getInstance();
-        meshManager.AddMeshComponent(floor, std::shared_ptr<Journey::Material>(floorMat), "floorMesh");
-        scene.AddEntity(nullptr, floor);
+        // Floor Terrain entity
+        terrain = std::make_shared<Journey::Entity>();
+        terrain->getTransform().Set(glm::vec3(-0.0f, 0.0f, -0.2f),
+                                glm::vec3(0.0f, 0.0f, 0.0f),
+                                glm::vec3(5.0f, 5.0f, 5.0f)
+                                );
+        Journey::PhongTexturedMaterial* terrainMat = new Journey::PhongTexturedMaterial();
+        terrainMat->kd = glm::vec3(0.5f, 0.5f, 0.5f);
+        terrainMat->ke = glm::vec3(0.4f, 0.4f, 0.4f);
+        terrainMat->ks = glm::vec3(0.2f, 0.2f, 0.2f);
+        meshManager.AddMeshComponent(terrain, std::shared_ptr<Journey::Material>(terrainMat), "terrainMesh");
+        scene.AddEntity(nullptr, terrain);
 
         // Entity creation - method 1
         carpin = std::make_shared<Journey::Entity>();
@@ -171,6 +169,9 @@ public:
         // Set Camera
         mainCamera = std::make_shared<Journey::FollowCamera>(mWidth, mHeight);
         scene.GetCameraHandler().setCurrentCamera(mainCamera);
+
+        //Set light 
+        scene.GetPointLight().setLightPos(glm::vec3(30.0f, -30.0f, 10.0f));
 
         // Entity creation - method 2
         shiba = std::make_shared<Shiba>(mainCamera);
@@ -191,7 +192,7 @@ public:
 
 private:
     float mInnerVar;
-    std::shared_ptr<Journey::Entity> floor;
+    std::shared_ptr<Journey::Entity> terrain;
     std::shared_ptr<Journey::Entity> carpin;
     std::shared_ptr<Shiba> shiba;
     std::shared_ptr<Journey::FollowCamera> mainCamera;

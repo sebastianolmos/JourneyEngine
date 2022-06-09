@@ -28,6 +28,8 @@ namespace Journey{
             glm::vec3 getSpecularColor() {
                 return specularColor;
             }
+
+            void setLightPos(glm::vec3 newPos) {lightPos = newPos;}
     };
 
 }
