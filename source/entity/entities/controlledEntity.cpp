@@ -1,6 +1,7 @@
 #include "controlledEntity.hpp"
 #include "../../camera/followCamera.hpp"
 #include <glm/gtx/rotate_vector.hpp>
+#include <glm/gtx/vector_angle.hpp> 
 
 namespace Journey {
 
@@ -14,18 +15,19 @@ namespace Journey {
     void ControlledEntity::UserUpdate(Scene& scene, float deltaTime)
     {
         mTheta += deltaTime * mRotXVel* 50.0f;
-        glm::vec3 finalVel = glm::rotate(mVel, glm::radians(mTheta), mUp);
-        mPos += deltaTime * finalVel * 3.0f;
+        mVel = glm::rotate(mVel, glm::radians(mTheta), mUp);
+        mPos += deltaTime * mVel * 3.0f;
         if (mPos.z > 0.0f)
             mVel.z -= mGravity * deltaTime;
         else {
             mPos.z = 0.0f;
-            mVel.z = 0.0f;
         }
         getTransform().SetTranslation(glm::vec3(mPos.x, 
                                                 mPos.y, 
                                                 mHeight + mPos.z));
-        getTransform().SetRotation(glm::vec3(0.0f, 0.0f, glm::radians(mTheta)));
+        float angle = glm::orientedAngle(glm::vec2(1.0f, 0.0f), getFixedVel()); 
+        //angle = (mVel.x < 0)? -angle:angle;
+        getTransform().SetRotation(glm::vec3(0.0f, 0.0f, angle));
 
         // Camera 
         auto tPos = getTransform().GetLocalTranslation();
@@ -33,19 +35,27 @@ namespace Journey {
         mCamera->setFollowRot(mTheta-90.0f);
     }
 
+    glm::vec2 ControlledEntity::getFixedVel() {
+        if ( (mVel.x < mDeathZone*3.0f && mVel.x > -mDeathZone*3.0f) && 
+             (mVel.y < mDeathZone*3.0f && mVel.y > -mDeathZone*3.0f) ) {
+            return glm::normalize(mLastVel);
+        }
+        else {
+            mLastVel = glm::vec2(mVel.x, mVel.y);
+        }
+        return glm::normalize(glm::vec2(mVel.x, mVel.y));
+    }
+
     void ControlledEntity::moveInX(float dx) {
-        float deathZone = 0.1;
-        mVel.x = (dx > deathZone || dx < -deathZone) ? dx : 0.0f;
+        mVel.x = (dx > mDeathZone || dx < -mDeathZone) ? dx : 0.0f;
     }
 
     void ControlledEntity::moveInY(float dy) {
-        float deathZone = 0.1;
-        mVel.y = (dy > deathZone || dy < -deathZone) ? -dy : 0.0f;
+        mVel.y = (dy > mDeathZone || dy < -mDeathZone) ? -dy : 0.0f;
     }
 
     void ControlledEntity::RotInX(float dx) {
-        float deathZone = 0.1;
-        mRotXVel = (dx > deathZone || dx < -deathZone) ? -dx : 0.0f;
+        mRotXVel = (dx > mDeathZone || dx < -mDeathZone) ? -dx : 0.0f;
     }
 
     void ControlledEntity::jump() {

@@ -91,7 +91,7 @@ public:
     }
     void throwProjectile() {
         std::shared_ptr<ProjectileEntity> projectile = std::make_shared<ProjectileEntity>(
-            mPos + mUp*mHeight, 1.0f, 8.0f, mVel, 0.2f
+            mPos + mUp*mHeight, 1.0f, 8.0f, glm::vec3(getFixedVel().x, getFixedVel().y, 0.0f), 0.2f
         );
         mManager->AddEntity(nullptr, projectile);
     }

@@ -14,16 +14,19 @@ namespace Journey {
         void moveInY(float dy);
         void RotInX(float dx);
         void jump();
+        glm::vec2 getFixedVel();
 
     protected:
         std::shared_ptr<FollowCamera> mCamera;
         float mTheta = 0.0f;
         glm::vec3 mPos = glm::vec3(0.0f);
         glm::vec3 mVel = glm::vec3(0.0f);
+        glm::vec2 mLastVel = glm::vec2(1.0f, 0.0f);
         glm::vec3 mUp = glm::vec3(0.0f, 0.0f, 1.0f);
         float mRotXVel = 0;
         float mHeight = 1.0f;
         float mGravity = 1.0f;
+        float mDeathZone = 0.1f;
     };
 
 }
