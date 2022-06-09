@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include "meshGenerator.hpp"
+#include <unordered_map>
 
 namespace Journey {
 
@@ -16,6 +17,7 @@ namespace Journey {
         Capsule
 	};
     class Entity;
+    class Model;
     struct Material;
 
     class MeshManager{
@@ -27,13 +29,16 @@ namespace Journey {
             MeshManager(MeshManager const&) = delete;    //Dont Implement!
             void operator=(MeshManager const&) = delete; //Dont Implement!
 
-            void AddPrimitiveMeshComponent(std::shared_ptr<Entity> entity, std::shared_ptr<Material> mat, EPrimitiveMesh primitiveMesh);
-            void AddImportedMeshComponent(std::shared_ptr<Entity> entity, std::shared_ptr<Material> mat, std::string modelPath);
+            void LoadPrimitiveMesh(std::string meshName, EPrimitiveMesh primitiveMesh, bool light = false);
+            void LoadModelMesh(std::string meshName, std::string modelPath);
+            void AddMeshComponent(std::shared_ptr<Entity> entity, std::shared_ptr<Material> mat, std::string meshName);
 
         private:
             MeshManager() {}
 
             MeshGenerator mMeshGenerator;
 
+            std::hash<std::string> mHasher;
+            std::unordered_map<std::size_t, std::shared_ptr<Model> > mMeshRecord;
     };
 }

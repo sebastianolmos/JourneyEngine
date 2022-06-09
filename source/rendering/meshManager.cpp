@@ -4,51 +4,28 @@
 #include "../entity/entity.hpp"
 #include "../component/staticMesh.hpp"
 #include "material.hpp"
+#include "model.hpp"
 #include "importedModel.hpp"
 
 namespace Journey
 {
-
-    void MeshManager::AddPrimitiveMeshComponent(std::shared_ptr<Entity> entity, std::shared_ptr<Material> mat, EPrimitiveMesh primitiveMesh)
+    void MeshManager::LoadPrimitiveMesh(std::string meshName, EPrimitiveMesh primitiveMesh, bool light)
     {
-        if (entity == nullptr || entity->mComponents.count(EComponentType::SpriteComponent) > 0)
+        std::size_t hashedName = mHasher(meshName);
+        if (mMeshRecord.count(hashedName) != 0)
             return;
-        
+
         switch(primitiveMesh) {
             case EPrimitiveMesh::Cube: {
-                if (mat->GetType() == EMaterialType::SimpleColored) {
-                    std::shared_ptr<StaticMeshComponent> meshComp = std::make_shared<StaticMeshComponent>();
-                    mMeshGenerator.GenerateCube(meshComp, false);
-                    meshComp->material = mat; 
-                    entity->mComponents.insert(std::make_pair(EComponentType::StaticMeshComponent, meshComp));
-                } 
-                else if (mat->GetType() == EMaterialType::PhongColored || mat->GetType() == EMaterialType::FlatColored) {
-                    std::shared_ptr<StaticMeshComponent> meshComp = std::make_shared<StaticMeshComponent>();
-                    mMeshGenerator.GenerateCube(meshComp, true);
-                    meshComp->material = mat; 
-                    entity->mComponents.insert(std::make_pair(EComponentType::StaticMeshComponent, meshComp));
-                } 
-                else {
-                    std::cout << "Material not alowed with PrimitiveMEsh" << std::endl;
-                }
+                std::shared_ptr<StaticMeshModel> model = std::make_shared<StaticMeshModel>();
+                mMeshGenerator.GenerateCube(model, light);
+                mMeshRecord.insert({hashedName, model});
                 break;
                 }
             case EPrimitiveMesh::Plane: {
-                if (mat->GetType() == EMaterialType::SimpleColored) {
-                    std::shared_ptr<StaticMeshComponent> meshComp = std::make_shared<StaticMeshComponent>();
-                    mMeshGenerator.GeneratePlane(meshComp, false);
-                    meshComp->material = mat; 
-                    entity->mComponents.insert(std::make_pair(EComponentType::StaticMeshComponent, meshComp));
-                } 
-                else if (mat->GetType() == EMaterialType::PhongColored || mat->GetType() == EMaterialType::FlatColored) {
-                    std::shared_ptr<StaticMeshComponent> meshComp = std::make_shared<StaticMeshComponent>();
-                    mMeshGenerator.GeneratePlane(meshComp, true);
-                    meshComp->material = mat; 
-                    entity->mComponents.insert(std::make_pair(EComponentType::StaticMeshComponent, meshComp));
-                } 
-                else {
-                    std::cout << "Material not alowed with PrimitiveMEsh" << std::endl;
-                }
+                std::shared_ptr<StaticMeshModel> model = std::make_shared<StaticMeshModel>();
+                mMeshGenerator.GeneratePlane(model, light);
+                mMeshRecord.insert({hashedName, model});
                 break;
                 }
             case EPrimitiveMesh::Pyramid: {
@@ -56,39 +33,15 @@ namespace Journey
                 break;
                 }
             case EPrimitiveMesh::Cylinder: {
-                if (mat->GetType() == EMaterialType::SimpleColored) {
-                    std::shared_ptr<StaticMeshComponent> meshComp = std::make_shared<StaticMeshComponent>();
-                    mMeshGenerator.GenerateCylinder(meshComp, false, 16);
-                    meshComp->material = mat; 
-                    entity->mComponents.insert(std::make_pair(EComponentType::StaticMeshComponent, meshComp));
-                } 
-                else if (mat->GetType() == EMaterialType::PhongColored || mat->GetType() == EMaterialType::FlatColored) {
-                    std::shared_ptr<StaticMeshComponent> meshComp = std::make_shared<StaticMeshComponent>();
-                    mMeshGenerator.GenerateCylinder(meshComp, true, 16);
-                    meshComp->material = mat; 
-                    entity->mComponents.insert(std::make_pair(EComponentType::StaticMeshComponent, meshComp));
-                } 
-                else {
-                    std::cout << "Material not alowed with PrimitiveMEsh" << std::endl;
-                }
+                std::shared_ptr<StaticMeshModel> model = std::make_shared<StaticMeshModel>();
+                mMeshGenerator.GenerateCylinder(model, light, 16);
+                mMeshRecord.insert({hashedName, model});
                 break;
                 }
             case EPrimitiveMesh::Sphere: {
-                if (mat->GetType() == EMaterialType::SimpleColored) {
-                    std::shared_ptr<StaticMeshComponent> meshComp = std::make_shared<StaticMeshComponent>();
-                    mMeshGenerator.GenerateSphere(meshComp, false, 16);
-                    meshComp->material = mat; 
-                    entity->mComponents.insert(std::make_pair(EComponentType::StaticMeshComponent, meshComp));
-                } 
-                else if (mat->GetType() == EMaterialType::PhongColored || mat->GetType() == EMaterialType::FlatColored) {
-                    std::shared_ptr<StaticMeshComponent> meshComp = std::make_shared<StaticMeshComponent>();
-                    mMeshGenerator.GenerateSphere(meshComp, true, 16);
-                    meshComp->material = mat; 
-                    entity->mComponents.insert(std::make_pair(EComponentType::StaticMeshComponent, meshComp));
-                } 
-                else {
-                    std::cout << "Material not alowed with PrimitiveMEsh" << std::endl;
-                }
+                std::shared_ptr<StaticMeshModel> model = std::make_shared<StaticMeshModel>();
+                mMeshGenerator.GenerateSphere(model, light, 16);
+                mMeshRecord.insert({hashedName, model});
                 break;
                 }
             case EPrimitiveMesh::Capsule: {
@@ -98,31 +51,30 @@ namespace Journey
             }
     }
 
-    void MeshManager::AddImportedMeshComponent(std::shared_ptr<Entity> entity, std::shared_ptr<Material> mat, std::string modelPath)
+    void MeshManager::LoadModelMesh(std::string meshName, std::string modelPath)
     {
+        std::size_t hashedName = mHasher(meshName);
+        if (mMeshRecord.count(hashedName) != 0)
+            return;
+        std::shared_ptr<ImportedModel> model = std::make_shared<ImportedModel>(modelPath);
+        mMeshRecord.insert({hashedName, model});
+    }
+
+    void MeshManager::AddMeshComponent(std::shared_ptr<Entity> entity, std::shared_ptr<Material> mat, std::string meshName)
+    {
+        std::size_t hashedName = mHasher(meshName);
         if (entity == nullptr || entity->mComponents.count(EComponentType::SpriteComponent) > 0)
             return;
-
-        if (mat->GetType() == EMaterialType::SimpleTextured) {
-            std::shared_ptr<StaticMeshComponent> meshComp = std::make_shared<StaticMeshComponent>();
-            std::shared_ptr<ImportedModel> model = std::make_shared<ImportedModel>(modelPath);
-
-            meshComp->material = mat;
-            meshComp->meshModel = model;
-            entity->mComponents.insert(std::make_pair(EComponentType::StaticMeshComponent, meshComp));
-        } 
-        else if (mat->GetType() == EMaterialType::PhongTextured || mat->GetType() == EMaterialType::FlatTextured) { 
-            std::shared_ptr<StaticMeshComponent> meshComp = std::make_shared<StaticMeshComponent>();
-            std::shared_ptr<ImportedModel> model = std::make_shared<ImportedModel>(modelPath);
-
-            meshComp->material = mat;
-            meshComp->meshModel = model;
-            entity->mComponents.insert(std::make_pair(EComponentType::StaticMeshComponent, meshComp));
-        } 
-        else {
-            std::cout << "Material not alowed with PrimitiveMEsh" << std::endl;
+        if (mMeshRecord.count(hashedName) == 0) {
+            std::cout << meshName << " No registered"<< std::endl;
+            return;
         }
-        
+
+        std::shared_ptr<StaticMeshComponent> meshComp = std::make_shared<StaticMeshComponent>();
+        meshComp->material = mat; 
+        meshComp->meshModel = mMeshRecord[hashedName];
+        entity->mComponents.insert(std::make_pair(EComponentType::StaticMeshComponent, meshComp));
+
     }
 
 }
