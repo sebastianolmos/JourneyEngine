@@ -16,7 +16,7 @@ namespace Journey {
     {
         mTheta += deltaTime * mRotXVel* mRotSpeed;
         mVel = glm::rotate(mVel, glm::radians(mTheta), mUp);
-        mPos += deltaTime * mVel * 3.0f;
+        mPos += deltaTime * mVel * mRunSpeed;
         if (mPos.z > 0.0f)
             mVel.z -= mGravity * deltaTime;
         else {
@@ -61,6 +61,6 @@ namespace Journey {
 
     void ControlledEntity::jump() {
         if (mPos.z <= 0.0f)
-                mVel.z += 1.0f;
+                mVel.z += mJumpForce;
     }
 }

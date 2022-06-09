@@ -25,10 +25,12 @@ namespace Journey {
         glm::vec3 mUp = glm::vec3(0.0f, 0.0f, 1.0f);
         float mRotXVel = 0;
         float mHeight = 1.0f;
-        float mGravity = 1.0f;
+        float mGravity = 2.0f;
         float mDeathZone = 0.1f;
         float mRotSpeed = 50.0f;
         float mAngleZ;
+        float mRunSpeed = 3.0f;
+        float mJumpForce = 1.3f;
     };
 
 }
