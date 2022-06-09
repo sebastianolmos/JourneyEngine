@@ -52,6 +52,7 @@ namespace Journey {
             mRenderManager.CleanRenderInfo();
             mEntityManager->UpdateEntities(*this, deltaTime);
             mApplication.UserUpdate(*this, deltaTime);
+            mEntityManager->DeleteEntities();
         }
         mRenderManager.DrawCall(*this);
         mWindow.SwapBuffers();

@@ -22,10 +22,12 @@ namespace Journey {
             void UpdateEntities(Scene& scene, float deltaTime);
             void AddEntity(std::shared_ptr<Entity> parentEntity, std::shared_ptr<Entity> newEntity);
             void DeleteEntity(std::shared_ptr<Entity> entity);
+            void DeleteEntities();
 
         private:
             int mEntitiesCount;
             std::unordered_map<int, std::shared_ptr<Entity>> mEntities;
+            std::vector<std::shared_ptr<Entity>> mDeletedEntities;
 
             void UpdateEntity(Scene& scene, std::shared_ptr<Entity> entity, glm::mat4 parentTransform, float deltaTime);
             Scene& mSceneRef;
