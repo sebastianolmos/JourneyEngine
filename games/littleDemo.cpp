@@ -11,7 +11,6 @@ void RegisterInputs(Journey::InputController& input) {
 }
 
 void RegisterMeshes(Journey::MeshManager& manager) {
-    
     manager.LoadPrimitiveMesh("projectile", Journey::EPrimitiveMesh::Sphere, true);
     manager.LoadPrimitiveMesh("floorMesh", Journey::EPrimitiveMesh::Cube, true);
     manager.LoadModelMesh("backpackMesh", "../../../assets/backpack/backpack.obj");
@@ -23,6 +22,10 @@ void RegisterMeshes(Journey::MeshManager& manager) {
     manager.LoadPrimitiveMesh("cylinder2", Journey::EPrimitiveMesh::Cylinder, true);
     manager.LoadPrimitiveMesh("sphere1", Journey::EPrimitiveMesh::Sphere);
     manager.LoadPrimitiveMesh("sphere2", Journey::EPrimitiveMesh::Sphere, true);
+}
+
+void RegisterTextures(Journey::TextureManager& manager) {
+    manager.LoadModelTexture("carpincho", "../../../assets/sprites/carpincho.png");
 }
 
 class ProjectileEntity : public Journey::Entity {
@@ -74,7 +77,7 @@ public:
                                 glm::vec3(0.65f, 1.0f, 0.42f)
                                 );
         Journey::SimpleTexturedMaterial* mat = new Journey::SimpleTexturedMaterial();
-        Journey::TextureManager::getInstance().AddSpriteComponent(shared_from_this(), std::shared_ptr<Journey::Material>(mat), "../../../assets/sprites/carpincho.png", true);
+        Journey::TextureManager::getInstance().AddSpriteComponent(shared_from_this(), std::shared_ptr<Journey::Material>(mat), "carpincho", true);
         // Input
         scene.GetInputController().BindAxisMap("MoveX", [&](float dx) {this->moveInX(dx);});
         scene.GetInputController().BindAxisMap("MoveY", [&](float dy) {this->moveInY(dy);});
@@ -136,6 +139,7 @@ public:
         // Registers
         RegisterInputs(scene.GetInputController());
         RegisterMeshes(Journey::MeshManager::getInstance());
+        RegisterTextures(Journey::TextureManager::getInstance());
         
         scene.GetInputController().BindActionOnPressed("Test", [&]() {this->testo();});
         scene.GetInputController().BindActionToggle("Run", [&](bool v) {this->changeRunState(v);});
@@ -166,7 +170,7 @@ public:
         Journey::SimpleTexturedMaterial* dogMat = new Journey::SimpleTexturedMaterial();
 
         auto& textureManager = Journey::TextureManager::getInstance();
-        textureManager.AddSpriteComponent(dog, std::shared_ptr<Journey::Material>(dogMat), "../../../assets/sprites/carpincho.png", true);
+        textureManager.AddSpriteComponent(dog, std::shared_ptr<Journey::Material>(dogMat), "carpincho", true);
         scene.AddEntity(nullptr, dog);
 
         // Set Camera

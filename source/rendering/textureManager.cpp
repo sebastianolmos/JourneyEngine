@@ -10,6 +10,66 @@
 #include "model.hpp"
 
 namespace Journey {
+
+    void TextureManager::LoadModelTexture(std::string textureName, std::string texturePath) 
+    {
+        std::size_t hashedName = mHasher(textureName);
+        if (mTextureRecord.count(hashedName) != 0)
+            return;
+
+        float texvertices[] = {
+            -0.5f, 0.0f, -0.5f,  0.0f, 1.0f,
+            0.5f, 0.0f, -0.5f,  1.0f, 1.0f,
+            0.5f, 0.0f, 0.5f,  1.0f, 0.0f,
+            0.5f,  0.0f, 0.5f,  1.0f, 0.0f,
+            -0.5f,  0.0f, 0.5f,  0.0f, 0.0f,
+            -0.5f, 0.0f, -0.5f,  0.0f, 1.0f
+        };
+        unsigned int texVBO, texVAO;
+        glGenVertexArrays(1, &texVAO);
+        glGenBuffers(1, &texVBO);
+
+        glBindVertexArray(texVAO);
+
+        glBindBuffer(GL_ARRAY_BUFFER, texVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(texvertices), texvertices, GL_STATIC_DRAW);
+
+        // position attribute
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+        // texture coord attribute
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+
+        std::shared_ptr<TextureRep> texPtr = LoadTexture(texturePath, GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT);
+        std::shared_ptr<SpriteModel> model = std::make_shared<SpriteModel>();
+        model->mVAO = texVAO;
+        model->mVertices = texvertices;
+        model->mVertexCount = 6;
+        model->mTextureID = texPtr->textureId;
+        model->mWidth = texPtr->width;
+        model->mHeight = texPtr->height;
+        mTextureRecord.insert({hashedName, model});
+    }   
+    
+    void TextureManager::AddSpriteComponent(std::shared_ptr<Entity> entity, std::shared_ptr<Material> mat, std::string textureName, bool transparency) 
+    {
+        std::size_t hashedName = mHasher(textureName);
+        if (entity == nullptr || entity->mComponents.count(EComponentType::SpriteComponent) != 0)
+            return;
+        if (mTextureRecord.count(hashedName) == 0) {
+            std::cout << textureName << " No registered"<< std::endl;
+            return;
+        }
+
+        std::shared_ptr<SpriteComponent> spriteComp = std::make_shared<SpriteComponent>();
+        spriteComp->spriteModel = mTextureRecord[hashedName];
+        spriteComp->material = mat; 
+        spriteComp->transparency = transparency;
+        entity->mComponents.insert(std::make_pair(EComponentType::SpriteComponent, spriteComp));
+    }
+
+
     std::shared_ptr<TextureRep> TextureManager::LoadTexture(const std::string filePath, int magFilter, int minFilter,
                                                         int sWrapMode,  int tWrapMode)
     {
@@ -39,71 +99,6 @@ namespace Journey {
         TextureRep* returnTexture = new TextureRep{texture, width, height};
         std::shared_ptr<TextureRep> texturePtr = std::shared_ptr<TextureRep>(returnTexture);
         return texturePtr;
-    }
-
-    void TextureManager::AddSpriteComponent(std::shared_ptr<Entity> entity, std::shared_ptr<Material> mat, std::string spritePath, bool transparency)
-    {
-        if (entity == nullptr)
-            return;
-        
-        if (entity->mComponents.count(EComponentType::SpriteComponent) == 0) {
-            
-            switch (mat->GetType())
-            {
-            case EMaterialType::SimpleTextured: {
-                std::shared_ptr<SpriteComponent> spriteComp = std::make_shared<SpriteComponent>();
-                float texvertices[] = {
-                    -0.5f, 0.0f, -0.5f,  0.0f, 1.0f,
-                    0.5f, 0.0f, -0.5f,  1.0f, 1.0f,
-                    0.5f, 0.0f, 0.5f,  1.0f, 0.0f,
-                    0.5f,  0.0f, 0.5f,  1.0f, 0.0f,
-                    -0.5f,  0.0f, 0.5f,  0.0f, 0.0f,
-                    -0.5f, 0.0f, -0.5f,  0.0f, 1.0f
-                };
-                unsigned int texVBO, texVAO;
-                glGenVertexArrays(1, &texVAO);
-                glGenBuffers(1, &texVBO);
-
-                glBindVertexArray(texVAO);
-
-                glBindBuffer(GL_ARRAY_BUFFER, texVBO);
-                glBufferData(GL_ARRAY_BUFFER, sizeof(texvertices), texvertices, GL_STATIC_DRAW);
-
-                // position attribute
-                glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-                glEnableVertexAttribArray(0);
-                // texture coord attribute
-                glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-                glEnableVertexAttribArray(1);
-
-                std::shared_ptr<TextureRep> texPtr = LoadTexture(spritePath, GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT);
-                std::shared_ptr<SpriteModel> model = std::make_shared<SpriteModel>();
-                model->mVAO = texVAO;
-                model->mVertices = texvertices;
-                model->mVertexCount = 6;
-                model->mTextureID = texPtr->textureId;
-                model->mWidth = texPtr->width;
-                model->mHeight = texPtr->height;
-                spriteComp->spriteModel = model;
-                spriteComp->material = mat; 
-                spriteComp->transparency = transparency;
-                entity->mComponents.insert(std::make_pair(EComponentType::SpriteComponent, spriteComp));
-                break;
-                }
-            case EMaterialType::FlatTextured: {
-                std::cout << "NOT Implemented yet" << std::endl;
-                break;
-                }
-            case EMaterialType::PhongTextured: {
-                std::cout << "NOT Implemented yet" << std::endl;
-                break;
-                }
-            default: {
-                std::cout << "Material not alowed to an Sprite" << std::endl;
-                break;
-                }
-            }
-        }
     }
 
 }

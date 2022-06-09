@@ -1,6 +1,8 @@
 #pragma once
+
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 namespace Journey {
 
@@ -12,6 +14,7 @@ namespace Journey {
     };
     class Entity;
     struct Material;
+    class SpriteModel;
 
     class TextureManager{
         public:
@@ -25,10 +28,14 @@ namespace Journey {
             std::shared_ptr<TextureRep> LoadTexture(const std::string filePath, int magFilter, int minFilter,
                                                             int sWrapMode, int tWrapMode);
 
-            void AddSpriteComponent(std::shared_ptr<Entity> entity, std::shared_ptr<Material> mat, std::string spritePath, bool transparency=false);
+            void LoadModelTexture(std::string textureName, std::string texturePath);
+            void AddSpriteComponent(std::shared_ptr<Entity> entity, std::shared_ptr<Material> mat, std::string textureName, bool transparency=false);
 
         private:
             TextureManager() {}
+
+            std::hash<std::string> mHasher;
+            std::unordered_map<std::size_t, std::shared_ptr<SpriteModel> > mTextureRecord;
 
     };
 
