@@ -28,6 +28,7 @@ namespace Journey {
             void operator=(MeshManager const&) = delete; //Dont Implement!
 
             void AddPrimitiveMeshComponent(std::shared_ptr<Entity> entity, std::shared_ptr<Material> mat, EPrimitiveMesh primitiveMesh);
+            void AddImportedMeshComponent(std::shared_ptr<Entity> entity, std::shared_ptr<Material> mat, std::string modelPath);
 
         private:
             MeshManager() {}

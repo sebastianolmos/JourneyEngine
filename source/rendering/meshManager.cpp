@@ -4,6 +4,7 @@
 #include "../entity/entity.hpp"
 #include "../component/staticMesh.hpp"
 #include "material.hpp"
+#include "importedModel.hpp"
 
 namespace Journey
 {
@@ -95,6 +96,33 @@ namespace Journey
                 break;
                 }
             }
+    }
+
+    void MeshManager::AddImportedMeshComponent(std::shared_ptr<Entity> entity, std::shared_ptr<Material> mat, std::string modelPath)
+    {
+        if (entity == nullptr || entity->mComponents.count(EComponentType::SpriteComponent) > 0)
+            return;
+
+        if (mat->GetType() == EMaterialType::SimpleTextured) {
+            std::shared_ptr<StaticMeshComponent> meshComp = std::make_shared<StaticMeshComponent>();
+            std::shared_ptr<ImportedModel> model = std::make_shared<ImportedModel>(modelPath);
+
+            meshComp->material = mat;
+            meshComp->meshModel = model;
+            entity->mComponents.insert(std::make_pair(EComponentType::StaticMeshComponent, meshComp));
+        } 
+        else if (mat->GetType() == EMaterialType::PhongTextured || mat->GetType() == EMaterialType::FlatTextured) { 
+            std::shared_ptr<StaticMeshComponent> meshComp = std::make_shared<StaticMeshComponent>();
+            std::shared_ptr<ImportedModel> model = std::make_shared<ImportedModel>(modelPath);
+
+            meshComp->material = mat;
+            meshComp->meshModel = model;
+            entity->mComponents.insert(std::make_pair(EComponentType::StaticMeshComponent, meshComp));
+        } 
+        else {
+            std::cout << "Material not alowed with PrimitiveMEsh" << std::endl;
+        }
+        
     }
 
 }

@@ -9,7 +9,7 @@ namespace Journey {
         public:
             StaticMeshComponent() = default;
 
-            std::shared_ptr<StaticMeshModel> meshModel;
+            std::shared_ptr<Model> meshModel;
             std::shared_ptr<Material> material;
 
             virtual EComponentType GetType() override { return EComponentType::StaticMeshComponent; }
