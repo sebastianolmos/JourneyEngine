@@ -1,8 +1,6 @@
 #include "JourneyEngine.hpp"
 
 void RegisterInputs(Journey::InputController& input) {
-    input.RegisterKeyAction("Test", JOURNEY_KEY_SPACE);
-    input.RegisterKeyAction("Run", JOURNEY_KEY_LEFT_SHIFT);
     input.RegisterGamepadAxis("MoveX", JOURNEY_GAMEPAD_AXIS_LEFT_X);
     input.RegisterGamepadAxis("MoveY", JOURNEY_GAMEPAD_AXIS_LEFT_Y);
     input.RegisterGamepadAxis("RotX", JOURNEY_GAMEPAD_AXIS_RIGHT_X);
@@ -13,15 +11,8 @@ void RegisterInputs(Journey::InputController& input) {
 void RegisterMeshes(Journey::MeshManager& manager) {
     manager.LoadPrimitiveMesh("projectile", Journey::EPrimitiveMesh::Sphere, true);
     manager.LoadPrimitiveMesh("floorMesh", Journey::EPrimitiveMesh::Cube, true);
-    manager.LoadModelMesh("backpackMesh", "../../../assets/backpack/backpack.obj");
-    manager.LoadPrimitiveMesh("plane1", Journey::EPrimitiveMesh::Plane);
-    manager.LoadPrimitiveMesh("plane2", Journey::EPrimitiveMesh::Plane, true);
-    manager.LoadPrimitiveMesh("cube1", Journey::EPrimitiveMesh::Cube);
-    manager.LoadPrimitiveMesh("cube2", Journey::EPrimitiveMesh::Cube, true);
-    manager.LoadPrimitiveMesh("cylinder1", Journey::EPrimitiveMesh::Cylinder);
-    manager.LoadPrimitiveMesh("cylinder2", Journey::EPrimitiveMesh::Cylinder, true);
-    manager.LoadPrimitiveMesh("sphere1", Journey::EPrimitiveMesh::Sphere);
-    manager.LoadPrimitiveMesh("sphere2", Journey::EPrimitiveMesh::Sphere, true);
+    manager.LoadModelMesh("shibaMesh", "../../../assets/shiba/shiba.obj");
+    manager.LoadModelMesh("cloudMesh", "../../../assets/cloud/cloudy.obj");
 }
 
 void RegisterTextures(Journey::TextureManager& manager) {
@@ -30,24 +21,26 @@ void RegisterTextures(Journey::TextureManager& manager) {
 
 class ProjectileEntity : public Journey::Entity {
 public:
-    ProjectileEntity(glm::vec3 spawnPos, float timeToDelete, float speed, glm::vec3 direction, float size) {
+    ProjectileEntity(glm::vec3 spawnPos, float timeToDelete, float speed, glm::vec3 direction, float size, float rotZ) {
         mTimer = 0.0f;
         mDeleteTime = timeToDelete;
         mSpeed = speed;
         mDirection = direction;
         mPos = spawnPos;
         mSize = size;
+        mRotation = rotZ;
     }
     ~ProjectileEntity() = default;
     virtual void UserStartUp(Journey::Scene& scene) override {
         getTransform().SetTranslation(mPos);
         getTransform().SetScale(glm::vec3(mSize));
+        getTransform().SetRotation(glm::vec3(glm::radians(90.0f), 0.0f, mRotation));
         Journey::PhongColoredMaterial* mat = new Journey::PhongColoredMaterial();
-        mat->color = glm::vec3(1.0f, 0.5f, 0.0f);
-        mat->kd = glm::vec3(0.5f, 0.5f, 0.5f);
-        mat->ke = glm::vec3(0.3f, 0.3f, 0.3f);
-        mat->ks = glm::vec3(0.3f, 0.3f, 0.3f);
-        Journey::MeshManager::getInstance().AddMeshComponent(shared_from_this(), std::shared_ptr<Journey::Material>(mat), "projectile");
+        mat->color = glm::vec3(1.0f, 1.0f, 1.0f);
+        mat->kd = glm::vec3(0.5f, 0.5f, 0.7f);
+        mat->ke = glm::vec3(0.3f, 0.3f, 0.4f);
+        mat->ks = glm::vec3(0.3f, 0.3f, 0.4f);
+        Journey::MeshManager::getInstance().AddMeshComponent(shared_from_this(), std::shared_ptr<Journey::Material>(mat), "cloudMesh");
     }
     virtual void UserUpdate(Journey::Scene& scene, float deltaTime) override {
         mPos += mDirection * mSpeed * deltaTime;
@@ -60,24 +53,27 @@ public:
 private:
     float mTimer;
     float mDeleteTime;
-    float mSpeed, mSize;
+    float mSpeed, mSize, mRotation;
     glm::vec3 mDirection;
     glm::vec3 mPos;
 };
 
-class Carpincho : public Journey::ControlledEntity{
+class Shiba : public Journey::ControlledEntity{
 public:
-    Carpincho(std::shared_ptr<Journey::FollowCamera> mainCamera)
+    Shiba(std::shared_ptr<Journey::FollowCamera> mainCamera)
     : Journey::ControlledEntity(mainCamera)
     {}
-    ~Carpincho() = default;
+    ~Shiba() = default;
     virtual void UserStartUp(Journey::Scene& scene) override {
-        this->getTransform().Set(glm::vec3(-2.0f, -2.5f, 1.0f),
+        this->getTransform().Set(glm::vec3(-2.0f, -2.5f, 0.5f),
                                 glm::vec3(0.0f, 0.0f, 0.0f),
-                                glm::vec3(0.65f, 1.0f, 0.42f)
+                                glm::vec3(0.6f, 0.6f, 0.6f)
                                 );
-        Journey::SimpleTexturedMaterial* mat = new Journey::SimpleTexturedMaterial();
-        Journey::TextureManager::getInstance().AddSpriteComponent(shared_from_this(), std::shared_ptr<Journey::Material>(mat), "carpincho", true);
+        Journey::PhongTexturedMaterial* mat = new Journey::PhongTexturedMaterial();
+        mat->kd = glm::vec3(0.6f, 0.6f, 0.6f);
+        mat->ke = glm::vec3(0.5f, 0.5f, 0.5f);
+        mat->ks = glm::vec3(0.0f, 0.0f, 0.0f);
+        Journey::MeshManager::getInstance().AddMeshComponent(shared_from_this(), std::shared_ptr<Journey::Material>(mat), "shibaMesh");
         // Input
         scene.GetInputController().BindAxisMap("MoveX", [&](float dx) {this->moveInX(dx);});
         scene.GetInputController().BindAxisMap("MoveY", [&](float dy) {this->moveInY(dy);});
@@ -88,10 +84,12 @@ public:
         mCamera->setDistanceRadius(4.0f);
         mCamera->setThetaAngle(85.0f);
         mCamera->setFov(55.0f);
+        mHeight = 0.3;
+        mRotSpeed = 80.0f;
     }
     void throwProjectile() {
         std::shared_ptr<ProjectileEntity> projectile = std::make_shared<ProjectileEntity>(
-            mPos + mUp*mHeight, 1.0f, 8.0f, glm::vec3(getFixedVel().x, getFixedVel().y, 0.0f), 0.2f
+            mPos + mUp*mHeight*2.0f, 1.0f, 8.0f, glm::vec3(getFixedVel().x, getFixedVel().y, 0.0f), 0.2f, mAngleZ + glm::radians(90.0f)
         );
         mManager->AddEntity(nullptr, projectile);
     }
@@ -140,9 +138,6 @@ public:
         RegisterInputs(scene.GetInputController());
         RegisterMeshes(Journey::MeshManager::getInstance());
         RegisterTextures(Journey::TextureManager::getInstance());
-        
-        scene.GetInputController().BindActionOnPressed("Test", [&]() {this->testo();});
-        scene.GetInputController().BindActionToggle("Run", [&](bool v) {this->changeRunState(v);});
 
         // Floor entity
         floor = std::make_shared<Journey::Entity>();
@@ -162,196 +157,24 @@ public:
         scene.AddEntity(nullptr, floor);
 
         // Entity creation - method 1
-        dog = std::make_shared<Journey::Entity>();
-        dog->getTransform().Set(glm::vec3(0.0f, -0.5f, 1.2f),
+        carpin = std::make_shared<Journey::Entity>();
+        carpin->getTransform().Set(glm::vec3(0.0f, -0.5f, 1.2f),
                                 glm::vec3(0.0f, 0.0f, glm::radians(35.0f)),
                                 glm::vec3(0.4f, 1.0f, 0.3f)
                                 );
-        Journey::SimpleTexturedMaterial* dogMat = new Journey::SimpleTexturedMaterial();
+        Journey::SimpleTexturedMaterial* carpinMat = new Journey::SimpleTexturedMaterial();
 
         auto& textureManager = Journey::TextureManager::getInstance();
-        textureManager.AddSpriteComponent(dog, std::shared_ptr<Journey::Material>(dogMat), "carpincho", true);
-        scene.AddEntity(nullptr, dog);
+        textureManager.AddSpriteComponent(carpin, std::shared_ptr<Journey::Material>(carpinMat), "carpincho", true);
+        scene.AddEntity(nullptr, carpin);
 
         // Set Camera
         mainCamera = std::make_shared<Journey::FollowCamera>(mWidth, mHeight);
         scene.GetCameraHandler().setCurrentCamera(mainCamera);
 
         // Entity creation - method 2
-        carpin = std::make_shared<Carpincho>(mainCamera);
-        scene.AddEntity(nullptr, carpin);
-
-        //backpack test
-        std::shared_ptr<Journey::Entity> backpack = std::make_shared<Journey::Entity>();
-        backpack->getTransform().Set(glm::vec3(0.0f, -0.5f, 1.2f),
-                                glm::vec3(0.0f, glm::radians(90.0f), 0.0f),
-                                glm::vec3(0.3f, 0.3f, 0.3f)
-                                );
-        Journey::PhongTexturedMaterial* backpackMat = new Journey::PhongTexturedMaterial();
-        backpackMat->kd = glm::vec3(0.6f, 0.6f, 0.6f);
-        backpackMat->ke = glm::vec3(0.5f, 0.5f, 0.5f);
-        backpackMat->ks = glm::vec3(1.0f, 0.8f, 0.8f);
-        meshManager.AddMeshComponent(backpack, std::shared_ptr<Journey::Material>(backpackMat), "backpackMesh");
-        scene.AddEntity(nullptr, backpack);
-
-        // Plane Colored
-        std::shared_ptr<RandRotEntity> plane1 = std::make_shared<RandRotEntity>();
-        plane1->getTransform().Set(glm::vec3(-18.0f, 20.0f, 2.2f),
-                                glm::vec3(0.0f, 0.0f, 0.0f),
-                                glm::vec3(2.0f, 2.0f, 1.0f)
-                                );
-        Journey::SimpleColoredMaterial* plane1Mat = new Journey::SimpleColoredMaterial;
-        plane1Mat->color = glm::vec3(1.0f, 0.0f, 0.0f);
-        meshManager.AddMeshComponent(plane1, std::shared_ptr<Journey::Material>(plane1Mat), "plane1");
-        scene.AddEntity(nullptr, plane1);
-
-        // Plane Flat 
-        std::shared_ptr<RandRotEntity> plane2 = std::make_shared<RandRotEntity>();
-        plane2->getTransform().Set(glm::vec3(-15.0f, 20.0f, 2.2f),
-                                glm::vec3(0.0f, glm::radians(-55.0f), glm::radians(-35.0f)),
-                                glm::vec3(2.0f, 2.0f, 1.0f)
-                                );
-        Journey::FlatColoredMaterial* plane2Mat = new Journey::FlatColoredMaterial;
-        plane2Mat->color = glm::vec3(0.0f, 1.0f, 0.5f);
-        plane2Mat->kd = glm::vec3(0.6f, 0.6f, 0.6f);
-        plane2Mat->ke = glm::vec3(0.5f, 0.5f, 0.5f);
-        plane2Mat->ks = glm::vec3(1.0f, 0.8f, 0.8f);
-        meshManager.AddMeshComponent(plane2, std::shared_ptr<Journey::Material>(plane2Mat), "plane2");
-        scene.AddEntity(nullptr, plane2);
-
-        // Plane Phong
-        std::shared_ptr<RandRotEntity> plane3 = std::make_shared<RandRotEntity>();
-        plane3->getTransform().Set(glm::vec3(-12.0f, 20.0f, 2.2f),
-                                glm::vec3(0.0f, glm::radians(-55.0f), glm::radians(-35.0f)),
-                                glm::vec3(2.0f, 2.0f, 1.0f)
-                                );
-        Journey::PhongColoredMaterial* plane3Mat = new Journey::PhongColoredMaterial;
-        plane3Mat->color = glm::vec3(1.0f, 0.5f, 0.0f);
-        plane3Mat->kd = glm::vec3(0.6f, 0.6f, 0.6f);
-        plane3Mat->ke = glm::vec3(0.5f, 0.5f, 0.5f);
-        plane3Mat->ks = glm::vec3(1.0f, 0.8f, 0.8f);
-        meshManager.AddMeshComponent(plane3, std::shared_ptr<Journey::Material>(plane3Mat), "plane2");
-        scene.AddEntity(nullptr, plane3);
-
-
-        // Cube Colored
-        std::shared_ptr<RandRotEntity> cube1 = std::make_shared<RandRotEntity>();
-        cube1->getTransform().Set(glm::vec3(-9.0f, 20.0f, 2.2f),
-                                glm::vec3(0.0f, 0.0f, 0.0f),
-                                glm::vec3(2.0f, 2.0f, 2.0f)
-                                );
-        Journey::SimpleColoredMaterial* cube1Mat = new Journey::SimpleColoredMaterial;
-        cube1Mat->color = glm::vec3(0.0f, 0.5f, 1.0f);
-        meshManager.AddMeshComponent(cube1, std::shared_ptr<Journey::Material>(cube1Mat), "cube1");
-        scene.AddEntity(nullptr, cube1);
-
-        // Cube Flat 
-        std::shared_ptr<RandRotEntity> cube2 = std::make_shared<RandRotEntity>();
-        cube2->getTransform().Set(glm::vec3(-6.0f, 20.0f, 2.2f),
-                                glm::vec3(0.0f, glm::radians(-55.0f), glm::radians(-35.0f)),
-                                glm::vec3(2.0f, 2.0f, 2.0f)
-                                );
-        Journey::FlatColoredMaterial* cube2Mat = new Journey::FlatColoredMaterial;
-        cube2Mat->color = glm::vec3(1.0f, 1.0f, 0.0f);
-        cube2Mat->kd = glm::vec3(0.6f, 0.6f, 0.6f);
-        cube2Mat->ke = glm::vec3(0.5f, 0.5f, 0.5f);
-        cube2Mat->ks = glm::vec3(1.0f, 0.8f, 0.8f);
-        meshManager.AddMeshComponent(cube2, std::shared_ptr<Journey::Material>(cube2Mat), "cube2");
-        scene.AddEntity(nullptr, cube2);
-
-        // Cube Phong
-        std::shared_ptr<RandRotEntity> cube3 = std::make_shared<RandRotEntity>();
-        cube3->getTransform().Set(glm::vec3(-3.0f, 20.0f, 2.2f),
-                                glm::vec3(0.0f, glm::radians(-55.0f), glm::radians(-35.0f)),
-                                glm::vec3(2.0f, 2.0f, 2.0f)
-                                );
-        Journey::PhongColoredMaterial* cube3Mat = new Journey::PhongColoredMaterial;
-        cube3Mat->color = glm::vec3(0.0f, 0.0f, 1.0f);
-        cube3Mat->kd = glm::vec3(0.6f, 0.6f, 0.6f);
-        cube3Mat->ke = glm::vec3(0.5f, 0.5f, 0.5f);
-        cube3Mat->ks = glm::vec3(1.0f, 0.8f, 0.8f);
-        meshManager.AddMeshComponent(cube3, std::shared_ptr<Journey::Material>(cube3Mat), "cube2");
-        scene.AddEntity(nullptr, cube3);
-
-
-        // Cylinder Colored
-        std::shared_ptr<RandRotEntity> cylinder1 = std::make_shared<RandRotEntity>();
-        cylinder1->getTransform().Set(glm::vec3(3.0f, 20.0f, 2.2f),
-                                glm::vec3(0.0f, 0.0f, 0.0f),
-                                glm::vec3(2.0f, 2.0f, 2.0f)
-                                );
-        Journey::SimpleColoredMaterial* cylinder1Mat = new Journey::SimpleColoredMaterial;
-        cylinder1Mat->color = glm::vec3(0.5f, 1.0f, 0.0f);
-        meshManager.AddMeshComponent(cylinder1, std::shared_ptr<Journey::Material>(cylinder1Mat), "cylinder1");
-        scene.AddEntity(nullptr, cylinder1);
-
-        // Cylinder Flat 
-        std::shared_ptr<RandRotEntity> cylinder2 = std::make_shared<RandRotEntity>();
-        cylinder2->getTransform().Set(glm::vec3(6.0f, 20.0f, 2.2f),
-                                glm::vec3(0.0f, glm::radians(-55.0f), glm::radians(-35.0f)),
-                                glm::vec3(2.0f, 2.0f, 2.0f)
-                                );
-        Journey::FlatColoredMaterial* cylinder2Mat = new Journey::FlatColoredMaterial;
-        cylinder2Mat->color = glm::vec3(0.5f, 0.0f, 1.0f);
-        cylinder2Mat->kd = glm::vec3(0.6f, 0.6f, 0.6f);
-        cylinder2Mat->ke = glm::vec3(0.5f, 0.5f, 0.5f);
-        cylinder2Mat->ks = glm::vec3(1.0f, 0.8f, 0.8f);
-        meshManager.AddMeshComponent(cylinder2, std::shared_ptr<Journey::Material>(cylinder2Mat), "cylinder2");
-        scene.AddEntity(nullptr, cylinder2);
-
-        // Cylinder Phong
-        std::shared_ptr<RandRotEntity> cylinder3 = std::make_shared<RandRotEntity>();
-        cylinder3->getTransform().Set(glm::vec3(9.0f, 20.0f, 2.2f),
-                                glm::vec3(0.0f, glm::radians(-55.0f), glm::radians(-35.0f)),
-                                glm::vec3(2.0f, 2.0f, 2.0f)
-                                );
-        Journey::PhongColoredMaterial* cylinder3Mat = new Journey::PhongColoredMaterial;
-        cylinder3Mat->color = glm::vec3(0.0f, 1.0f, 0.0f);
-        cylinder3Mat->kd = glm::vec3(0.6f, 0.6f, 0.6f);
-        cylinder3Mat->ke = glm::vec3(0.5f, 0.5f, 0.5f);
-        cylinder3Mat->ks = glm::vec3(1.0f, 0.8f, 0.8f);
-        meshManager.AddMeshComponent(cylinder3, std::shared_ptr<Journey::Material>(cylinder3Mat), "cylinder2");
-        scene.AddEntity(nullptr, cylinder3);
-
-
-        // Sphere Colored
-        std::shared_ptr<RandRotEntity> sphere1 = std::make_shared<RandRotEntity>();
-        sphere1->getTransform().Set(glm::vec3(12.0f, 20.0f, 2.2f),
-                                glm::vec3(0.0f, 0.0f, 0.0f),
-                                glm::vec3(2.0f, 2.0f, 2.0f)
-                                );
-        Journey::SimpleColoredMaterial* sphere1Mat = new Journey::SimpleColoredMaterial;
-        sphere1Mat->color = glm::vec3(1.0f, 0.0f, 1.0f);
-        meshManager.AddMeshComponent(sphere1, std::shared_ptr<Journey::Material>(sphere1Mat), "sphere1");
-        scene.AddEntity(nullptr, sphere1);
-
-        // sphere Flat 
-        std::shared_ptr<RandRotEntity> sphere2 = std::make_shared<RandRotEntity>();
-        sphere2->getTransform().Set(glm::vec3(15.0f, 20.0f, 2.2f),
-                                glm::vec3(0.0f, glm::radians(-55.0f), glm::radians(-35.0f)),
-                                glm::vec3(2.0f, 2.0f, 2.0f)
-                                );
-        Journey::FlatColoredMaterial* sphere2Mat = new Journey::FlatColoredMaterial;
-        sphere2Mat->color = glm::vec3(0.0f, 0.5f, 0.5f);
-        sphere2Mat->kd = glm::vec3(0.6f, 0.6f, 0.6f);
-        sphere2Mat->ke = glm::vec3(0.5f, 0.5f, 0.5f);
-        sphere2Mat->ks = glm::vec3(1.0f, 0.8f, 0.8f);
-        meshManager.AddMeshComponent(sphere2, std::shared_ptr<Journey::Material>(sphere2Mat), "sphere2");
-        scene.AddEntity(nullptr, sphere2);
-
-        // sphere Phong
-        std::shared_ptr<RandRotEntity> sphere3 = std::make_shared<RandRotEntity>();
-        sphere3->getTransform().Set(glm::vec3(18.0f, 20.0f, 2.2f),
-                                glm::vec3(0.0f, glm::radians(-55.0f), glm::radians(-35.0f)),
-                                glm::vec3(2.0f, 2.0f, 2.0f)
-                                );
-        Journey::PhongColoredMaterial* sphere3Mat = new Journey::PhongColoredMaterial;
-        sphere3Mat->color = glm::vec3(1.0f, 0.0f, 0.5f);
-        sphere3Mat->kd = glm::vec3(0.6f, 0.6f, 0.6f);
-        sphere3Mat->ke = glm::vec3(0.5f, 0.5f, 0.5f);
-        sphere3Mat->ks = glm::vec3(1.0f, 0.8f, 0.8f);
-        meshManager.AddMeshComponent(sphere3, std::shared_ptr<Journey::Material>(sphere3Mat), "sphere2");
-        scene.AddEntity(nullptr, sphere3);
+        shiba = std::make_shared<Shiba>(mainCamera);
+        scene.AddEntity(nullptr, shiba);
 
         mInnerVar = 0;
     }
@@ -362,26 +185,15 @@ public:
 
     virtual void UserUpdate(Journey::Scene& scene, float deltaTime) override {
         mInnerVar += deltaTime;
-        dog->getTransform().SetTranslation(glm::vec3(glm::sin(mInnerVar)*1.2,-0.5f, 1.2f));
-        dog->getTransform().SetRotation(glm::vec3(0.0f, 0.0f, glm::radians(35.0f) + mInnerVar));
-    }
-
-    void testo(){
-        std::cout << "Looking god!" << std::endl;
-    }
-
-    void changeRunState(bool state) {
-        if (state)
-            std::cout << "Start Running!" << std::endl;
-        else 
-            std::cout << "Stop Running!" << std::endl;
+        carpin->getTransform().SetTranslation(glm::vec3(glm::sin(mInnerVar)*1.2,-0.5f, 1.2f));
+        carpin->getTransform().SetRotation(glm::vec3(0.0f, 0.0f, glm::radians(35.0f) + mInnerVar));
     }
 
 private:
     float mInnerVar;
     std::shared_ptr<Journey::Entity> floor;
-    std::shared_ptr<Journey::Entity> dog;
-    std::shared_ptr<Carpincho> carpin;
+    std::shared_ptr<Journey::Entity> carpin;
+    std::shared_ptr<Shiba> shiba;
     std::shared_ptr<Journey::FollowCamera> mainCamera;
 };
 

@@ -155,11 +155,6 @@ namespace Journey {
             PhongTexturedShader.setMat4("model", renderInfo.modelTransform);
             renderInfo.modelObject->drawCall(PhongTexturedShader);
         }
-        PhongTexturedShader.setVec3("material.ambient", glm::vec3(0.3f));
-        PhongTexturedShader.setVec3("material.diffuse", glm::vec3(0.6f));
-        PhongTexturedShader.setVec3("material.specular", glm::vec3(0.5f)); 
-        PhongTexturedShader.setFloat("material.shininess", 64.0f);
-        PhongTexturedShader.setMat4("model", glm::mat4(1.0f));
 
         SimpleTexturedShader.use();
         SimpleTexturedShader.setMat4("projection", scene.GetCameraHandler().getProjection());

@@ -27,6 +27,8 @@ namespace Journey {
         float mHeight = 1.0f;
         float mGravity = 1.0f;
         float mDeathZone = 0.1f;
+        float mRotSpeed = 50.0f;
+        float mAngleZ;
     };
 
 }

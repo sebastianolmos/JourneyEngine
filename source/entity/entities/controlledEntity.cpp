@@ -14,20 +14,21 @@ namespace Journey {
 
     void ControlledEntity::UserUpdate(Scene& scene, float deltaTime)
     {
-        mTheta += deltaTime * mRotXVel* 50.0f;
+        mTheta += deltaTime * mRotXVel* mRotSpeed;
         mVel = glm::rotate(mVel, glm::radians(mTheta), mUp);
         mPos += deltaTime * mVel * 3.0f;
         if (mPos.z > 0.0f)
             mVel.z -= mGravity * deltaTime;
         else {
             mPos.z = 0.0f;
+            mVel.z = 0.0f;
         }
         getTransform().SetTranslation(glm::vec3(mPos.x, 
                                                 mPos.y, 
                                                 mHeight + mPos.z));
-        float angle = glm::orientedAngle(glm::vec2(1.0f, 0.0f), getFixedVel()); 
+        mAngleZ = glm::orientedAngle(glm::vec2(1.0f, 0.0f), getFixedVel()); 
         //angle = (mVel.x < 0)? -angle:angle;
-        getTransform().SetRotation(glm::vec3(0.0f, 0.0f, angle));
+        getTransform().SetRotation(glm::vec3(0.0f, 0.0f, mAngleZ));
 
         // Camera 
         auto tPos = getTransform().GetLocalTranslation();
