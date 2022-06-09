@@ -10,6 +10,21 @@ void RegisterInputs(Journey::InputController& input) {
     input.RegisterGamepadAction("Throw", JOURNEY_XBOX_BUTTON_B);
 }
 
+void RegisterMeshes(Journey::MeshManager& manager) {
+    
+    manager.LoadPrimitiveMesh("projectile", Journey::EPrimitiveMesh::Sphere, true);
+    manager.LoadPrimitiveMesh("floorMesh", Journey::EPrimitiveMesh::Cube, true);
+    manager.LoadModelMesh("backpackMesh", "../../../assets/backpack/backpack.obj");
+    manager.LoadPrimitiveMesh("plane1", Journey::EPrimitiveMesh::Plane);
+    manager.LoadPrimitiveMesh("plane2", Journey::EPrimitiveMesh::Plane, true);
+    manager.LoadPrimitiveMesh("cube1", Journey::EPrimitiveMesh::Cube);
+    manager.LoadPrimitiveMesh("cube2", Journey::EPrimitiveMesh::Cube, true);
+    manager.LoadPrimitiveMesh("cylinder1", Journey::EPrimitiveMesh::Cylinder);
+    manager.LoadPrimitiveMesh("cylinder2", Journey::EPrimitiveMesh::Cylinder, true);
+    manager.LoadPrimitiveMesh("sphere1", Journey::EPrimitiveMesh::Sphere);
+    manager.LoadPrimitiveMesh("sphere2", Journey::EPrimitiveMesh::Sphere, true);
+}
+
 class ProjectileEntity : public Journey::Entity {
 public:
     ProjectileEntity(glm::vec3 spawnPos, float timeToDelete, float speed, glm::vec3 direction, float size) {
@@ -29,7 +44,6 @@ public:
         mat->kd = glm::vec3(0.5f, 0.5f, 0.5f);
         mat->ke = glm::vec3(0.3f, 0.3f, 0.3f);
         mat->ks = glm::vec3(0.3f, 0.3f, 0.3f);
-        Journey::MeshManager::getInstance().LoadPrimitiveMesh("projectile", Journey::EPrimitiveMesh::Sphere, true);
         Journey::MeshManager::getInstance().AddMeshComponent(shared_from_this(), std::shared_ptr<Journey::Material>(mat), "projectile");
     }
     virtual void UserUpdate(Journey::Scene& scene, float deltaTime) override {
@@ -119,8 +133,10 @@ public:
     virtual void UserStartUp(Journey::Scene& scene) override {
         scene.DebugModeEnabled();
 
-        // Input 
+        // Registers
         RegisterInputs(scene.GetInputController());
+        RegisterMeshes(Journey::MeshManager::getInstance());
+        
         scene.GetInputController().BindActionOnPressed("Test", [&]() {this->testo();});
         scene.GetInputController().BindActionToggle("Run", [&](bool v) {this->changeRunState(v);});
 
@@ -138,7 +154,6 @@ public:
         floorMat->ks = glm::vec3(0.2f, 0.2f, 0.2f);
 
         auto& meshManager = Journey::MeshManager::getInstance();
-        meshManager.LoadPrimitiveMesh("floorMesh", Journey::EPrimitiveMesh::Cube, true);
         meshManager.AddMeshComponent(floor, std::shared_ptr<Journey::Material>(floorMat), "floorMesh");
         scene.AddEntity(nullptr, floor);
 
@@ -172,7 +187,6 @@ public:
         backpackMat->kd = glm::vec3(0.6f, 0.6f, 0.6f);
         backpackMat->ke = glm::vec3(0.5f, 0.5f, 0.5f);
         backpackMat->ks = glm::vec3(1.0f, 0.8f, 0.8f);
-        meshManager.LoadModelMesh("backpackMesh", "../../../assets/backpack/backpack.obj");
         meshManager.AddMeshComponent(backpack, std::shared_ptr<Journey::Material>(backpackMat), "backpackMesh");
         scene.AddEntity(nullptr, backpack);
 
@@ -184,7 +198,6 @@ public:
                                 );
         Journey::SimpleColoredMaterial* plane1Mat = new Journey::SimpleColoredMaterial;
         plane1Mat->color = glm::vec3(1.0f, 0.0f, 0.0f);
-        meshManager.LoadPrimitiveMesh("plane1", Journey::EPrimitiveMesh::Plane);
         meshManager.AddMeshComponent(plane1, std::shared_ptr<Journey::Material>(plane1Mat), "plane1");
         scene.AddEntity(nullptr, plane1);
 
@@ -199,7 +212,6 @@ public:
         plane2Mat->kd = glm::vec3(0.6f, 0.6f, 0.6f);
         plane2Mat->ke = glm::vec3(0.5f, 0.5f, 0.5f);
         plane2Mat->ks = glm::vec3(1.0f, 0.8f, 0.8f);
-        meshManager.LoadPrimitiveMesh("plane2", Journey::EPrimitiveMesh::Plane, true);
         meshManager.AddMeshComponent(plane2, std::shared_ptr<Journey::Material>(plane2Mat), "plane2");
         scene.AddEntity(nullptr, plane2);
 
@@ -214,8 +226,7 @@ public:
         plane3Mat->kd = glm::vec3(0.6f, 0.6f, 0.6f);
         plane3Mat->ke = glm::vec3(0.5f, 0.5f, 0.5f);
         plane3Mat->ks = glm::vec3(1.0f, 0.8f, 0.8f);
-        meshManager.LoadPrimitiveMesh("plane3", Journey::EPrimitiveMesh::Plane, true);
-        meshManager.AddMeshComponent(plane3, std::shared_ptr<Journey::Material>(plane3Mat), "plane3");
+        meshManager.AddMeshComponent(plane3, std::shared_ptr<Journey::Material>(plane3Mat), "plane2");
         scene.AddEntity(nullptr, plane3);
 
 
@@ -227,7 +238,6 @@ public:
                                 );
         Journey::SimpleColoredMaterial* cube1Mat = new Journey::SimpleColoredMaterial;
         cube1Mat->color = glm::vec3(0.0f, 0.5f, 1.0f);
-        meshManager.LoadPrimitiveMesh("cube1", Journey::EPrimitiveMesh::Cube);
         meshManager.AddMeshComponent(cube1, std::shared_ptr<Journey::Material>(cube1Mat), "cube1");
         scene.AddEntity(nullptr, cube1);
 
@@ -242,7 +252,6 @@ public:
         cube2Mat->kd = glm::vec3(0.6f, 0.6f, 0.6f);
         cube2Mat->ke = glm::vec3(0.5f, 0.5f, 0.5f);
         cube2Mat->ks = glm::vec3(1.0f, 0.8f, 0.8f);
-        meshManager.LoadPrimitiveMesh("cube2", Journey::EPrimitiveMesh::Cube, true);
         meshManager.AddMeshComponent(cube2, std::shared_ptr<Journey::Material>(cube2Mat), "cube2");
         scene.AddEntity(nullptr, cube2);
 
@@ -257,8 +266,7 @@ public:
         cube3Mat->kd = glm::vec3(0.6f, 0.6f, 0.6f);
         cube3Mat->ke = glm::vec3(0.5f, 0.5f, 0.5f);
         cube3Mat->ks = glm::vec3(1.0f, 0.8f, 0.8f);
-        meshManager.LoadPrimitiveMesh("cube3", Journey::EPrimitiveMesh::Cube, true);
-        meshManager.AddMeshComponent(cube3, std::shared_ptr<Journey::Material>(cube3Mat), "cube3");
+        meshManager.AddMeshComponent(cube3, std::shared_ptr<Journey::Material>(cube3Mat), "cube2");
         scene.AddEntity(nullptr, cube3);
 
 
@@ -270,7 +278,6 @@ public:
                                 );
         Journey::SimpleColoredMaterial* cylinder1Mat = new Journey::SimpleColoredMaterial;
         cylinder1Mat->color = glm::vec3(0.5f, 1.0f, 0.0f);
-        meshManager.LoadPrimitiveMesh("cylinder1", Journey::EPrimitiveMesh::Cylinder);
         meshManager.AddMeshComponent(cylinder1, std::shared_ptr<Journey::Material>(cylinder1Mat), "cylinder1");
         scene.AddEntity(nullptr, cylinder1);
 
@@ -285,7 +292,6 @@ public:
         cylinder2Mat->kd = glm::vec3(0.6f, 0.6f, 0.6f);
         cylinder2Mat->ke = glm::vec3(0.5f, 0.5f, 0.5f);
         cylinder2Mat->ks = glm::vec3(1.0f, 0.8f, 0.8f);
-        meshManager.LoadPrimitiveMesh("cylinder2", Journey::EPrimitiveMesh::Cylinder, true);
         meshManager.AddMeshComponent(cylinder2, std::shared_ptr<Journey::Material>(cylinder2Mat), "cylinder2");
         scene.AddEntity(nullptr, cylinder2);
 
@@ -300,8 +306,7 @@ public:
         cylinder3Mat->kd = glm::vec3(0.6f, 0.6f, 0.6f);
         cylinder3Mat->ke = glm::vec3(0.5f, 0.5f, 0.5f);
         cylinder3Mat->ks = glm::vec3(1.0f, 0.8f, 0.8f);
-        meshManager.LoadPrimitiveMesh("cylinder3", Journey::EPrimitiveMesh::Cylinder, true);
-        meshManager.AddMeshComponent(cylinder3, std::shared_ptr<Journey::Material>(cylinder3Mat), "cylinder3");
+        meshManager.AddMeshComponent(cylinder3, std::shared_ptr<Journey::Material>(cylinder3Mat), "cylinder2");
         scene.AddEntity(nullptr, cylinder3);
 
 
@@ -313,7 +318,6 @@ public:
                                 );
         Journey::SimpleColoredMaterial* sphere1Mat = new Journey::SimpleColoredMaterial;
         sphere1Mat->color = glm::vec3(1.0f, 0.0f, 1.0f);
-        meshManager.LoadPrimitiveMesh("sphere1", Journey::EPrimitiveMesh::Sphere);
         meshManager.AddMeshComponent(sphere1, std::shared_ptr<Journey::Material>(sphere1Mat), "sphere1");
         scene.AddEntity(nullptr, sphere1);
 
@@ -328,7 +332,6 @@ public:
         sphere2Mat->kd = glm::vec3(0.6f, 0.6f, 0.6f);
         sphere2Mat->ke = glm::vec3(0.5f, 0.5f, 0.5f);
         sphere2Mat->ks = glm::vec3(1.0f, 0.8f, 0.8f);
-        meshManager.LoadPrimitiveMesh("sphere2", Journey::EPrimitiveMesh::Sphere, true);
         meshManager.AddMeshComponent(sphere2, std::shared_ptr<Journey::Material>(sphere2Mat), "sphere2");
         scene.AddEntity(nullptr, sphere2);
 
@@ -343,8 +346,7 @@ public:
         sphere3Mat->kd = glm::vec3(0.6f, 0.6f, 0.6f);
         sphere3Mat->ke = glm::vec3(0.5f, 0.5f, 0.5f);
         sphere3Mat->ks = glm::vec3(1.0f, 0.8f, 0.8f);
-        meshManager.LoadPrimitiveMesh("sphere3", Journey::EPrimitiveMesh::Sphere, true);
-        meshManager.AddMeshComponent(sphere3, std::shared_ptr<Journey::Material>(sphere3Mat), "sphere3");
+        meshManager.AddMeshComponent(sphere3, std::shared_ptr<Journey::Material>(sphere3Mat), "sphere2");
         scene.AddEntity(nullptr, sphere3);
 
         mInnerVar = 0;
