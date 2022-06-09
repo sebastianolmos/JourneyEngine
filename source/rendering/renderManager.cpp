@@ -18,7 +18,7 @@ namespace Journey {
         // other shaders
         CleanRenderInfo();
 
-        Testmodel = new Model("../../../assets/backpack/backpack.obj");
+        Testmodel = new ImportedModel("../../../assets/backpack/backpack.obj");
 
             //Enabling transparencies
         glEnable(GL_BLEND);
@@ -64,17 +64,8 @@ namespace Journey {
         for(auto& renderInfo: mSimpleColoredObjects) {
             // bind textures on corresponding texture units
             SimpleColoredShader.setVec3("shapeColor", renderInfo.color);
-            SimpleColoredShader.setMat4("model", renderInfo.model);
-            if (renderInfo.usingIndices){
-                glBindVertexArray(renderInfo.VAO);
-                glDrawElements(GL_TRIANGLES, renderInfo.vertexCount, GL_UNSIGNED_INT, 0);
-                glBindVertexArray(0);
-            }
-            else {
-                glBindVertexArray(renderInfo.VAO);
-                glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
-            }
-            
+            SimpleColoredShader.setMat4("model", renderInfo.modelTransform);
+            renderInfo.modelObject->drawCall(SimpleColoredShader);            
         }  
 
         // <------ FLAT COLORED SHADER ------->
@@ -94,17 +85,8 @@ namespace Journey {
             FlatColoredShader.setVec3("material.specular", renderInfo.ks); 
             FlatColoredShader.setFloat("material.shininess", 64.0f);
             
-            FlatColoredShader.setMat4("model", renderInfo.model);
-            // render 
-            if (renderInfo.usingIndices){
-                glBindVertexArray(renderInfo.VAO);
-                glDrawElements(GL_TRIANGLES, renderInfo.vertexCount, GL_UNSIGNED_INT, 0);
-                glBindVertexArray(0);
-            }
-            else {
-                glBindVertexArray(renderInfo.VAO);
-                glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
-            }
+            FlatColoredShader.setMat4("model", renderInfo.modelTransform);
+            renderInfo.modelObject->drawCall(FlatColoredShader);
         }   
 
         // <------ PHONG COLORED SHADER ------->
@@ -124,17 +106,8 @@ namespace Journey {
             PhongColoredShader.setVec3("material.specular", renderInfo.ks); 
             PhongColoredShader.setFloat("material.shininess", 164.0f);
             
-            PhongColoredShader.setMat4("model", renderInfo.model);
-            // render 
-            if (renderInfo.usingIndices){
-                glBindVertexArray(renderInfo.VAO);
-                glDrawElements(GL_TRIANGLES, renderInfo.vertexCount, GL_UNSIGNED_INT, 0);
-                glBindVertexArray(0);
-            }
-            else {
-                glBindVertexArray(renderInfo.VAO);
-                glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
-            }
+            PhongColoredShader.setMat4("model", renderInfo.modelTransform);
+            renderInfo.modelObject->drawCall(PhongColoredShader);
             
         }   
 
@@ -143,18 +116,8 @@ namespace Journey {
         SimpleTexturedShader.setMat4("projection", scene.GetCameraHandler().getProjection());
         SimpleTexturedShader.setMat4("view", scene.GetCameraHandler().getViewMatrix());
         for(auto& renderInfo: mSimpleTexturedObjects) {
-            SimpleTexturedShader.setMat4("model", renderInfo.model);
-            // bind textures on corresponding texture units
-            glBindTexture(GL_TEXTURE_2D, renderInfo.textureID);
-            if (renderInfo.usingIndices){
-                glBindVertexArray(renderInfo.VAO);
-                glDrawElements(GL_TRIANGLES, renderInfo.vertexCount, GL_UNSIGNED_INT, 0);
-                glBindVertexArray(0);
-            }
-            else {
-                glBindVertexArray(renderInfo.VAO);
-                glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
-            }
+            SimpleTexturedShader.setMat4("model", renderInfo.modelTransform);
+            renderInfo.modelObject->drawCall(SimpleTexturedShader);
         }   
 
         // <------ FLAT TEXTURED SHADER ------->
@@ -172,18 +135,8 @@ namespace Journey {
             FlatTexturedShader.setVec3("material.diffuse", renderInfo.kd);
             FlatTexturedShader.setVec3("material.specular", renderInfo.ks); 
             FlatTexturedShader.setFloat("material.shininess", 64.0f);
-            FlatTexturedShader.setMat4("model", renderInfo.model);
-            glBindTexture(GL_TEXTURE_2D, renderInfo.textureID);
-            // bind textures on corresponding texture units
-            if (renderInfo.usingIndices){
-                glBindVertexArray(renderInfo.VAO);
-                glDrawElements(GL_TRIANGLES, renderInfo.vertexCount, GL_UNSIGNED_INT, 0);
-                glBindVertexArray(0);
-            }
-            else {
-                glBindVertexArray(renderInfo.VAO);
-                glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
-            }
+            FlatTexturedShader.setMat4("model", renderInfo.modelTransform);
+            renderInfo.modelObject->drawCall(FlatTexturedShader);
         }   
 
         // <------ PHONG TEXTURED SHADER ------->
@@ -201,25 +154,15 @@ namespace Journey {
             PhongTexturedShader.setVec3("material.diffuse", renderInfo.kd);
             PhongTexturedShader.setVec3("material.specular", renderInfo.ks); 
             PhongTexturedShader.setFloat("material.shininess", 64.0f);
-            PhongTexturedShader.setMat4("model", renderInfo.model);
-            // bind textures on corresponding texture units
-            glBindTexture(GL_TEXTURE_2D, renderInfo.textureID);
-            if (renderInfo.usingIndices){
-                glBindVertexArray(renderInfo.VAO);
-                glDrawElements(GL_TRIANGLES, renderInfo.vertexCount, GL_UNSIGNED_INT, 0);
-                glBindVertexArray(0);
-            }
-            else {
-                glBindVertexArray(renderInfo.VAO);
-                glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
-            }
+            PhongTexturedShader.setMat4("model", renderInfo.modelTransform);
+            renderInfo.modelObject->drawCall(PhongTexturedShader);
         }
         PhongTexturedShader.setVec3("material.ambient", glm::vec3(0.3f));
         PhongTexturedShader.setVec3("material.diffuse", glm::vec3(0.6f));
         PhongTexturedShader.setVec3("material.specular", glm::vec3(0.5f)); 
         PhongTexturedShader.setFloat("material.shininess", 64.0f);
         PhongTexturedShader.setMat4("model", glm::mat4(1.0f));
-        Testmodel->Draw(PhongTexturedShader);
+        Testmodel->drawCall(PhongTexturedShader);
 
         SimpleTexturedShader.use();
         SimpleTexturedShader.setMat4("projection", scene.GetCameraHandler().getProjection());
@@ -228,18 +171,8 @@ namespace Journey {
         while (!mTransparentObjects.empty()) {
             TransparentInfo trparent = mTransparentObjects.top();
             RenderInfo renderInfo = trparent.second;
-            SimpleTexturedShader.setMat4("model", renderInfo.model);
-            // bind textures on corresponding texture units
-            glBindTexture(GL_TEXTURE_2D, renderInfo.textureID);
-            if (renderInfo.usingIndices){
-                glBindVertexArray(renderInfo.VAO);
-                glDrawElements(GL_TRIANGLES, renderInfo.vertexCount, GL_UNSIGNED_INT, 0);
-                glBindVertexArray(0);
-            }
-            else {
-                glBindVertexArray(renderInfo.VAO);
-                glDrawArrays(GL_TRIANGLES, 0, renderInfo.vertexCount);
-            }
+            SimpleTexturedShader.setMat4("model", renderInfo.modelTransform);
+            renderInfo.modelObject->drawCall(SimpleTexturedShader);
             mTransparentObjects.pop();
         }
     }
@@ -287,7 +220,8 @@ namespace Journey {
     void RenderManager::CreateDebugFrustrumObject()
     {
         // Debug Lines
-        RenderInfo rInfo;
+        RenderDebugInfo rInfo;
+
         unsigned int tmpVBO;
         unsigned int tmpEBO;
         float vertices[] = {
@@ -339,9 +273,9 @@ namespace Journey {
         mDebugObjects.push_back(rInfo);
     }
 
-    RenderInfo createAxisObject(glm::vec3 axis) {
+    RenderDebugInfo createAxisObject(glm::vec3 axis) {
         // Debug Lines
-        RenderInfo rInfo;
+        RenderDebugInfo rInfo;
         unsigned int tmpVBO;
         unsigned int tmpEBO;
         float vertices[] = {
@@ -378,9 +312,9 @@ namespace Journey {
         return rInfo;
     }
 
-    RenderInfo CreateGridLines(int n, float d)
+    RenderDebugInfo CreateGridLines(int n, float d)
     {
-        RenderInfo rInfo;
+        RenderDebugInfo rInfo;
 
         glm::vec2 leftUpCorner = glm::vec2(-n*d, n*d);
         glm::vec2 rightDownCorner = glm::vec2(n*d, -n*d);
@@ -444,7 +378,7 @@ namespace Journey {
         shaderProgram.setMat4("projection", scene.GetCameraHandler().getProjection());
         shaderProgram.setMat4("view", scene.GetCameraHandler().getViewMatrix());
         for(std::size_t i = 0; i < mDebugObjects.size(); ++i) {
-            RenderInfo renderInfo = mDebugObjects[i];
+            RenderDebugInfo renderInfo = mDebugObjects[i];
             shaderProgram.setVec3("shapeColor", renderInfo.color);
             shaderProgram.setMat4("model", renderInfo.model);
 

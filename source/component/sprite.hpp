@@ -10,25 +10,14 @@ namespace Journey {
         public:
             SpriteComponent() = default;
 
-            float* vertices;
-            int vertexCount;
-            int vertexStride;
-
-            unsigned int VAO;
-            unsigned int VBO;
-            unsigned textureID;
             bool transparency;
-
+            std::shared_ptr<SpriteModel> spriteModel;
             std::shared_ptr<Material> material;
 
             virtual EComponentType GetType() override { return EComponentType::SpriteComponent; }
             
             virtual void UpdateRenderInfo(RenderInfo& rInfo) override {
-                rInfo.VAO = VAO;
-                rInfo.VBO = VBO;
-                rInfo.vertexCount = vertexCount;
-                if (material->GetType() == EMaterialType::SimpleTextured) 
-                    rInfo.textureID = textureID;
+                rInfo.modelObject = spriteModel;
                 material->fillRenderInfo(rInfo);        
             }
     };

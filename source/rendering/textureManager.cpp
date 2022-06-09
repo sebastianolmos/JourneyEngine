@@ -7,6 +7,7 @@
 #include "../entity/entity.hpp"
 #include "../component/sprite.hpp"
 #include "material.hpp"
+#include "model.hpp"
 
 namespace Journey {
     std::shared_ptr<TextureRep> TextureManager::LoadTexture(const std::string filePath, int magFilter, int minFilter,
@@ -75,16 +76,17 @@ namespace Journey {
                 glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
                 glEnableVertexAttribArray(1);
 
-                spriteComp->VAO = texVAO;
-                spriteComp->VBO = texVBO;
-                spriteComp->vertices = texvertices;
-                spriteComp->vertexCount = 6;
-                spriteComp->vertexStride = 5;
-                spriteComp->transparency = transparency;
-
                 std::shared_ptr<TextureRep> texPtr = LoadTexture(spritePath, GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT);
-                spriteComp->textureID = texPtr->textureId;
+                std::shared_ptr<SpriteModel> model = std::make_shared<SpriteModel>();
+                model->mVAO = texVAO;
+                model->mVertices = texvertices;
+                model->mVertexCount = 6;
+                model->mTextureID = texPtr->textureId;
+                model->mWidth = texPtr->width;
+                model->mHeight = texPtr->height;
+                spriteComp->spriteModel = model;
                 spriteComp->material = mat; 
+                spriteComp->transparency = transparency;
                 entity->mComponents.insert(std::make_pair(EComponentType::SpriteComponent, spriteComp));
                 break;
                 }

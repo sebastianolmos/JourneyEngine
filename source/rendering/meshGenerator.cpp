@@ -1,6 +1,8 @@
 #include "meshGenerator.hpp"
 #include <glad/glad.h>
 
+#include "model.hpp"
+
 namespace Journey {
 
     void MeshGenerator::GeneratePlane(std::shared_ptr<StaticMeshComponent> component, bool light)
@@ -50,14 +52,13 @@ namespace Journey {
             glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
             glEnableVertexAttribArray(1);
         }
-        
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
-        component->VAO = tmpVAO;
-        component->VBO = tmpVBO;
-        component->vertices = vert;
-        component->vertexCount = 6;
-        component->usingIndicesToRender = true;
+        std::shared_ptr<StaticMeshModel> model = std::make_shared<StaticMeshModel>();
+        model->mVAO = tmpVAO;
+        model->mVertices = vert;
+        model->mIndexCount = 6;
+        component->meshModel = model;
     }
 
     void MeshGenerator::GenerateCube(std::shared_ptr<StaticMeshComponent> component, bool light)
@@ -125,11 +126,11 @@ namespace Journey {
         
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
-        component->VAO = tmpVAO;
-        component->VBO = tmpVBO;
-        component->vertices = vert;
-        component->vertexCount = 36;
-        component->usingIndicesToRender = true;
+        std::shared_ptr<StaticMeshModel> model = std::make_shared<StaticMeshModel>();
+        model->mVAO = tmpVAO;
+        model->mVertices = vert;
+        model->mIndexCount = 36;
+        component->meshModel = model;
     }
 
     void MeshGenerator::GenerateCylinder(std::shared_ptr<StaticMeshComponent> component, bool light, int segments)
@@ -215,11 +216,11 @@ namespace Journey {
         
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
-        component->VAO = tmpVAO;
-        component->VBO = tmpVBO;
-        component->vertices = vert;
-        component->vertexCount = indices.size();
-        component->usingIndicesToRender = true;
+        std::shared_ptr<StaticMeshModel> model = std::make_shared<StaticMeshModel>();
+        model->mVAO = tmpVAO;
+        model->mVertices = vert;
+        model->mIndexCount = indices.size();
+        component->meshModel = model;
     }
 
     void MeshGenerator::GenerateSphere(std::shared_ptr<StaticMeshComponent> component, bool light, int segments)
@@ -297,11 +298,11 @@ namespace Journey {
         
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
-        component->VAO = tmpVAO;
-        component->VBO = tmpVBO;
-        component->vertices = vert;
-        component->vertexCount = indices.size();
-        component->usingIndicesToRender = true;
+        std::shared_ptr<StaticMeshModel> model = std::make_shared<StaticMeshModel>();
+        model->mVAO = tmpVAO;
+        model->mVertices = vert;
+        model->mIndexCount = indices.size();
+        component->meshModel = model;
     }
 
 }

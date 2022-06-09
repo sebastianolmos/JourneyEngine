@@ -39,7 +39,7 @@ namespace Journey {
             {   
                 RenderInfo rInfo;
                 staticMesh->UpdateRenderInfo(rInfo);
-                rInfo.model = newTransform;
+                rInfo.modelTransform = newTransform;
                 scene.GetRenderManager().AddObjectToRender(staticMesh->material->GetType(), rInfo);
             }
         }
@@ -50,7 +50,7 @@ namespace Journey {
             {   
                 RenderInfo rInfo;
                 sprite->UpdateRenderInfo(rInfo);
-                rInfo.model = newTransform;
+                rInfo.modelTransform = newTransform;
                 if (sprite->transparency) {
                     glm::vec3 position = glm::vec3(newTransform[3]);
                     float dist2 = glm::distance2(position, scene.GetCameraHandler().getViewPos());

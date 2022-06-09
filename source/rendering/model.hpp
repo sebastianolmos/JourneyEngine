@@ -1,56 +1,38 @@
 #pragma once
 
-#ifndef MODEL_H
-#define MODEL_H
-
-#include "mesh.hpp"
-
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <iostream>
-#include <map>
-#include <vector>
-
-struct aiMesh;
-struct aiScene;
-struct aiNode;
-struct aiMaterial;
-enum aiTextureType;
-
 namespace Journey {
-
-    unsigned int TextureFromFile(const char* path, const std::string& directory, bool gamma = false);
     class Shader;
+    class MeshGenerator;
+    class TextureManager;
 
     class Model {
     public:
-        // constructor, expects a filepath to a 3D model.
-        Model(std::string const& path, bool gamma = false);
-        // draws the model, and thus all its meshes
-        void Draw(Shader& shader);
-
-        // model data 
-        std::vector<Texture> textures_loaded;	// stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
-        std::vector<Mesh>    meshes;
-        std::string directory;
-        bool gammaCorrection;
-
-    private:
-        // loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
-        void loadModel(std::string const& path);
-        Mesh processMesh(aiMesh* mesh, const aiScene* scene);
-        // processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
-        void processNode(aiNode* node, const aiScene* scene);
-        // checks all material textures of a given type and loads the textures if they're not loaded yet.
-        // the required info is returned as a Texture struct.
-        std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
-        
+        virtual void drawCall(Shader& shader) = 0;
     };
 
+    class StaticMeshModel : public Model {
+    public:
+        StaticMeshModel() = default;
+        virtual void drawCall(Shader& shader) override;
+    private:
+        friend MeshGenerator;
+        float* mVertices;
+        int mIndexCount;
+        unsigned int mVAO;
+    };
+
+    class SpriteModel : public Model {
+    public:
+        SpriteModel() = default;
+        virtual void drawCall(Shader& shader) override;
+    private:
+        friend TextureManager;
+
+        float* mVertices;
+        int mVertexCount;
+        unsigned int mVAO;
+        unsigned mTextureID;
+        int mWidth;
+        int mHeight;
+    };
 }
-
-#endif
-
-
-

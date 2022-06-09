@@ -8,10 +8,28 @@
 
 #include "shaders/shader.hpp"
 #include "model.hpp"
+#include "importedModel.hpp"
 
 namespace Journey {
 
     struct RenderInfo{
+        std::shared_ptr<Model> modelObject;
+        glm::fvec3 ks;
+        glm::fvec3 kd;
+        glm::fvec3 ke;   
+        glm::fvec3 color;
+        glm::mat4 modelTransform;    
+
+        bool operator < (const RenderInfo& rInfo)const noexcept {
+            return this->ks.x < rInfo.ks.x;
+        }
+
+        bool operator>(const RenderInfo& rInfo)const noexcept {
+            return this->ks.x> rInfo.ks.x;
+        }
+    };
+
+    struct RenderDebugInfo{
         unsigned int VAO;
         unsigned int VBO;
         unsigned int textureID;
@@ -21,15 +39,7 @@ namespace Journey {
         glm::fvec3 kd;
         glm::fvec3 ke;   
         glm::fvec3 color;
-        glm::mat4 model;    
-
-        bool operator < (const RenderInfo& rInfo)const noexcept {
-            return this->VAO < rInfo.VAO;
-        }
-
-        bool operator>(const RenderInfo& rInfo)const noexcept {
-            return this->VAO > rInfo.VAO;
-        }
+        glm::mat4 model;
     };
     
     typedef std::pair<float, RenderInfo> TransparentInfo;
@@ -66,12 +76,12 @@ namespace Journey {
             std::priority_queue<TransparentInfo> mTransparentObjects;
 
             unsigned int mDrawLines = false;
-            std::vector<RenderInfo> mDebugObjects;
+            std::vector<RenderDebugInfo> mDebugObjects;
             void CreateDebugObjects();
             void CreateDebugFrustrumObject();
             void CreateDebugAxisObject();
             void DrawDebugObjects(Shader shaderProgram, Scene& scene);
-            Model* Testmodel;
+            ImportedModel* Testmodel;
     };
 
 }
