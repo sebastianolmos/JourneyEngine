@@ -12,7 +12,6 @@
 #include <map>
 #include <vector>
 
-class Shader;
 struct aiMesh;
 struct aiScene;
 struct aiNode;
@@ -22,7 +21,7 @@ enum aiTextureType;
 namespace Journey {
 
     unsigned int TextureFromFile(const char* path, const std::string& directory, bool gamma = false);
-
+    class Shader;
 
     class Model {
     public:

@@ -8,7 +8,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include "shaders/shader.h"
+#include "shaders/shader.hpp"
 #include <stb_image.h>
 
 namespace Journey {

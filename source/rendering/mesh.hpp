@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-class Shader;
 namespace Journey {
 
     struct Vertex {
@@ -19,12 +18,12 @@ namespace Journey {
         glm::vec3 Tangent; // tangent
         glm::vec3 Bitangent; // bitangent
     };
-
     struct Texture {
         unsigned int id;
         std::string type;
         std::string path;
     };
+    class Shader;
 
     class Mesh {
 

@@ -21,7 +21,7 @@ set(JOURNEY_HEADERS
         rendering/meshManager.hpp
         rendering/renderManager.hpp
         rendering/textureManager.hpp
-        rendering/shaders/shader.h
+        rendering/shaders/shader.hpp
         rendering/meshGenerator.hpp
         rendering/mesh.hpp
         rendering/model.hpp
@@ -42,6 +42,7 @@ set(JOURNEY_SOURCES
         rendering/meshManager.cpp
         rendering/renderManager.cpp
         rendering/textureManager.cpp
+        rendering/shaders/shader.cpp
         rendering/meshGenerator.cpp
         rendering/mesh.cpp
         rendering/model.cpp)

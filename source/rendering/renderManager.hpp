@@ -6,7 +6,7 @@
 #include <queue>
 #include <glm/glm.hpp>
 
-#include "shaders/shader.h"
+#include "shaders/shader.hpp"
 #include "model.hpp"
 
 namespace Journey {

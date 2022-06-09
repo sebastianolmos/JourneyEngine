@@ -1,7 +1,7 @@
 #include "mesh.hpp"
 
 #include <glad/glad.h> // holds all OpenGL type declarations
-#include "shaders/shader.h"
+#include "shaders/shader.hpp"
 
 namespace Journey {
 
