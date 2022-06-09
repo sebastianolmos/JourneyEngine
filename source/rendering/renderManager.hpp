@@ -81,7 +81,6 @@ namespace Journey {
             void CreateDebugFrustrumObject();
             void CreateDebugAxisObject();
             void DrawDebugObjects(Shader shaderProgram, Scene& scene);
-            ImportedModel* Testmodel;
     };
 
 }

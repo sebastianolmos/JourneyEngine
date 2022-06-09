@@ -18,8 +18,6 @@ namespace Journey {
         // other shaders
         CleanRenderInfo();
 
-        Testmodel = new ImportedModel("../../../assets/backpack/backpack.obj");
-
             //Enabling transparencies
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -162,7 +160,6 @@ namespace Journey {
         PhongTexturedShader.setVec3("material.specular", glm::vec3(0.5f)); 
         PhongTexturedShader.setFloat("material.shininess", 64.0f);
         PhongTexturedShader.setMat4("model", glm::mat4(1.0f));
-        Testmodel->drawCall(PhongTexturedShader);
 
         SimpleTexturedShader.use();
         SimpleTexturedShader.setMat4("projection", scene.GetCameraHandler().getProjection());

@@ -148,7 +148,6 @@ namespace Journey {
 
     std::vector<Texture> ImportedModel::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)
     {
-        stbi_set_flip_vertically_on_load(true);
         std::vector<Texture> textures;
         for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
         {
@@ -175,8 +174,6 @@ namespace Journey {
                 textures_loaded.push_back(texture);  // store it as texture loaded for entire model, to ensure we won't unnecesery load duplicate textures.
             }
         }
-        
-        stbi_set_flip_vertically_on_load(false);
         return textures;
     }
 

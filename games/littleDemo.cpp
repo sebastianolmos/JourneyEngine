@@ -163,8 +163,8 @@ public:
         //backpack test
         std::shared_ptr<Journey::Entity> backpack = std::make_shared<Journey::Entity>();
         backpack->getTransform().Set(glm::vec3(0.0f, -0.5f, 1.2f),
-                                glm::vec3(0.0f, glm::radians(35.0f), 0.0f),
-                                glm::vec3(0.4f, 1.0f, 0.3f)
+                                glm::vec3(0.0f, glm::radians(90.0f), 0.0f),
+                                glm::vec3(0.3f, 0.3f, 0.3f)
                                 );
         Journey::PhongTexturedMaterial* backpackMat = new Journey::PhongTexturedMaterial();
         backpackMat->kd = glm::vec3(0.6f, 0.6f, 0.6f);
