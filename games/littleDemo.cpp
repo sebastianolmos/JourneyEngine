@@ -90,12 +90,12 @@ public:
         mHeight = 0.3;
         mRotSpeed = 80.0f;
         mRunSpeed = 6.0f;
-        mPos.y = -17.0f;
+        mPos.y = -17.2f;
     }
     void throwProjectile() {
         std::shared_ptr<ProjectileEntity> projectile = std::make_shared<ProjectileEntity>(
             mPos + mUp * mHeight * 2.0f, 
-            2.0f, 
+            1.5f, 
             8.0f + glm::length(mVel)*mRunSpeed, 
             glm::vec3(getFixedVel().x, getFixedVel().y, 0.0f), 
             0.2f, mAngleZ + glm::radians(90.0f)
