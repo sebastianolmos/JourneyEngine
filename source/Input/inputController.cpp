@@ -242,7 +242,7 @@ namespace Journey {
                 
                 // Toggle Action
                 if (mOnToggleJoystickActions.count(jButton.first)!=0) {
-                    for(std::function<void(bool)> func : mOnToggleKeyActions[jButton.first])
+                    for(std::function<void(bool)> func : mOnToggleJoystickActions[jButton.first])
                         func(bCurrentState);
                 }
                 // Pressed key 
