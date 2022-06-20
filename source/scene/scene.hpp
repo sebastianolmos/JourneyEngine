@@ -16,6 +16,7 @@
 #include "../window/window.hpp"
 #include "../input/inputController.hpp"
 #include "../application.hpp"
+#include "entt/entt.hpp"
 
 #include <memory>
 #include <string>
@@ -59,6 +60,8 @@ namespace Journey {
             PointLight mPointLight;
             bool bAbleToUseDebugMode = false; 
             bool bDebugMode = false; 
+
+            entt::registry mRegistry;
     };
 
 }
