@@ -7,3 +7,6 @@
 [submodule "libs/assimp/source/assimp"]
 	path = libs/assimp/source/assimp
 	url = https://github.com/assimp/assimp.git
+[submodule "libs/openal/source/openal-soft"]
+	path = libs/openal/source/openal-soft
+	url = https://github.com/kcat/openal-soft.git
