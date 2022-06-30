@@ -28,7 +28,7 @@ void RegisterTextures(Journey::TextureManager& manager) {
 void RegisterAudios(Journey::AudioManager& manager) {
     manager.LoadAudioBuffer("background", "../../../assets/audio/Guitar-Gentle.wav");
     manager.LoadAudioBuffer("bark", "../../../assets/audio/bark.wav");
-    manager.LoadAudioBuffer("jumping", "../../../assets/audio/cartoon_jump.wav");
+    manager.LoadAudioBuffer("jumping", "../../../assets/audio/loop.wav");
     manager.LoadAudioBuffer("hit", "../../../assets/audio/sharp_punch.wav");
     manager.LoadAudioBuffer("coin", "../../../assets/audio/short_success_sound.wav");
     manager.LoadAudioBuffer("catched", "../../../assets/audio/tada.wav");
@@ -215,8 +215,7 @@ public:
         getTransform().SetRotation(glm::vec3(glm::radians(90.0f), 0.0f, mTheta));
 
         // Check collision with shiba
-        if (!mOverlaped && glm::distance2(getTransform().GetLocalTranslation(), mShibaRef->getTransform().GetLocalTranslation()) < mRadius*mRadius) {
-            mOverlaped = true;
+        if (glm::distance2(getTransform().GetLocalTranslation(), mShibaRef->getTransform().GetLocalTranslation()) < mRadius*mRadius) {
             std::shared_ptr<PlayAndDelete> audio = std::make_shared<PlayAndDelete>(getTransform().GetLocalTranslation(), "coin", 0.8);
             mManager->AddEntity(nullptr, audio);
             mManager->DeleteEntity(shared_from_this());
@@ -233,8 +232,6 @@ private:
     float mHeight = 1.0f;
     float mRadius = 0.8f;
     float mTheta = 0.0f;
-    bool mOverlaped = false;
-
 };
 
 class RabbitEntity : public Journey::Entity {
@@ -242,6 +239,9 @@ public:
     RabbitEntity(std::shared_ptr<Journey::Entity> dogRef, glm::vec3 pos, float size) {
         mShibaRef = dogRef;
         getTransform().Set(pos, glm::vec3(0.0f), glm::vec3(size));
+        mPos.x = pos.x;
+        mPos.y = pos.y;
+        mHeight = pos.z;
     }
     ~RabbitEntity() = default;
     virtual void UserStartUp(Journey::Scene& scene) override {
@@ -250,12 +250,47 @@ public:
         mat->ke = glm::vec3(0.5f, 0.5f, 0.5f);
         mat->ks = glm::vec3(0.6f, 0.6f, 0.6f);
         Journey::MeshManager::getInstance().AddMeshComponent(shared_from_this(), std::shared_ptr<Journey::Material>(mat), "rabbit");
+        scene.GetAudioManager().AddAudioSourceComponent(shared_from_this(), "jumping", false, true);
+        if (this->HasComponent(Journey::EComponentType::AudioSourceComponent)){
+            Journey::AudioSourceComponent* audioSrc = dynamic_cast<Journey::AudioSourceComponent*>(this->GetComponent(Journey::EComponentType::AudioSourceComponent).get());
+            audioSrc->setVolume(0.8);
+            audioSrc->play();
+        }
+        selectGoal();
     }
     virtual void UserUpdate(Journey::Scene& scene, float deltaTime) override {
+        mPos += mDir *speed * deltaTime;
+        getTransform().SetTranslation(glm::vec3(mPos.x, mPos.y, mHeight));
+        if (glm::distance2(mPos, mGoal) < 1.0f) {
+            selectGoal();
+        }
+    }
+
+    void selectGoal() {
+        bool unselect = true;
+        while (unselect) {
+            float ranX = (((rand() / static_cast<float>(RAND_MAX)) * 2.0f ) -1.0f ) * 50.0f;
+            float ranY = -12.5 + (((rand() / static_cast<float>(RAND_MAX)) * 2.0f ) -1.0f ) * 35.0f;
+            if (ranX > mLeft && ranX < mRight && ranY < mTop && ranY > mBottom) {
+                unselect = false;
+                mGoal = glm::vec2(ranX, ranY);
+                mDir = glm::normalize(mGoal - mPos);
+            }
+        }
     }
 
 private:
     std::shared_ptr<Journey::Entity> mShibaRef;
+    float mLeft = -50.0f;
+    float mRight = 50.0f;
+    float mTop = 20.0f;
+    float mBottom = -35.0f;
+    glm::vec2 mGoal;
+    glm::vec2 mPos;
+    glm::vec2 mDir;
+    float mHeight;
+    float speed = 7.0f;
+
 };
 
 class BushEntity : public Journey::Entity {

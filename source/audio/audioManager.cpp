@@ -190,13 +190,19 @@ void AudioManager::updateListener(Scene& scene, float deltaTime)
 void AudioManager::updateSources(float deltaTime)
 {
     for(auto& aInfo: mAudioSourcesBatch) {
-        glm::vec3 lastPos;
-        OPENALCALL(alGetSourcefv(aInfo.second->m_Id, AL_POSITION, glm::value_ptr(lastPos)));
+        ALint global;
+        OPENALCALL(alGetSourcei(aInfo.second->m_Id, AL_SOURCE_RELATIVE, &global));
+        if (global == AL_TRUE)
+            continue;
+        else {
+            glm::vec3 lastPos;
+            OPENALCALL(alGetSourcefv(aInfo.second->m_Id, AL_POSITION, glm::value_ptr(lastPos)));
 
-        OPENALCALL(alSourcefv(aInfo.second->m_Id, AL_POSITION, glm::value_ptr(aInfo.first)));
+            OPENALCALL(alSourcefv(aInfo.second->m_Id, AL_POSITION, glm::value_ptr(aInfo.first)));
 
-        glm::vec3 velocity = (aInfo.first - lastPos) / float(deltaTime);
-        OPENALCALL(alSourcefv(aInfo.second->m_Id, AL_VELOCITY, glm::value_ptr(velocity)));
+            glm::vec3 velocity = (aInfo.first - lastPos) / float(deltaTime);
+            OPENALCALL(alSourcefv(aInfo.second->m_Id, AL_VELOCITY, glm::value_ptr(velocity)));
+            }
     }   
 }
 

@@ -13,12 +13,12 @@ namespace Journey{
     class TextureManager;
     class MeshManager;
     class AudioManager;
+    enum class EState {
+        Active,
+        PendingDestroy
+    };
     class Entity : public std::enable_shared_from_this<Entity> {
         public:
-            enum class EState {
-                Active,
-                PendingDestroy
-            };
 
             Transform& getTransform() {return mTransform;}
             
