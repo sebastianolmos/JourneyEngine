@@ -15,8 +15,10 @@ namespace Journey {
         mInputController.StartUp(mWindow.mWindowHandle);
         mEntityManager->StartUp();
         mRenderManager.StartUp();
+        mAudioManager.StartUp();
 
         mApplication.StartUp(*this);
+        mAudioManager.test();
     }
 
     Scene::~Scene()
@@ -25,6 +27,7 @@ namespace Journey {
 
         mRenderManager.ShutDown();
         mEntityManager->ShutDown();
+        mAudioManager.ShutDown();
 		// ShotDown the Input Controller
         mWindow.ShutDown();
     }

@@ -13,6 +13,7 @@
 #include "../component/sprite.hpp"
 #include "../rendering/material.hpp"
 #include "../rendering/renderManager.hpp"
+#include "../audio/audioManager.hpp"
 #include "../window/window.hpp"
 #include "../input/inputController.hpp"
 #include "../application.hpp"
@@ -55,6 +56,7 @@ namespace Journey {
             bool mShouldClose;
             std::shared_ptr<EntityManager> mEntityManager;
             RenderManager mRenderManager;
+            AudioManager mAudioManager;
             CameraHandler mCameraHandler;
             PointLight mPointLight;
             bool bAbleToUseDebugMode = false; 
