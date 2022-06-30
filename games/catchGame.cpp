@@ -22,6 +22,11 @@ void RegisterTextures(Journey::TextureManager& manager) {
     manager.LoadModelTexture("carpincho", "../../../assets/sprites/carpincho.png");
 }
 
+void RegisterAudios(Journey::AudioManager& manager) {
+    manager.LoadAudioBuffer("loop", "../../../assets/audio/loop.wav");
+    manager.LoadAudioBuffer("bark", "../../../assets/audio/bark.wav");
+}
+
 class ProjectileEntity : public Journey::Entity {
 public:
     ProjectileEntity(glm::vec3 spawnPos, float timeToDelete, float speed, glm::vec3 direction, float size, float rotZ) {
@@ -91,6 +96,8 @@ public:
         mRotSpeed = 80.0f;
         mRunSpeed = 6.0f;
         mPos.y = -17.2f;
+        // Add audio source
+        scene.GetAudioManager().AddAudioSourceComponent(shared_from_this(), "bark", false, false);
     }
     void throwProjectile() {
         std::shared_ptr<ProjectileEntity> projectile = std::make_shared<ProjectileEntity>(
@@ -101,6 +108,10 @@ public:
             0.2f, mAngleZ + glm::radians(90.0f)
         );
         mManager->AddEntity(nullptr, projectile);
+        if (this->HasComponent(Journey::EComponentType::AudioSourceComponent)){
+            Journey::AudioSourceComponent* audioSrc = dynamic_cast<Journey::AudioSourceComponent*>(this->GetComponent(Journey::EComponentType::AudioSourceComponent).get());
+            audioSrc->play();
+        }
     }
 };
 
@@ -179,6 +190,7 @@ public:
         RegisterInputs(scene.GetInputController());
         RegisterMeshes(Journey::MeshManager::getInstance());
         RegisterTextures(Journey::TextureManager::getInstance());
+        RegisterAudios(scene.GetAudioManager());
 
         auto& meshManager = Journey::MeshManager::getInstance();
         // Floor Terrain entity
@@ -194,10 +206,21 @@ public:
         meshManager.AddMeshComponent(terrain, std::shared_ptr<Journey::Material>(terrainMat), "terrainMesh");
         scene.AddEntity(nullptr, terrain);
 
+
         // Set Camera
         mainCamera = std::make_shared<Journey::FollowCamera>(mWidth, mHeight);
         scene.GetCameraHandler().setCurrentCamera(mainCamera);
         mainCamera->setFov(45.0f);
+
+        // Add audio listener
+        scene.GetAudioManager().AddListener(mainCamera->getViewPos(), 1.0f);
+
+        // Add background music
+        scene.GetAudioManager().AddAudioSourceComponent(terrain, "loop", true, true);
+        if (terrain->HasComponent(Journey::EComponentType::AudioSourceComponent)){
+            Journey::AudioSourceComponent* audioSrc = dynamic_cast<Journey::AudioSourceComponent*>(terrain->GetComponent(Journey::EComponentType::AudioSourceComponent).get());
+            audioSrc->play();
+        }
 
         //Set light 
         scene.GetPointLight().setLightPos(glm::vec3(20.0f, -20.0f, 10.0f));

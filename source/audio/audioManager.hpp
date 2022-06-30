@@ -14,10 +14,11 @@ namespace Journey {
     class AudioSourceComponent;
 
     struct AudioData {
-        signed short* data;
-        unsigned int channels;
-        unsigned int sample_rate;
-        unsigned __int64 frame_count;
+        unsigned int channels = 0;
+		unsigned int sampleRate = 0;
+		unsigned __int64 totalPCMFrameCount = 0;
+		std::vector<uint16_t> pcmData;
+		unsigned __int64 GetTotalSamples() const { return totalPCMFrameCount * channels; }
     };
 
     class AudioManager {

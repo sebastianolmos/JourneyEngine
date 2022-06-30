@@ -33,6 +33,7 @@ namespace Journey {
 
     void Scene::StartMainLoop()
     {
+        //mAudioManager.test();
         std::chrono::time_point<std::chrono::steady_clock> startTime = std::chrono::steady_clock::now();
         while (!mWindow.ShouldClose() && !mShouldClose)
 		{

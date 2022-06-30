@@ -28,7 +28,6 @@ set(JOURNEY_HEADERS
         rendering/model.hpp
         rendering/importedModel.hpp
         audio/audioBuffer.hpp
-        audio/audioListener.hpp
         audio/audioManager.hpp
         scene/scene.hpp
         performanceMonitor.h)
@@ -53,6 +52,7 @@ set(JOURNEY_SOURCES
         rendering/mesh.cpp
         rendering/model.cpp
         rendering/importedModel.cpp
+        audio/audioBuffer.cpp
         audio/audioManager.cpp)
 
 file(GLOB_RECURSE Shaders  "${CMAKE_SOURCE_DIR}/source/shaders/*")

@@ -18,12 +18,15 @@
 #include "audioBuffer.hpp"
 #include "../scene/scene.hpp"
 
+
+#ifndef OPENALCALL
 #define OPENALCALL(function)\
 	function;\
 	{\
 		ALenum error = alGetError();\
 		assert(error != AL_NO_ERROR, "OpenAL Error");\
 	}
+#endif
 
 namespace Journey {
 
@@ -61,23 +64,36 @@ void AudioManager::LoadAudioBuffer(std::string audioName, std::string audioPath)
     std::size_t hashedName = mHasher(audioName);
     if (mAudioBufferRecord.count(hashedName) != 0)
         return;
-    std::shared_ptr<AudioData> buffer = std::make_shared<AudioData>();
 
-    buffer->data = drwav_open_file_and_read_pcm_frames_s16(
-            audioPath.c_str(),
-            &(buffer->channels),
-            &(buffer->sample_rate),
-            &(buffer->frame_count),
-            nullptr);
+    AudioData audioData;
+	drwav_int16* sampleData = drwav_open_file_and_read_pcm_frames_s16(
+		audioPath.c_str(),
+		&audioData.channels,
+		&audioData.sampleRate,
+		&audioData.totalPCMFrameCount,
+		nullptr);
+    if (!sampleData)
+	{
+		std::cerr << "Audio Clip Error: Failed to load file " << audioPath.c_str();
+		drwav_free(sampleData, nullptr);
+		return;
+	}
+	else if (audioData.GetTotalSamples() > drwav_uint64(std::numeric_limits<size_t>::max()))
+	{
+		std::cerr << "Audio Clip Error: File " << audioPath.c_str() << " is to big to be loaded.";
+		drwav_free(sampleData, nullptr);
+		return;
+	}
+    /*at this point, the wav file is correctly loaded */
 
-    if (!(buffer->data)) {
-        throw std::runtime_error(std::string("Failed to open file: ") + audioPath);
-        return;
-    }
-    // As a record, we hold the data
-    //drwav_free(buffer->data, nullptr);
+	//Si la carga usando dr_wav fue exitosa se comienza el transpaso de estos datos a OpenAL.
+	audioData.pcmData.resize(size_t(audioData.GetTotalSamples()));
 
-    mAudioBufferRecord.insert({hashedName, buffer});
+	//Primero se copian todos los datos a un vector de uint16_t, para luego liberar los datos recien copiados.
+	std::memcpy(audioData.pcmData.data(), sampleData, audioData.pcmData.size() * 2);
+	drwav_free(sampleData, nullptr);
+    std::shared_ptr<AudioData> fData = std::make_shared<AudioData>(audioData);
+    mAudioBufferRecord.insert({hashedName, fData});
 }
 
 void AudioManager::AddAudioSourceComponent(std::shared_ptr<Entity> entity, std::string audioName, bool global, bool loop)
@@ -90,23 +106,39 @@ void AudioManager::AddAudioSourceComponent(std::shared_ptr<Entity> entity, std::
         return;
     }
 
+    /* Setting up a source */
+	ALuint source;
+	OPENALCALL(alGenSources((ALuint)1, &source));
+	OPENALCALL(alSourcef(source, AL_PITCH, 1));
+	OPENALCALL(alSourcef(source, AL_GAIN, 1));
+    OPENALCALL(alSource3f(source, AL_POSITION, 0, 0, 0));
+	OPENALCALL(alSource3f(source, AL_VELOCITY, 0, 0, 0));
+	OPENALCALL(alSourcei(source, AL_LOOPING, loop));
+    if (global) {
+        OPENALCALL(alSourcei(source, AL_SOURCE_RELATIVE, AL_TRUE));
+    }
+
+    std::shared_ptr<AudioData> fData = mAudioBufferRecord[hashedName];
+    /* Generating a buffer */
+	ALuint buffer;
+	OPENALCALL(alGenBuffers((ALuint)1, &buffer));
+    OPENALCALL(alBufferData(
+		buffer,
+		fData->channels > 1 ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16,
+		fData->pcmData.data(),
+		fData->pcmData.size() * 2,
+		fData->sampleRate)
+	);
+
+    /* Binding the buffer with the data to source */
+	OPENALCALL(alSourcei(source, AL_BUFFER, buffer));
+
     std::shared_ptr<AudioSourceComponent> audioSrc = std::make_shared<AudioSourceComponent>();
     audioSrc->mLoop = loop;
     audioSrc->mGlobal = global;
 
-    std::shared_ptr<AudioData> dataPtr = mAudioBufferRecord[hashedName];
-    using Format = AudioBuffer::Format;
-    const auto fmt = (dataPtr->channels) == 1 ? Format::Mono16 : Format::Stereo16;
-    const auto size = sizeof(drwav_int16) * (dataPtr->frame_count);
-    std::shared_ptr<AudioBuffer> buffer = std::make_shared<AudioBuffer>();
-    buffer->setData(fmt, (dataPtr->sample_rate), size, (dataPtr->data));
-    if (global) {
-        OPENALCALL(alSourcei(buffer->m_id, AL_SOURCE_RELATIVE, AL_TRUE));
-        OPENALCALL(alListener3f(AL_POSITION, 0, 0, 0));
-    }
-    OPENALCALL(alSourcei(buffer->m_id, AL_LOOPING, loop));
-
-    audioSrc->mBuffer = buffer;
+    std::shared_ptr<AudioBuffer> aBuffer = std::make_shared<AudioBuffer>(source, buffer);
+    audioSrc->mBuffer = aBuffer;
     entity->mComponents.insert({EComponentType::AudioSourceComponent, audioSrc});
 }
 
@@ -159,12 +191,12 @@ void AudioManager::updateSources(float deltaTime)
 {
     for(auto& aInfo: mAudioSourcesBatch) {
         glm::vec3 lastPos;
-        OPENALCALL(alGetSourcefv(aInfo.second->m_id, AL_POSITION, glm::value_ptr(lastPos)));
+        OPENALCALL(alGetSourcefv(aInfo.second->m_Id, AL_POSITION, glm::value_ptr(lastPos)));
 
-        OPENALCALL(alSourcefv(aInfo.second->m_id, AL_POSITION, glm::value_ptr(aInfo.first)));
+        OPENALCALL(alSourcefv(aInfo.second->m_Id, AL_POSITION, glm::value_ptr(aInfo.first)));
 
         glm::vec3 velocity = (aInfo.first - lastPos) / float(deltaTime);
-        OPENALCALL(alSourcefv(aInfo.second->m_id, AL_VELOCITY, glm::value_ptr(velocity)));
+        OPENALCALL(alSourcefv(aInfo.second->m_Id, AL_VELOCITY, glm::value_ptr(velocity)));
     }   
 }
 
@@ -322,3 +354,7 @@ void AudioManager::test()
 	std::cout << "The wav file lasted " << duration << " seconds." << std::endl;
     }
 }
+
+#ifdef OPENALCALL
+#undef OPENALCALL
+#endif
