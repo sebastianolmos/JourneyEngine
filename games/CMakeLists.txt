@@ -7,10 +7,8 @@ function(Add_Game TARGETNAME FILENAME)
 	set_property(TARGET ${TARGETNAME} PROPERTY FOLDER Games)
 	target_link_libraries(${TARGETNAME} PRIVATE 
 				JourneyEngine 
-				${THIRD_PARTY_LIBRARIES}
-				"${CMAKE_SOURCE_DIR}/build/libs/dr_wav/Release/dr_wav.lib"
-				"${CMAKE_SOURCE_DIR}/build/libs/openal/source/openal-soft/Release/OpenAL32.lib")
-	target_include_directories(${TARGETNAME} PRIVATE ${JOURNEY_INCLUDE_DIRECTORY} ${THIRD_PARTY_INCLUDE_DIRECTORIES})
+				${THIRD_PARTY_LIBRARIES})
+	target_include_directories(${TARGETNAME} PRIVATE ${JOURNEY_INCLUDE_DIRECTORY} ${THIRD_PARTY_INCLUDE_DIRECTORIES}) 
 endfunction(Add_Game)
 
 Add_Game(LittleDemo_v0 littleDemo.cpp)

@@ -8,7 +8,7 @@ Se necesita tener Visual Studio 2019 y CMake
 
 - Clonar el repositorio
 - Dentro del repositorio escribir el comando ``git submodule update --init --recursive``
-- Compilar cada libreria en release dentro de una carpeta build al lado de la carpeta source (solo glfw, glad y Assimp nesecitan compilacion).
+- Compilar cada libreria en release dentro de una carpeta build al lado de la carpeta source (glfw, glad, Assimp y openAL nesecitan compilacion).
     - mkdir libs\glfw\build
     - cd libs\glfw\build
     - cmake ..\source\glfw\ .
@@ -23,6 +23,10 @@ Se necesita tener Visual Studio 2019 y CMake
     - Abrir el .sln dentro de build
     - Compilar en modo Release
     - El ejecutable estara en build/games/Release
+
+Tambien de puede compilar con el comando
+
+    cmake --build build -A x64 --config Release
 
 ¡¡Es importante ejecutar el juego desde el directorio ``build/games/Release``!! Esto para que funcionene correctamente los path a los assets del demo:
 
