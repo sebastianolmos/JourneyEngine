@@ -18,5 +18,6 @@
 #include <memory>
 #include <stdlib.h>
 #include <ctime>
+#include  <glm/gtx/norm.hpp>
 
 #endif

@@ -101,24 +101,29 @@ namespace Journey {
 
     void EntityManager::DeleteEntity(std::shared_ptr<Entity> entity) 
     {
-        if (entity->mParent == nullptr) {
-            if (mEntities.count(entity->mId) > 0){
-                mEntities.erase(entity->mId);
-                entity->ShutDown();
-                mDeletedEntities.push_back(entity);
-            }
+        if (entity->mCurrentState != EState::PendingDestroy) {
+            entity->mCurrentState = EState::PendingDestroy;
+            mDeletedEntities.push_back(entity);
         }
-        else {
-            if (entity->mParent->mChildren.count(entity->mId) > 0) {
-                entity->mParent->mChildren.erase(entity->mId);
-                entity->ShutDown();
-                mDeletedEntities.push_back(entity);
-            }
-        }
+        
     }
 
     void EntityManager::DeleteEntities()
-    {
+    {   
+        for(auto& entity: mDeletedEntities) {
+            if (entity->mParent == nullptr) {
+                if (mEntities.count(entity->mId) > 0){
+                    mEntities.erase(entity->mId);
+                    entity->ShutDown();
+                }
+            }
+            else {
+                if (entity->mParent->mChildren.count(entity->mId) > 0) {
+                    entity->mParent->mChildren.erase(entity->mId);
+                    entity->ShutDown();
+                }
+            }
+        }
         mDeletedEntities.clear();
     }
 }
