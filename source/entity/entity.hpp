@@ -40,6 +40,14 @@ namespace Journey{
             virtual void UserUpdate(Scene& scene, float deltaTime) {};
             virtual void UserStartUp(Scene& scene){};
             const EState GetState() const { return mCurrentState; }
+            bool HasComponent(EComponentType component) {return mComponents.count(component) != 0;}
+            
+            std::shared_ptr<Component> GetComponent(EComponentType component) {
+                if (HasComponent(component)) 
+                    return mComponents[component];
+                else
+                    nullptr;
+            }
 
 
         protected:
