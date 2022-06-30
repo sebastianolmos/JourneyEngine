@@ -150,4 +150,14 @@ namespace Journey {
         mUp = glm::cross(mMovRight, mFront);
         mRight = glm::cross(mFront, mUp);
     }
+
+    glm::vec3 DebugCamera::getFront()
+    {
+        return mFront;
+    }
+
+    glm::vec3 DebugCamera::getUp()
+    {
+        return mUp;
+    }
 }

@@ -13,5 +13,9 @@ namespace Journey {
         virtual glm::mat4 getViewMatrix() = 0;
 
         virtual glm::vec3 getViewPos() = 0;
+
+        virtual glm::vec3 getFront() = 0;
+
+        virtual glm::vec3 getUp() = 0;
     };
 }

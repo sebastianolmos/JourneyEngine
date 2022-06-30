@@ -12,6 +12,7 @@ namespace Journey{
     class EntityManager;
     class TextureManager;
     class MeshManager;
+    class AudioManager;
     class Entity : public std::enable_shared_from_this<Entity> {
         public:
             enum class EState {
@@ -51,6 +52,7 @@ namespace Journey{
             friend EntityManager;
             friend TextureManager;
             friend MeshManager;
+            friend AudioManager;
 
             void ShutDown() noexcept {mCurrentState = EState::PendingDestroy; }
 

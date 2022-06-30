@@ -18,7 +18,6 @@ namespace Journey {
         mAudioManager.StartUp();
 
         mApplication.StartUp(*this);
-        mAudioManager.test();
     }
 
     Scene::~Scene()
@@ -53,10 +52,13 @@ namespace Journey {
         mInputController.PollDevices(mWindow.mWindowHandle, *this, deltaTime);
         if (!InDebugMode()) {
             mRenderManager.CleanRenderInfo();
+            mAudioManager.cleanBatch();
             mEntityManager->UpdateEntities(*this, deltaTime);
             mApplication.UserUpdate(*this, deltaTime);
             mEntityManager->DeleteEntities();
         }
+        mAudioManager.updateListener(*this, deltaTime);
+        mAudioManager.updateSources(deltaTime);
         mRenderManager.DrawCall(*this);
         mWindow.SwapBuffers();
     }
@@ -122,4 +124,10 @@ namespace Journey {
     {
         mRenderManager.mDrawLines = !mRenderManager.mDrawLines;
     }
+
+     AudioManager& Scene::GetAudioManager()
+    {
+        return mAudioManager;
+    }
+
 }

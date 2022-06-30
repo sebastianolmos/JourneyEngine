@@ -2,8 +2,10 @@
 #include "../scene/scene.hpp"
 #include "../component/component.hpp"
 #include "../component/staticMesh.hpp"
+#include "../component/audioSource.hpp"
 #include "../component/sprite.hpp"
 #include "../rendering/material.hpp"
+#include "../audio/audioManager.hpp"
 #include  <glm/gtx/norm.hpp>
 
 #include <iostream>
@@ -59,6 +61,12 @@ namespace Journey {
                 else
                     scene.GetRenderManager().AddObjectToRender(sprite->material->GetType(), rInfo);
             }
+        }
+        //Check AudioSource Component
+        if ((entity->mComponents).count(EComponentType::AudioSourceComponent) != 0 )
+        {
+            AudioSourceComponent* audioSrc = dynamic_cast<AudioSourceComponent*>((entity->mComponents[EComponentType::AudioSourceComponent]).get());
+            scene.GetAudioManager().pushSourceToBatch(newTransform[3], audioSrc->getBuffer());
         }
 
         for (std::pair<int, std::shared_ptr<Entity>> element : entity->mChildren)

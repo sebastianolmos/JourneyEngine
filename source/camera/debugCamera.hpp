@@ -30,6 +30,10 @@ namespace Journey {
 
         virtual glm::vec3 getViewPos() override;
 
+        virtual glm::vec3 getFront() override;
+
+        virtual glm::vec3 getUp() override;
+
         void SetRotDrag(bool value);
         void SetCenterDrag(bool value);
         void SetVerticalDrag(bool value);

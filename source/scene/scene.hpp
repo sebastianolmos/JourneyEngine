@@ -31,6 +31,7 @@ namespace Journey {
 
             InputController& GetInputController();
             RenderManager& GetRenderManager();
+            AudioManager& GetAudioManager();
 		    Window& GetWindow();
 		    void EndApplication();
             void AddEntity(std::shared_ptr<Entity> parentEntity, std::shared_ptr<Entity> newEntity);

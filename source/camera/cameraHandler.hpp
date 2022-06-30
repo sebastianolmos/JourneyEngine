@@ -21,6 +21,16 @@ namespace Journey{
                 return mCurrentCamera->getViewPos();
             }
 
+            glm::vec3 getFront()
+            {
+                return mCurrentCamera->getFront();
+            }
+
+            glm::vec3 getUp()
+            {
+                return mCurrentCamera->getUp();
+            }
+
             void setCurrentCamera(std::shared_ptr<Camera> newCamera) {
                 mCurrentCamera = newCamera;
             }

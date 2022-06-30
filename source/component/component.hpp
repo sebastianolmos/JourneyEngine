@@ -5,14 +5,15 @@ namespace Journey {
     struct RenderInfo;
     enum class EComponentType : uint8_t {
 		StaticMeshComponent,
-        SpriteComponent
+        SpriteComponent,
+        AudioSourceComponent
 	};
 
     class Component {
         public:
             virtual EComponentType GetType() = 0;
             virtual void UpdateRenderInfo(RenderInfo& rInfo) {}
-
+            
             EComponentType mType;        
     };
 

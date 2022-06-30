@@ -12,6 +12,8 @@ namespace Journey {
         virtual glm::mat4 getProjection() override;
         virtual glm::mat4 getViewMatrix() override;
         virtual glm::vec3 getViewPos() override;
+        virtual glm::vec3 getFront() override;
+        virtual glm::vec3 getUp() override;
 
         void setFollowPoint(glm::vec3 point);
         void setFollowRot(float rot);

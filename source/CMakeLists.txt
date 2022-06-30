@@ -17,6 +17,7 @@ set(JOURNEY_HEADERS
         component/transform.hpp
         component/sprite.hpp
         component/staticMesh.hpp
+        component/audioSource.hpp
         rendering/material.hpp
         rendering/meshManager.hpp
         rendering/renderManager.hpp
@@ -26,6 +27,8 @@ set(JOURNEY_HEADERS
         rendering/mesh.hpp
         rendering/model.hpp
         rendering/importedModel.hpp
+        audio/audioBuffer.hpp
+        audio/audioListener.hpp
         audio/audioManager.hpp
         scene/scene.hpp
         performanceMonitor.h)
@@ -40,6 +43,7 @@ set(JOURNEY_SOURCES
         camera/debugCamera.cpp
         camera/followCamera.cpp
         component/transform.cpp
+        component/audioSource.cpp
         rendering/material.cpp
         rendering/meshManager.cpp
         rendering/renderManager.cpp

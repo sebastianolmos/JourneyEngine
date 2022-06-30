@@ -1,9 +1,22 @@
 #include "audioManager.hpp"
 
+#define DR_WAV_IMPLEMENTATION
+#include "dr_wav.h"
+
+#include "AL/al.h"
+#include "AL/alc.h"
+
+
 #include <iostream>
 #include <cassert>
 #include <vector>
 #include <chrono>
+#include <glm/gtc/type_ptr.hpp>
+
+#include "../entity/entity.hpp"
+#include "../component/audioSource.hpp"
+#include "audioBuffer.hpp"
+#include "../scene/scene.hpp"
 
 #define OPENALCALL(function)\
 	function;\
@@ -14,7 +27,148 @@
 
 namespace Journey {
 
-void AudioManager::list_audio_devices(const ALCchar* devices)
+void AudioManager::StartUp() 
+{
+    //Create the context
+    /* Conecting to the default device */
+	const char* devicename = alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER);
+	ALCdevice* device = OPENALCALL(alcOpenDevice(devicename));
+	if (device == nullptr) return;
+
+	/* Checking if our OpenAL support enumeration of devices */
+	ALboolean enumeration = OPENALCALL(alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT"));
+	if (enumeration == AL_FALSE)
+		std::cout << "enumeration not supported" << std::endl;
+	else
+		std::cout << "enumeration supported" << std::endl;
+
+	// list_audio_devices(alcGetString(NULL, ALC_DEVICE_SPECIFIER));
+
+	ALCcontext* context = OPENALCALL(alcCreateContext(device, NULL));
+	bool success = OPENALCALL(alcMakeContextCurrent(context));
+	if (!success) return;
+
+	std::cout << "OpenAL context OK" << std::endl;
+}
+
+void AudioManager::ShutDown() 
+{
+    cleanBatch();
+}
+
+void AudioManager::LoadAudioBuffer(std::string audioName, std::string audioPath) 
+{
+    std::size_t hashedName = mHasher(audioName);
+    if (mAudioBufferRecord.count(hashedName) != 0)
+        return;
+    std::shared_ptr<AudioData> buffer = std::make_shared<AudioData>();
+
+    buffer->data = drwav_open_file_and_read_pcm_frames_s16(
+            audioPath.c_str(),
+            &(buffer->channels),
+            &(buffer->sample_rate),
+            &(buffer->frame_count),
+            nullptr);
+
+    if (!(buffer->data)) {
+        throw std::runtime_error(std::string("Failed to open file: ") + audioPath);
+        return;
+    }
+    // As a record, we hold the data
+    //drwav_free(buffer->data, nullptr);
+
+    mAudioBufferRecord.insert({hashedName, buffer});
+}
+
+void AudioManager::AddAudioSourceComponent(std::shared_ptr<Entity> entity, std::string audioName, bool global, bool loop)
+{
+    std::size_t hashedName = mHasher(audioName);
+    if (entity == nullptr || entity->mComponents.count(EComponentType::AudioSourceComponent) != 0)
+        return;
+    if (mAudioBufferRecord.count(hashedName) == 0) {
+        std::cout << audioName << " No registered"<< std::endl;
+        return;
+    }
+
+    std::shared_ptr<AudioSourceComponent> audioSrc = std::make_shared<AudioSourceComponent>();
+    audioSrc->mLoop = loop;
+    audioSrc->mGlobal = global;
+
+    std::shared_ptr<AudioData> dataPtr = mAudioBufferRecord[hashedName];
+    using Format = AudioBuffer::Format;
+    const auto fmt = (dataPtr->channels) == 1 ? Format::Mono16 : Format::Stereo16;
+    const auto size = sizeof(drwav_int16) * (dataPtr->frame_count);
+    std::shared_ptr<AudioBuffer> buffer = std::make_shared<AudioBuffer>();
+    buffer->setData(fmt, (dataPtr->sample_rate), size, (dataPtr->data));
+    if (global) {
+        OPENALCALL(alSourcei(buffer->m_id, AL_SOURCE_RELATIVE, AL_TRUE));
+        OPENALCALL(alListener3f(AL_POSITION, 0, 0, 0));
+    }
+    OPENALCALL(alSourcei(buffer->m_id, AL_LOOPING, loop));
+
+    audioSrc->mBuffer = buffer;
+    entity->mComponents.insert({EComponentType::AudioSourceComponent, audioSrc});
+}
+
+void AudioManager::AddListener(glm::vec3 position, float volume)
+{
+    /* Setting up the listener */
+	ALfloat listenerOrigin[] = { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f };
+    OPENALCALL(alListenerfv(AL_POSITION, glm::value_ptr(position)));
+	OPENALCALL(alListener3f(AL_VELOCITY, 0, 0, 0));
+	OPENALCALL(alListenerfv(AL_ORIENTATION, listenerOrigin));
+    OPENALCALL(alListenerf(AL_GAIN, volume));
+}
+
+void AudioManager::setListenerVolume(float volume)
+{
+    OPENALCALL(alListenerf(AL_GAIN, volume));
+}
+
+float AudioManager::getListenerVolume()
+{
+    float volume;
+    OPENALCALL(alGetListenerf(AL_GAIN, &volume));
+    return volume;
+}
+
+void AudioManager::pushSourceToBatch(glm::vec3 pos, std::shared_ptr<AudioBuffer> buffer)
+{
+    mAudioSourcesBatch.push_back(std::make_pair(pos, buffer));
+}
+
+void AudioManager::cleanBatch()
+{
+    mAudioSourcesBatch.clear();
+}
+
+void AudioManager::updateListener(Scene& scene, float deltaTime)
+{
+    glm::vec3 lastPos;
+    OPENALCALL(alGetListenerfv(AL_POSITION, glm::value_ptr(lastPos)));
+    OPENALCALL(alListenerfv(AL_POSITION, glm::value_ptr(scene.GetCameraHandler().getViewPos())));
+
+    glm::vec3 velocity = (scene.GetCameraHandler().getViewPos() - lastPos) / deltaTime;
+    OPENALCALL(alListenerfv(AL_VELOCITY, glm::value_ptr(velocity)));
+
+    glm::vec3 orientation[] {scene.GetCameraHandler().getFront(), scene.GetCameraHandler().getUp()};
+    OPENALCALL(alListenerfv(AL_ORIENTATION, glm::value_ptr(orientation[0])));
+}
+
+void AudioManager::updateSources(float deltaTime)
+{
+    for(auto& aInfo: mAudioSourcesBatch) {
+        glm::vec3 lastPos;
+        OPENALCALL(alGetSourcefv(aInfo.second->m_id, AL_POSITION, glm::value_ptr(lastPos)));
+
+        OPENALCALL(alSourcefv(aInfo.second->m_id, AL_POSITION, glm::value_ptr(aInfo.first)));
+
+        glm::vec3 velocity = (aInfo.first - lastPos) / float(deltaTime);
+        OPENALCALL(alSourcefv(aInfo.second->m_id, AL_VELOCITY, glm::value_ptr(velocity)));
+    }   
+}
+
+void AudioManager::list_audio_devices(const char* devices)
 {
 	const ALCchar* device = devices, * next = devices + 1;
 	size_t len = 0;
@@ -30,7 +184,7 @@ void AudioManager::list_audio_devices(const ALCchar* devices)
 	fprintf(stdout, "----------\n");
 }
 
-bool AudioManager::load_wav_file(const char* audiofile, ALuint bufferId)
+bool AudioManager::load_wav_file(const char* audiofile, char bufferId)
 {
 	/* loading the wav file to OpenAL */
 	struct WavData {

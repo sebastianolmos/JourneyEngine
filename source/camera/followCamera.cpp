@@ -67,4 +67,13 @@ namespace Journey {
         mTheta = value;
     }
 
+    glm::vec3 FollowCamera::getFront()
+    {
+        return mCenter-mPosition;
+    }
+
+    glm::vec3 FollowCamera::getUp()
+    {
+        return mWorldUp;
+    }
 }
