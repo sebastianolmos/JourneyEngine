@@ -228,7 +228,7 @@ private:
     glm::vec3 mPos;
     glm::vec3 mVel;
     float mGravity = 3.0f;
-    float mFriction = 0.5f;
+    float mFriction = 0.1f;
     float mHeight = 1.0f;
     float mRadius = 0.8f;
     float mTheta = 0.0f;
@@ -264,6 +264,27 @@ public:
         if (glm::distance2(mPos, mGoal) < 1.0f) {
             selectGoal();
         }
+
+        // Check collision with shiba
+        if (!mCatched && glm::distance2(mPos, glm::vec2(mShibaRef->getTransform().GetLocalTranslation().x, mShibaRef->getTransform().GetLocalTranslation().y)) < mRadius*mRadius) {
+            std::shared_ptr<PlayAndDelete> audio = std::make_shared<PlayAndDelete>(getTransform().GetLocalTranslation(), "catched", 0.8);
+            if (this->HasComponent(Journey::EComponentType::AudioSourceComponent)){
+                Journey::AudioSourceComponent* audioSrc = dynamic_cast<Journey::AudioSourceComponent*>(this->GetComponent(Journey::EComponentType::AudioSourceComponent).get());
+                audioSrc->stop();
+            }
+            mCatched = true;
+            mManager->AddEntity(nullptr, audio);
+            speed = 0.0f;
+            int n = 20;
+            float pi = glm::radians(180.0f);
+            float angle = 2*pi/n;
+            float speed = 2.0f;
+            for (int i = 0; i < n; i++) {
+                std::shared_ptr<CoinEntity> coin = std::make_shared<CoinEntity>(mShibaRef, getTransform().GetLocalTranslation(),
+                glm::vec3(speed*glm::cos(angle*(float)i),speed*glm::sin(angle*(float)i),speed*1.6f));
+                mManager->AddEntity(nullptr, coin);
+            }
+        }
     }
 
     void selectGoal() {
@@ -290,6 +311,8 @@ private:
     glm::vec2 mDir;
     float mHeight;
     float speed = 7.0f;
+    float mRadius = 1.2f;
+    bool mCatched =false;
 
 };
 
