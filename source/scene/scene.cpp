@@ -1,6 +1,8 @@
 #include "scene.hpp"
 #include <chrono>
 
+#include "../component/pointLight.hpp"
+
 namespace Journey {
 
     Scene::Scene(Application& app) :
@@ -89,11 +91,6 @@ namespace Journey {
         return mCameraHandler;
     }
 
-    PointLight&  Scene::GetPointLight()
-    {
-        return mPointLight;
-    }
-
     void Scene::AddEntity(std::shared_ptr<Entity> parentEntity, std::shared_ptr<Entity> newEntity)
     {
         mEntityManager->AddEntity(parentEntity, newEntity);
@@ -129,6 +126,26 @@ namespace Journey {
      AudioManager& Scene::GetAudioManager()
     {
         return mAudioManager;
+    }
+
+
+    std::shared_ptr<PointLightComponent> Scene::AddPointLightComponent(std::shared_ptr<Entity> entity)
+    {
+        std::shared_ptr<PointLightComponent> light = std::make_shared<PointLightComponent>();
+        if (mRenderManager.currentPointLights >= mRenderManager.MaxPointLights){
+            std::cout << "Se ha alcanza el maximo de " << mRenderManager.MaxPointLights << " point lights" << std::endl;
+        }
+        else {
+            entity->mComponents.insert(std::make_pair(EComponentType::PointLightComponent, light));
+            mRenderManager.currentPointLights++;
+        }
+        return light;
+    }
+
+    void Scene::deletePointLight() 
+    {
+        if (mRenderManager.currentPointLights > 0)
+            mRenderManager.currentPointLights--;
     }
 
 }

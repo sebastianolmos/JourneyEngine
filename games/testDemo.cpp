@@ -181,6 +181,28 @@ public:
         carpin = std::make_shared<Carpincho>(mainCamera);
         scene.AddEntity(nullptr, carpin);
 
+        // Add point Light 1
+        std::shared_ptr<Journey::Entity> light1 = std::make_shared<Journey::Entity>();
+        light1->getTransform().SetTranslation(glm::vec3(1.5f, 1.0f, 5.5f));
+        auto lComp1 = scene.AddPointLightComponent(light1);
+        lComp1->setAmbient(glm::vec3(0.2f));
+        lComp1->setDiffuse(glm::vec3(1.0f));
+        lComp1->setSpecular(glm::vec3(1.0f));
+        lComp1->turnOn();
+        scene.AddEntity(carpin, light1);
+        for (int i = 0; i < 7; i++) {
+            for (int j = 0; j < 2; j++) {
+                std::shared_ptr<Journey::Entity> light = std::make_shared<Journey::Entity>();
+                light->getTransform().SetTranslation(glm::vec3(-18.0f + i*4.0f, 18.0f + j*4.0f, 2.2f));
+                auto lComp = scene.AddPointLightComponent(light);
+                lComp->setAmbient(glm::vec3(0.0f));
+                lComp->setDiffuse(glm::vec3(0.0f+ 1.0f/7.0f*i, 1.0f- 1.0f/7.0f*i, 0.0 + 1.0f*j));
+                lComp->setSpecular(glm::vec3(1.0f));
+                lComp->turnOn();
+                scene.AddEntity(nullptr, light);
+            }
+        }
+
         //backpack test
         std::shared_ptr<Journey::Entity> backpack = std::make_shared<Journey::Entity>();
         backpack->getTransform().Set(glm::vec3(0.0f, -0.5f, 1.2f),

@@ -5,7 +5,6 @@
 
 #include "../entity/entity.hpp"
 #include "../entity/entityManager.hpp"
-#include "../entity/pointLight.hpp"
 #include "../camera/cameraHandler.hpp"
 #include "../component/transform.hpp"
 #include "../component/component.hpp"
@@ -22,12 +21,15 @@
 #include <string>
 
 namespace Journey {
-
     class Engine;
+    class PointLightComponent;
+
+
     class Scene {
     
         public:
             friend Engine;
+            friend EntityManager;
 
             InputController& GetInputController();
             RenderManager& GetRenderManager();
@@ -36,7 +38,6 @@ namespace Journey {
 		    void EndApplication();
             void AddEntity(std::shared_ptr<Entity> parentEntity, std::shared_ptr<Entity> newEntity);
             CameraHandler&  GetCameraHandler();
-            PointLight&  GetPointLight();
 
             // Debug methods
             void DebugModeEnabled();
@@ -45,11 +46,14 @@ namespace Journey {
             const bool InDebugMode() const;
             void ToggleDrawMode();
 
+            std::shared_ptr<PointLightComponent> AddPointLightComponent(std::shared_ptr<Entity> entity);
+
         private:
             Scene(Application& app);
             ~Scene();
             void StartMainLoop();
             void Update(const float deltaTime);
+            void deletePointLight();
 
             InputController mInputController;
             Window mWindow;
@@ -59,7 +63,6 @@ namespace Journey {
             RenderManager mRenderManager;
             AudioManager mAudioManager;
             CameraHandler mCameraHandler;
-            PointLight mPointLight;
             bool bAbleToUseDebugMode = false; 
             bool bDebugMode = false; 
     };

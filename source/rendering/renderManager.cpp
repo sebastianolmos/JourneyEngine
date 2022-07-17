@@ -2,6 +2,7 @@
 #include <glad/glad.h>
 #include "../scene/scene.hpp"
 #include "../input/inputController.hpp"
+#include "../component/pointLight.hpp"
 
 
 namespace Journey {
@@ -9,12 +10,18 @@ namespace Journey {
     RenderManager::RenderManager() {}
 
     void RenderManager::StartUp() {
-        SimpleColoredShader.StartUp("../../../source/rendering/shaders/SimpleColoredShader.vs", "../../../source/rendering/shaders/SimpleColoredShader.fs");
-        SimpleTexturedShader.StartUp("../../../source/rendering/shaders/SimpleTexturedShader.vs", "../../../source/rendering/shaders/SimpleTexturedShader.fs");
-        FlatColoredShader.StartUp("../../../source/rendering/shaders/FlatColoredShader.vs", "../../../source/rendering/shaders/FlatColoredShader.fs");
-        FlatTexturedShader.StartUp("../../../source/rendering/shaders/FlatTexturedShader.vs", "../../../source/rendering/shaders/FlatTexturedShader.fs");
-        PhongColoredShader.StartUp("../../../source/rendering/shaders/PhongColoredShader.vs", "../../../source/rendering/shaders/PhongColoredShader.fs");
-        PhongTexturedShader.StartUp("../../../source/rendering/shaders/PhongTexturedShader.vs", "../../../source/rendering/shaders/PhongTexturedShader.fs");
+        SimpleColoredShader.StartUp("../../../source/rendering/shaders/SimpleColoredShader.vs", 
+                        "../../../source/rendering/shaders/SimpleColoredShader.fs");
+        SimpleTexturedShader.StartUp("../../../source/rendering/shaders/SimpleTexturedShader.vs", 
+                        "../../../source/rendering/shaders/SimpleTexturedShader.fs");
+        FlatColoredShader.StartUp("../../../source/rendering/shaders/FlatColoredShader.vs", 
+                        "../../../source/rendering/shaders/FlatColoredShader.fs", MaxPointLights);
+        FlatTexturedShader.StartUp("../../../source/rendering/shaders/FlatTexturedShader.vs", 
+                        "../../../source/rendering/shaders/FlatTexturedShader.fs", MaxPointLights);
+        PhongColoredShader.StartUp("../../../source/rendering/shaders/PhongColoredShader.vs", 
+                        "../../../source/rendering/shaders/PhongColoredShader.fs", MaxPointLights);
+        PhongTexturedShader.StartUp("../../../source/rendering/shaders/PhongTexturedShader.vs", 
+                        "../../../source/rendering/shaders/PhongTexturedShader.fs", MaxPointLights);
         // other shaders
         CleanRenderInfo();
 
@@ -38,6 +45,7 @@ namespace Journey {
         mPhongTexturedObjects.clear();
         if (!mTransparentObjects.empty())
             std::cout << " Something wrong, tranaperency queue isnt empty" << std::endl;
+        mPointLights.clear();
     }
 
     void RenderManager::DrawCall(Scene& scene)
@@ -68,11 +76,18 @@ namespace Journey {
 
         // <------ FLAT COLORED SHADER ------->
         FlatColoredShader.use();
-        FlatColoredShader.setVec3("light.position", scene.GetPointLight().getLightPos());
+        for (int i = 0; i < mPointLights.size(); i++) {
+            std::string number = std::to_string(i);
+            FlatColoredShader.setVec3("pointLights["+ number + "].position", mPointLights[i].first);
+            FlatColoredShader.setVec3("pointLights["+ number + "].ambient", mPointLights[i].second->mAmbient);
+            FlatColoredShader.setVec3("pointLights["+ number + "].diffuse", mPointLights[i].second->mDiffuse);
+            FlatColoredShader.setVec3("pointLights["+ number + "].specular", mPointLights[i].second->mSpecular);
+            FlatColoredShader.setFloat("pointLights["+ number + "].constant", mPointLights[i].second->mConstant);
+            FlatColoredShader.setFloat("pointLights["+ number + "].linear", mPointLights[i].second->mLinear);
+            FlatColoredShader.setFloat("pointLights["+ number + "].quadratic", mPointLights[i].second->mQuadratic);
+            FlatColoredShader.setBool("pointLights["+ number + "].on", mPointLights[i].second->mOn);
+        }
         FlatColoredShader.setVec3("viewPos", scene.GetCameraHandler().getViewPos());
-        FlatColoredShader.setVec3("light.ambient", scene.GetPointLight().getAmbientColor());
-        FlatColoredShader.setVec3("light.diffuse", scene.GetPointLight().getDifuseColor());
-        FlatColoredShader.setVec3("light.specular",scene.GetPointLight().getSpecularColor());
         FlatColoredShader.setMat4("projection", scene.GetCameraHandler().getProjection());
         FlatColoredShader.setMat4("view", scene.GetCameraHandler().getViewMatrix());
         for(auto& renderInfo: mFlatColoredObjects) {
@@ -89,11 +104,20 @@ namespace Journey {
 
         // <------ PHONG COLORED SHADER ------->
         PhongColoredShader.use();
-        PhongColoredShader.setVec3("light.position", scene.GetPointLight().getLightPos());
+        for (int i = 0; i < mPointLights.size(); i++) {
+            std::string number = std::to_string(i);
+            PhongColoredShader.setVec3("pointLights["+ number + "].position", mPointLights[i].first);
+            PhongColoredShader.setVec3("pointLights["+ number + "].ambient", mPointLights[i].second->mAmbient);
+            PhongColoredShader.setVec3("pointLights["+ number + "].diffuse", mPointLights[i].second->mDiffuse);
+            PhongColoredShader.setVec3("pointLights["+ number + "].specular", mPointLights[i].second->mSpecular);
+            PhongColoredShader.setFloat("pointLights["+ number + "].constant", mPointLights[i].second->mConstant);
+            PhongColoredShader.setFloat("pointLights["+ number + "].linear", mPointLights[i].second->mLinear);
+            PhongColoredShader.setFloat("pointLights["+ number + "].quadratic", mPointLights[i].second->mQuadratic);
+            PhongColoredShader.setBool("pointLights["+ number + "].on", mPointLights[i].second->mOn);
+            //std::cout << "Point Light: " << mPointLights[i].first.x << ", " << mPointLights[i].first.y <<
+            //", " << mPointLights[i].first.z << std::endl;
+        }
         PhongColoredShader.setVec3("viewPos", scene.GetCameraHandler().getViewPos());
-        PhongColoredShader.setVec3("light.ambient", scene.GetPointLight().getAmbientColor());
-        PhongColoredShader.setVec3("light.diffuse", scene.GetPointLight().getDifuseColor());
-        PhongColoredShader.setVec3("light.specular",scene.GetPointLight().getSpecularColor());
         PhongColoredShader.setMat4("projection", scene.GetCameraHandler().getProjection());
         PhongColoredShader.setMat4("view", scene.GetCameraHandler().getViewMatrix());
         for(auto& renderInfo: mPhongColoredObjects) {
@@ -120,11 +144,18 @@ namespace Journey {
 
         // <------ FLAT TEXTURED SHADER ------->
         FlatTexturedShader.use();
-        FlatTexturedShader.setVec3("light.position", scene.GetPointLight().getLightPos());
+        for (int i = 0; i < mPointLights.size(); i++) {
+            std::string number = std::to_string(i);
+            FlatTexturedShader.setVec3("pointLights["+ number + "].position", mPointLights[i].first);
+            FlatTexturedShader.setVec3("pointLights["+ number + "].ambient", mPointLights[i].second->mAmbient);
+            FlatTexturedShader.setVec3("pointLights["+ number + "].diffuse", mPointLights[i].second->mDiffuse);
+            FlatTexturedShader.setVec3("pointLights["+ number + "].specular", mPointLights[i].second->mSpecular);
+            FlatTexturedShader.setFloat("pointLights["+ number + "].constant", mPointLights[i].second->mConstant);
+            FlatTexturedShader.setFloat("pointLights["+ number + "].linear", mPointLights[i].second->mLinear);
+            FlatTexturedShader.setFloat("pointLights["+ number + "].quadratic", mPointLights[i].second->mQuadratic);
+            FlatTexturedShader.setBool("pointLights["+ number + "].on", mPointLights[i].second->mOn);
+        }
         FlatTexturedShader.setVec3("viewPos", scene.GetCameraHandler().getViewPos());
-        FlatTexturedShader.setVec3("light.ambient", scene.GetPointLight().getAmbientColor());
-        FlatTexturedShader.setVec3("light.diffuse", scene.GetPointLight().getDifuseColor());
-        FlatTexturedShader.setVec3("light.specular",scene.GetPointLight().getSpecularColor());
         FlatTexturedShader.setMat4("projection", scene.GetCameraHandler().getProjection());
         FlatTexturedShader.setMat4("view", scene.GetCameraHandler().getViewMatrix());
         for(auto& renderInfo: mFlatTexturedObjects) {
@@ -139,11 +170,18 @@ namespace Journey {
 
         // <------ PHONG TEXTURED SHADER ------->
         PhongTexturedShader.use();
-        PhongTexturedShader.setVec3("light.position", scene.GetPointLight().getLightPos());
+        for (int i = 0; i < mPointLights.size(); i++) {
+            std::string number = std::to_string(i);
+            PhongTexturedShader.setVec3("pointLights["+ number + "].position", mPointLights[i].first);
+            PhongTexturedShader.setVec3("pointLights["+ number + "].ambient", mPointLights[i].second->mAmbient);
+            PhongTexturedShader.setVec3("pointLights["+ number + "].diffuse", mPointLights[i].second->mDiffuse);
+            PhongTexturedShader.setVec3("pointLights["+ number + "].specular", mPointLights[i].second->mSpecular);
+            PhongTexturedShader.setFloat("pointLights["+ number + "].constant", mPointLights[i].second->mConstant);
+            PhongTexturedShader.setFloat("pointLights["+ number + "].linear", mPointLights[i].second->mLinear);
+            PhongTexturedShader.setFloat("pointLights["+ number + "].quadratic", mPointLights[i].second->mQuadratic);
+            PhongTexturedShader.setBool("pointLights["+ number + "].on", mPointLights[i].second->mOn);
+        }
         PhongTexturedShader.setVec3("viewPos", scene.GetCameraHandler().getViewPos());
-        PhongTexturedShader.setVec3("light.ambient", scene.GetPointLight().getAmbientColor());
-        PhongTexturedShader.setVec3("light.diffuse", scene.GetPointLight().getDifuseColor());
-        PhongTexturedShader.setVec3("light.specular",scene.GetPointLight().getSpecularColor());
         PhongTexturedShader.setMat4("projection", scene.GetCameraHandler().getProjection());
         PhongTexturedShader.setMat4("view", scene.GetCameraHandler().getViewMatrix());
         for(auto& renderInfo: mPhongTexturedObjects) {
@@ -168,7 +206,6 @@ namespace Journey {
             mTransparentObjects.pop();
         }
     }
-
     
 
     void RenderManager::AddObjectToRender(EMaterialType materialType, RenderInfo renderInfo)
@@ -201,6 +238,12 @@ namespace Journey {
     void RenderManager::AddTransparentObjectToRender(float distanceToCam, RenderInfo renderInfo)
     {
         mTransparentObjects.push(std::make_pair(distanceToCam, renderInfo));
+    }
+
+    
+    void RenderManager::AddPointLightToRender(glm::vec3 pos, PointLightComponent* light)
+    {
+        mPointLights.push_back(std::make_pair(pos, light));
     }
 
     void RenderManager::CreateDebugObjects()

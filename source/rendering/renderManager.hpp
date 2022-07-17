@@ -5,6 +5,7 @@
 #include <vector>
 #include <queue>
 #include <glm/glm.hpp>
+#include <memory>
 
 #include "shaders/shader.hpp"
 #include "model.hpp"
@@ -41,8 +42,10 @@ namespace Journey {
         glm::fvec3 color;
         glm::mat4 model;
     };
-    
+    class PointLightComponent;
+
     typedef std::pair<float, RenderInfo> TransparentInfo;
+    typedef std::pair<glm::vec3, PointLightComponent* > PointLightInfo;
     class Scene;
 
     class RenderManager{
@@ -58,6 +61,7 @@ namespace Journey {
 
             void AddObjectToRender(EMaterialType materialType, RenderInfo renderInfo);
             void AddTransparentObjectToRender(float distanceToCam, RenderInfo renderInfo);
+            void AddPointLightToRender(glm::vec3 pos, PointLightComponent* light);
 
         private:	
             Shader SimpleColoredShader;
@@ -81,6 +85,10 @@ namespace Journey {
             void CreateDebugFrustrumObject();
             void CreateDebugAxisObject();
             void DrawDebugObjects(Shader shaderProgram, Scene& scene);
+            
+            const unsigned int MaxPointLights = 16;
+            int currentPointLights = 0;
+            std::vector<PointLightInfo> mPointLights;
     };
 
 }

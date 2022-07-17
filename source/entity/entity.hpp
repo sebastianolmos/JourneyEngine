@@ -61,6 +61,7 @@ namespace Journey{
             friend TextureManager;
             friend MeshManager;
             friend AudioManager;
+            friend Scene;
 
             void ShutDown() noexcept {mCurrentState = EState::PendingDestroy; }
 

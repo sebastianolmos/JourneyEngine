@@ -7,7 +7,6 @@ set(JOURNEY_HEADERS
         application.hpp
         entity/entity.hpp
         entity/entityManager.hpp
-        entity/pointLight.hpp
         entity/entities/controlledEntity.hpp
         camera/camera.hpp
         camera/debugCamera.hpp
@@ -18,6 +17,7 @@ set(JOURNEY_HEADERS
         component/sprite.hpp
         component/staticMesh.hpp
         component/audioSource.hpp
+        component/pointLight.hpp
         rendering/material.hpp
         rendering/meshManager.hpp
         rendering/renderManager.hpp
@@ -43,6 +43,7 @@ set(JOURNEY_SOURCES
         camera/followCamera.cpp
         component/transform.cpp
         component/audioSource.cpp
+        component/pointLight.cpp
         rendering/material.cpp
         rendering/meshManager.cpp
         rendering/renderManager.cpp

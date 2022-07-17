@@ -6,7 +6,9 @@ namespace Journey {
     enum class EComponentType : uint8_t {
 		StaticMeshComponent,
         SpriteComponent,
-        AudioSourceComponent
+        AudioSourceComponent,
+        PointLightComponent,
+        SpotLightComponent
 	};
 
     class Component {

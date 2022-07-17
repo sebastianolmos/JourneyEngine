@@ -7,7 +7,7 @@
 
 namespace Journey {
 
-    void Shader::StartUp(const char* vertexPath, const char* fragmentPath)
+    void Shader::StartUp(const char* vertexPath, const char* fragmentPath, int pointLights, int spotLights)
     {
         // 1. retrieve the vertex/fragment source code from filePath
         std::string vertexCode;
@@ -37,6 +37,36 @@ namespace Journey {
         {
             std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
         }
+        // Replace the amount of lights in the fragment shader code
+        if (pointLights > 0) {
+            std::string replacement = "$NP$";
+            std::string lights = std::to_string(pointLights);
+            // Replace in vertex shader
+            size_t v_pos = vertexCode.find(replacement);
+            if (v_pos != std::string::npos) {
+                vertexCode.replace(v_pos, replacement.size(), lights);
+            }
+            // Replace in fragment shader
+            size_t f_pos = fragmentCode.find(replacement);
+            if (f_pos != std::string::npos) {
+                fragmentCode.replace(f_pos, replacement.size(), lights);
+            }
+        }
+        if (spotLights > 0) {
+            std::string replacement = "$NS$";
+            std::string lights = std::to_string(spotLights);
+            // Replace in vertex shader
+            size_t v_pos = vertexCode.find(replacement);
+            if (v_pos != std::string::npos) {
+                vertexCode.replace(v_pos, replacement.size(), lights);
+            }
+            // Replace in fragment shader
+            size_t f_pos = fragmentCode.find(replacement);
+            if (f_pos != std::string::npos) {
+                fragmentCode.replace(f_pos, replacement.size(), lights);
+            }
+        }
+
         const char* vShaderCode = vertexCode.c_str();
         const char* fShaderCode = fragmentCode.c_str();
         // 2. compile shaders
@@ -46,7 +76,6 @@ namespace Journey {
         glShaderSource(vertex, 1, &vShaderCode, NULL);
         glCompileShader(vertex);
         checkCompileErrors(vertex, "VERTEX");
-        // fragment Shader
         fragment = glCreateShader(GL_FRAGMENT_SHADER);
         glShaderSource(fragment, 1, &fShaderCode, NULL);
         glCompileShader(fragment);
