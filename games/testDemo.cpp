@@ -236,6 +236,18 @@ public:
             }
         }   
 
+        // Add skybox
+        std::vector<std::string> faces
+        {
+            "../../../assets/skybox/right.png",
+            "../../../assets/skybox/left.png",
+            "../../../assets/skybox/top.png",
+            "../../../assets/skybox/bottom.png",
+            "../../../assets/skybox/front.png",
+            "../../../assets/skybox/back.png"
+        };
+        scene.AddSkybox(faces);
+
         //backpack test
         std::shared_ptr<Journey::Entity> backpack = std::make_shared<Journey::Entity>();
         backpack->getTransform().Set(glm::vec3(0.0f, -0.5f, 1.2f),

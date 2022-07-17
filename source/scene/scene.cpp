@@ -168,4 +168,9 @@ namespace Journey {
             mRenderManager.currentSpotLights--;
     }
 
+    void Scene::AddSkybox(std::vector<std::string> faces)
+    {
+        mRenderManager.AddSkyBox(faces);
+    }
+
 }

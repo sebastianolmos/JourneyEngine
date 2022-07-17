@@ -4,6 +4,7 @@
 #include "../input/inputController.hpp"
 #include "../component/pointLight.hpp"
 #include "../component/spotLight.hpp"
+#include "skybox.hpp"
 
 
 namespace Journey {
@@ -261,6 +262,11 @@ namespace Journey {
             renderInfo.modelObject->drawCall(SimpleTexturedShader);
             mTransparentObjects.pop();
         }
+
+        if (mSkybox != nullptr){
+            mSkybox->Draw(scene.GetCameraHandler().getViewMatrix(), scene.GetCameraHandler().getProjection());
+        }
+
     }
     
 
@@ -310,6 +316,11 @@ namespace Journey {
         info.direction = dir;
         info.light = light;
         mSpotLights.push_back(info);
+    }
+    
+    void RenderManager::AddSkyBox(std::vector<std::string> faces)
+    {
+        mSkybox = new Skybox(faces);
     }
 
     void RenderManager::CreateDebugObjects()
@@ -503,4 +514,5 @@ namespace Journey {
 
         glLineWidth(1.0);
     }
+
 }

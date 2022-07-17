@@ -14,6 +14,7 @@
 namespace Journey {
     class PointLightComponent;
     class SpotLightComponent;
+    class Skybox;
 
     struct RenderInfo{
         std::shared_ptr<Model> modelObject;
@@ -70,6 +71,7 @@ namespace Journey {
             void AddTransparentObjectToRender(float distanceToCam, RenderInfo renderInfo);
             void AddPointLightToRender(glm::vec3 pos, PointLightComponent* light);
             void AddSpotLightToRender(glm::vec3 pos, glm::vec3 dir, SpotLightComponent* light);
+            void AddSkyBox(std::vector<std::string> faces);
 
         private:	
             Shader SimpleColoredShader;
@@ -101,6 +103,8 @@ namespace Journey {
             const unsigned int MaxSpotLights = 16;
             int currentSpotLights = 0;
             std::vector<SpotLightInfo> mSpotLights;
+
+            Skybox* mSkybox = nullptr;
     };
 
 }

@@ -48,6 +48,7 @@ namespace Journey {
 
             std::shared_ptr<PointLightComponent> AddPointLightComponent(std::shared_ptr<Entity> entity);
             std::shared_ptr<SpotLightComponent> AddSpotLightComponent(std::shared_ptr<Entity> entity);
+            void AddSkybox(std::vector<std::string> faces);
 
         private:
             Scene(Application& app);

@@ -28,6 +28,7 @@ set(JOURNEY_HEADERS
         rendering/mesh.hpp
         rendering/model.hpp
         rendering/importedModel.hpp
+        rendering/skybox.hpp
         audio/audioBuffer.hpp
         audio/audioManager.hpp
         scene/scene.hpp
@@ -55,6 +56,7 @@ set(JOURNEY_SOURCES
         rendering/mesh.cpp
         rendering/model.cpp
         rendering/importedModel.cpp
+        rendering/skybox.cpp
         audio/audioBuffer.cpp
         audio/audioManager.cpp)
 
