@@ -28,7 +28,7 @@ void RegisterTextures(Journey::TextureManager& manager) {
 void RegisterAudios(Journey::AudioManager& manager) {
     manager.LoadAudioBuffer("background", "../../../assets/audio/Guitar-Gentle.wav");
     manager.LoadAudioBuffer("bark", "../../../assets/audio/bark.wav");
-    manager.LoadAudioBuffer("jumping", "../../../assets/audio/loop.wav");
+    manager.LoadAudioBuffer("jumping", "../../../assets/audio/cartoon_jump.wav");
     manager.LoadAudioBuffer("hit", "../../../assets/audio/sharp_punch.wav");
     manager.LoadAudioBuffer("coin", "../../../assets/audio/short_success_sound.wav");
     manager.LoadAudioBuffer("catched", "../../../assets/audio/tada.wav");
@@ -198,16 +198,8 @@ public:
         if (mPos.z > mHeight) {
             mVel.z -= mGravity * deltaTime;
         } else {
-            mVel.z = 0.0f;
+            mVel = glm::vec3(0.0f);
             mPos.z = mHeight;
-        }
-
-        if (mVel.x != 0.0f && mVel.y != 0.0f) {
-            mVel.x -= mFriction * deltaTime;
-            mVel.y -= mFriction * deltaTime;
-        } else {
-            mVel.x = 0.0f;
-            mVel.y = 0.0f;
         }
         mPos += mVel * deltaTime;
         mTheta += 2.0f * deltaTime;
@@ -228,7 +220,6 @@ private:
     glm::vec3 mPos;
     glm::vec3 mVel;
     float mGravity = 3.0f;
-    float mFriction = 0.1f;
     float mHeight = 1.0f;
     float mRadius = 0.8f;
     float mTheta = 0.0f;
@@ -280,8 +271,8 @@ public:
             float angle = 2*pi/n;
             float speed = 2.0f;
             for (int i = 0; i < n; i++) {
-                std::shared_ptr<CoinEntity> coin = std::make_shared<CoinEntity>(mShibaRef, getTransform().GetLocalTranslation(),
-                glm::vec3(speed*glm::cos(angle*(float)i),speed*glm::sin(angle*(float)i),speed*1.6f));
+                std::shared_ptr<CoinEntity> coin = std::make_shared<CoinEntity>(mShibaRef, glm::vec3(mPos.x, mPos.y, 1.2),
+                glm::vec3(speed*glm::cos(angle*(float)i),speed*glm::sin(angle*(float)i),speed*2.6f));
                 mManager->AddEntity(nullptr, coin);
             }
         }
@@ -383,7 +374,7 @@ public:
         scene.GetAudioManager().AddAudioSourceComponent(barn, "background", true, true);
         if (barn->HasComponent(Journey::EComponentType::AudioSourceComponent)){
             Journey::AudioSourceComponent* audioSrc = dynamic_cast<Journey::AudioSourceComponent*>(barn->GetComponent(Journey::EComponentType::AudioSourceComponent).get());
-            audioSrc->setVolume(0.15f);
+            audioSrc->setVolume(0.1f);
             audioSrc->play();
         }
 
