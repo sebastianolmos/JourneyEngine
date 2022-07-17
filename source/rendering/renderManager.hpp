@@ -125,9 +125,9 @@ namespace Journey {
             bool mHDR = true;
             bool mBloom = true;
             float mGamma = 2.0;
-            float mExposure = 1.2f;
-            float mBloomFilterRadius = 0.009f;
-            float mBloomStrength = 0.108f;
+            float mExposure = 1.4f;
+            float mBloomFilterRadius = 0.017f;
+            float mBloomStrength = 0.27f;
 
             void ConfigureFloatingPointFrameBuffer();
             void CreateAndAttachDepthBuffer();

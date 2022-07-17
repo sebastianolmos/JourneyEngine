@@ -5,28 +5,45 @@ in vec2 TexCoords;
 
 uniform sampler2D scene;
 uniform sampler2D bloomBlur;
-uniform bool bloom;
-uniform bool hdr;
 uniform float exposure;
+uniform float bloomStrength = 0.04f;
 uniform float gamma;
+uniform bool hdr;
+uniform int programChoice;
+
+vec3 bloom_none()
+{
+    vec3 hdrColor = texture(scene, TexCoords).rgb;
+    return hdrColor;
+}
+vec3 bloom_new()
+{
+    vec3 hdrColor = texture(scene, TexCoords).rgb;
+    vec3 bloomColor = texture(bloomBlur, TexCoords).rgb;
+    return mix(hdrColor, bloomColor, bloomStrength); // linear interpolation
+}
 
 void main()
-{             
-    vec3 hdrColor = texture(scene, TexCoords).rgb;    
-    float alpha = texture(scene, TexCoords)[3];
-    vec3 bloomColor = texture(bloomBlur, TexCoords).rgb;
-    if (hdr) {
-        if(bloom)
-            hdrColor += bloomColor; // additive blending
+{
+    if(hdr) {
+        // to bloom or not to bloom
+        vec3 result = vec3(0.0);
+        switch (programChoice)
+        {
+        case 1: result = bloom_none(); break;
+        case 2: result = bloom_new(); break;
+        default:
+            result = bloom_none(); break;
+        }
         // tone mapping
-        vec3 result = vec3(1.0) - exp(-hdrColor * exposure);
-        // also gamma correct while we're at it       
+        result = vec3(1.0) - exp(-result * exposure);
+        // also gamma correct while we're at it
         result = pow(result, vec3(1.0 / gamma));
-        FragColor = vec4(result, alpha);
+        FragColor = vec4(result, 1.0);
     }
     else {
+        vec3 hdrColor = texture(scene, TexCoords).rgb;
         vec3 result = pow(hdrColor, vec3(1.0 / gamma));
-        FragColor = vec4(result, alpha);
+        FragColor = vec4(result, 1.0);
     }
-    
 }

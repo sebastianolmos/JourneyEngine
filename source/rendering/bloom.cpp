@@ -114,8 +114,8 @@ namespace Journey {
         mDownsampleShader = new Shader();
         mUpsampleShader = new Shader();
 
-        mDownsampleShader->StartUp("../../../source/rendering/shaders/DownSampleShader.vs",
-                                    "../../../source/rendering/shaders/DownSampleShader.fs");
+        mDownsampleShader->StartUp("../../../source/rendering/shaders/DownSamplesShader.vs",
+                                    "../../../source/rendering/shaders/DownSamplesShader.fs");
         mUpsampleShader->StartUp("../../../source/rendering/shaders/UpSampleShader.vs",
                                     "../../../source/rendering/shaders/UpSampleShader.fs");
 
@@ -141,6 +141,7 @@ namespace Journey {
 
     void BloomRenderer::RenderDownsamples(unsigned int srcTexture)
     {
+        glDisable(GL_BLEND);
         const std::vector<bloomMip>& mipChain = mFBO.MipChain();
 
         mDownsampleShader->use();

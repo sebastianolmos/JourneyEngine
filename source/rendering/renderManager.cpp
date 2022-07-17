@@ -194,6 +194,7 @@ namespace Journey {
         SimpleTexturedShader.use();
         SimpleTexturedShader.setMat4("projection", scene.GetCameraHandler().getProjection());
         SimpleTexturedShader.setMat4("view", scene.GetCameraHandler().getViewMatrix());
+        glActiveTexture(GL_TEXTURE0);
         for(auto& renderInfo: mSimpleTexturedObjects) {
             SimpleTexturedShader.setMat4("model", renderInfo.modelTransform);
             renderInfo.modelObject->drawCall(SimpleTexturedShader);
@@ -229,6 +230,7 @@ namespace Journey {
         FlatTexturedShader.setVec3("viewPos", scene.GetCameraHandler().getViewPos());
         FlatTexturedShader.setMat4("projection", scene.GetCameraHandler().getProjection());
         FlatTexturedShader.setMat4("view", scene.GetCameraHandler().getViewMatrix());
+        glActiveTexture(GL_TEXTURE0);
         for(auto& renderInfo: mFlatTexturedObjects) {
             // material properties
             FlatTexturedShader.setVec3("material.ambient", renderInfo.ke);
@@ -269,6 +271,7 @@ namespace Journey {
         PhongTexturedShader.setVec3("viewPos", scene.GetCameraHandler().getViewPos());
         PhongTexturedShader.setMat4("projection", scene.GetCameraHandler().getProjection());
         PhongTexturedShader.setMat4("view", scene.GetCameraHandler().getViewMatrix());
+        glActiveTexture(GL_TEXTURE0);
         for(auto& renderInfo: mPhongTexturedObjects) {
             // material properties
             PhongTexturedShader.setVec3("material.ambient", renderInfo.ke);
@@ -282,6 +285,7 @@ namespace Journey {
         SimpleTexturedShader.use();
         SimpleTexturedShader.setMat4("projection", scene.GetCameraHandler().getProjection());
         SimpleTexturedShader.setMat4("view", scene.GetCameraHandler().getViewMatrix());
+        glActiveTexture(GL_TEXTURE0);
         // Textures with transparency renderer by order
         while (!mTransparentObjects.empty()) {
             TransparentInfo trparent = mTransparentObjects.top();

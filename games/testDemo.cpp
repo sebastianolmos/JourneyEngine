@@ -348,7 +348,7 @@ public:
                                 glm::vec3(2.0f, 2.0f, 2.0f)
                                 );
         Journey::SimpleColoredMaterial* cylinder1Mat = new Journey::SimpleColoredMaterial;
-        cylinder1Mat->color = glm::vec3(7.0f, 6.0f, 1.0f);
+        cylinder1Mat->color = glm::vec3(4.0f, 2.5f, 1.0f);
         meshManager.AddMeshComponent(cylinder1, std::shared_ptr<Journey::Material>(cylinder1Mat), "cylinder1");
         scene.AddEntity(nullptr, cylinder1);
 
@@ -373,8 +373,8 @@ public:
                                 glm::vec3(2.0f, 2.0f, 2.0f)
                                 );
         Journey::PhongColoredMaterial* cylinder3Mat = new Journey::PhongColoredMaterial;
-        cylinder3Mat->color = glm::vec3(0.0f, 1.0f, 0.0f);
-        cylinder3Mat->kd = glm::vec3(0.6f, 0.6f, 0.6f);
+        cylinder3Mat->color = glm::vec3(1.0f, 1.0f, 1.0f);
+        cylinder3Mat->kd = glm::vec3(0.6f, 0.6f, 0.6f)*3.0f;
         cylinder3Mat->ke = glm::vec3(0.5f, 0.5f, 0.5f);
         cylinder3Mat->ks = glm::vec3(1.0f, 0.8f, 0.8f);
         meshManager.AddMeshComponent(cylinder3, std::shared_ptr<Journey::Material>(cylinder3Mat), "cylinder2");
