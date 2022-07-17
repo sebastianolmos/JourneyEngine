@@ -188,12 +188,11 @@ public:
         lComp1->setAmbient(glm::vec3(0.2f));
         lComp1->setDiffuse(glm::vec3(1.0f));
         lComp1->setSpecular(glm::vec3(1.0f));
-        lComp1->turnOn();
-        scene.AddEntity(carpin, light1);
+        lComp1->turnOff();
         for (int i = 0; i < 7; i++) {
             for (int j = 0; j < 2; j++) {
                 std::shared_ptr<Journey::Entity> light = std::make_shared<Journey::Entity>();
-                light->getTransform().SetTranslation(glm::vec3(-18.0f + i*4.0f, 18.0f + j*4.0f, 2.2f));
+                light->getTransform().SetTranslation(glm::vec3(-18.0f + i*5.0f, 18.0f + j*5.0f, 2.2f));
                 auto lComp = scene.AddPointLightComponent(light);
                 lComp->setAmbient(glm::vec3(0.0f));
                 lComp->setDiffuse(glm::vec3(0.0f+ 1.0f/7.0f*i, 1.0f- 1.0f/7.0f*i, 0.0 + 1.0f*j));
@@ -202,6 +201,40 @@ public:
                 scene.AddEntity(nullptr, light);
             }
         }
+
+        // Add spot Light 1
+        std::shared_ptr<Journey::Entity> spot1 = std::make_shared<Journey::Entity>();
+        spot1->getTransform().SetTranslation(glm::vec3(0.0f));
+        auto sComp1 = scene.AddSpotLightComponent(spot1);
+        sComp1->setDirection(glm::vec3(1.0f, 0.0f, -0.7f));
+        sComp1->setAmbient(glm::vec3(0.0f));
+        sComp1->setDiffuse(glm::vec3(1.0f, 0.7f, 0.0f));
+        sComp1->setSpecular(glm::vec3(1.0f));
+        sComp1->setCutOff(glm::cos(glm::radians(26.0f)));
+        sComp1->setOuterCutOff(glm::cos(glm::radians(40.0f)));
+        sComp1->setConstantAttenuation(0.5f);
+        sComp1->setLinearAttenuation(0.02f);
+        sComp1->setQuadraticAttenuation(0.002f);
+        sComp1->turnOn();
+        scene.AddEntity(carpin, spot1);     
+        for (int i = 0; i < 7; i++) {
+            for (int j = 0; j < 2; j++) {
+                std::shared_ptr<Journey::Entity> spotl = std::make_shared<Journey::Entity>();
+                spotl->getTransform().SetTranslation(glm::vec3(-18.0f + i*4.0f, -23.0f + j*4.0f, 2.5f));
+                auto sComp = scene.AddSpotLightComponent(spotl);
+                sComp->setDirection(glm::vec3(0.0f, 0.0f, -1.0f));
+                sComp->setAmbient(glm::vec3(0.0f));
+                sComp->setDiffuse(glm::vec3(1.0f));
+                sComp->setSpecular(glm::vec3(1.0f));
+                sComp->setCutOff(glm::cos(glm::radians(30.0f)));
+                sComp->setOuterCutOff(glm::cos(glm::radians(35.0f)));
+                sComp->setConstantAttenuation(0.5f);
+                sComp->setLinearAttenuation(0.02f);
+                sComp->setQuadraticAttenuation(0.002f);
+                sComp->turnOn();
+                scene.AddEntity(nullptr, spotl);  
+            }
+        }   
 
         //backpack test
         std::shared_ptr<Journey::Entity> backpack = std::make_shared<Journey::Entity>();

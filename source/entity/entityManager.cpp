@@ -4,6 +4,7 @@
 #include "../component/staticMesh.hpp"
 #include "../component/audioSource.hpp"
 #include "../component/pointLight.hpp"
+#include "../component/spotLight.hpp"
 #include "../component/sprite.hpp"
 #include "../rendering/material.hpp"
 #include "../audio/audioManager.hpp"
@@ -71,11 +72,17 @@ namespace Journey {
             scene.GetAudioManager().pushSourceToBatch(newTransform[3], audioSrc->getBuffer());
         }
 
-        // Check PointLigthComponent
+        // Check Ligths Component
         if ((entity->mComponents).count(EComponentType::PointLightComponent) != 0 )
         {
             PointLightComponent* light = dynamic_cast<PointLightComponent*>((entity->mComponents[EComponentType::PointLightComponent]).get());
             scene.GetRenderManager().AddPointLightToRender(newTransform[3], light);
+        }
+        else if ((entity->mComponents).count(EComponentType::SpotLightComponent) != 0 )
+        {
+            SpotLightComponent* light = dynamic_cast<SpotLightComponent*>((entity->mComponents[EComponentType::SpotLightComponent]).get());
+            glm::vec4 trDirection = entity->getTransform().GetLocalRotation() * glm::vec4(light->getDirection(), 1.0f);
+            scene.GetRenderManager().AddSpotLightToRender(newTransform[3], glm::normalize(glm::vec3(trDirection.x, trDirection.y, trDirection.z)/trDirection.w), light);
         }
 
         for (std::pair<int, std::shared_ptr<Entity>> element : entity->mChildren)
@@ -113,8 +120,12 @@ namespace Journey {
         if (entity->mCurrentState != EState::PendingDestroy) {
             entity->mCurrentState = EState::PendingDestroy;
             mDeletedEntities.push_back(entity);
+
             if (entity->HasComponent(EComponentType::PointLightComponent))
                 mSceneRef.deletePointLight();
+
+            if (entity->HasComponent(EComponentType::SpotLightComponent))
+                mSceneRef.deleteSpotLight();
         }
         
     }

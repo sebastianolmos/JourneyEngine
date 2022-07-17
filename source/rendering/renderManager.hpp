@@ -12,6 +12,8 @@
 #include "importedModel.hpp"
 
 namespace Journey {
+    class PointLightComponent;
+    class SpotLightComponent;
 
     struct RenderInfo{
         std::shared_ptr<Model> modelObject;
@@ -42,7 +44,12 @@ namespace Journey {
         glm::fvec3 color;
         glm::mat4 model;
     };
-    class PointLightComponent;
+
+    struct SpotLightInfo {
+        glm::vec3 position;
+        glm::vec3 direction;
+        SpotLightComponent* light;
+    };
 
     typedef std::pair<float, RenderInfo> TransparentInfo;
     typedef std::pair<glm::vec3, PointLightComponent* > PointLightInfo;
@@ -62,6 +69,7 @@ namespace Journey {
             void AddObjectToRender(EMaterialType materialType, RenderInfo renderInfo);
             void AddTransparentObjectToRender(float distanceToCam, RenderInfo renderInfo);
             void AddPointLightToRender(glm::vec3 pos, PointLightComponent* light);
+            void AddSpotLightToRender(glm::vec3 pos, glm::vec3 dir, SpotLightComponent* light);
 
         private:	
             Shader SimpleColoredShader;
@@ -89,6 +97,10 @@ namespace Journey {
             const unsigned int MaxPointLights = 16;
             int currentPointLights = 0;
             std::vector<PointLightInfo> mPointLights;
+
+            const unsigned int MaxSpotLights = 16;
+            int currentSpotLights = 0;
+            std::vector<SpotLightInfo> mSpotLights;
     };
 
 }

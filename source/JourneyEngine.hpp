@@ -12,6 +12,7 @@
 #include "rendering/textureManager.hpp"
 #include "component/audioSource.hpp"
 #include "component/pointLight.hpp"
+#include "component/spotLight.hpp"
 #include "audio/audioManager.hpp"
 #include "camera/followCamera.hpp"
 #include "camera/cameraHandler.hpp"

@@ -2,6 +2,7 @@
 #include <chrono>
 
 #include "../component/pointLight.hpp"
+#include "../component/spotLight.hpp"
 
 namespace Journey {
 
@@ -142,10 +143,29 @@ namespace Journey {
         return light;
     }
 
+    std::shared_ptr<SpotLightComponent> Scene::AddSpotLightComponent(std::shared_ptr<Entity> entity)
+    {
+        std::shared_ptr<SpotLightComponent> light = std::make_shared<SpotLightComponent>();
+        if (mRenderManager.currentSpotLights >= mRenderManager.MaxSpotLights){
+            std::cout << "Se ha alcanza el maximo de " << mRenderManager.MaxSpotLights << " spot lights" << std::endl;
+        }
+        else {
+            entity->mComponents.insert(std::make_pair(EComponentType::SpotLightComponent, light));
+            mRenderManager.currentSpotLights++;
+        }
+        return light;
+    }
+
     void Scene::deletePointLight() 
     {
         if (mRenderManager.currentPointLights > 0)
             mRenderManager.currentPointLights--;
+    }
+
+    void Scene::deleteSpotLight() 
+    {
+        if (mRenderManager.currentSpotLights > 0)
+            mRenderManager.currentSpotLights--;
     }
 
 }

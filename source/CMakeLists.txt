@@ -18,6 +18,7 @@ set(JOURNEY_HEADERS
         component/staticMesh.hpp
         component/audioSource.hpp
         component/pointLight.hpp
+        component/spotLight.hpp
         rendering/material.hpp
         rendering/meshManager.hpp
         rendering/renderManager.hpp
@@ -44,6 +45,7 @@ set(JOURNEY_SOURCES
         component/transform.cpp
         component/audioSource.cpp
         component/pointLight.cpp
+        component/spotLight.cpp
         rendering/material.cpp
         rendering/meshManager.cpp
         rendering/renderManager.cpp

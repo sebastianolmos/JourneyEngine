@@ -3,6 +3,7 @@
 #include "../scene/scene.hpp"
 #include "../input/inputController.hpp"
 #include "../component/pointLight.hpp"
+#include "../component/spotLight.hpp"
 
 
 namespace Journey {
@@ -15,13 +16,13 @@ namespace Journey {
         SimpleTexturedShader.StartUp("../../../source/rendering/shaders/SimpleTexturedShader.vs", 
                         "../../../source/rendering/shaders/SimpleTexturedShader.fs");
         FlatColoredShader.StartUp("../../../source/rendering/shaders/FlatColoredShader.vs", 
-                        "../../../source/rendering/shaders/FlatColoredShader.fs", MaxPointLights);
+                        "../../../source/rendering/shaders/FlatColoredShader.fs", MaxPointLights, MaxSpotLights);
         FlatTexturedShader.StartUp("../../../source/rendering/shaders/FlatTexturedShader.vs", 
-                        "../../../source/rendering/shaders/FlatTexturedShader.fs", MaxPointLights);
+                        "../../../source/rendering/shaders/FlatTexturedShader.fs", MaxPointLights, MaxSpotLights);
         PhongColoredShader.StartUp("../../../source/rendering/shaders/PhongColoredShader.vs", 
-                        "../../../source/rendering/shaders/PhongColoredShader.fs", MaxPointLights);
+                        "../../../source/rendering/shaders/PhongColoredShader.fs", MaxPointLights, MaxSpotLights);
         PhongTexturedShader.StartUp("../../../source/rendering/shaders/PhongTexturedShader.vs", 
-                        "../../../source/rendering/shaders/PhongTexturedShader.fs", MaxPointLights);
+                        "../../../source/rendering/shaders/PhongTexturedShader.fs", MaxPointLights, MaxSpotLights);
         // other shaders
         CleanRenderInfo();
 
@@ -46,6 +47,7 @@ namespace Journey {
         if (!mTransparentObjects.empty())
             std::cout << " Something wrong, tranaperency queue isnt empty" << std::endl;
         mPointLights.clear();
+        mSpotLights.clear();
     }
 
     void RenderManager::DrawCall(Scene& scene)
@@ -87,6 +89,20 @@ namespace Journey {
             FlatColoredShader.setFloat("pointLights["+ number + "].quadratic", mPointLights[i].second->mQuadratic);
             FlatColoredShader.setBool("pointLights["+ number + "].on", mPointLights[i].second->mOn);
         }
+        for (int i = 0; i < mSpotLights.size(); i++) {
+            std::string number = std::to_string(i);
+            FlatColoredShader.setVec3("spotLights["+ number + "].position", mSpotLights[i].position);
+            FlatColoredShader.setVec3("spotLights["+ number + "].direction", mSpotLights[i].direction);
+            FlatColoredShader.setVec3("spotLights["+ number + "].ambient", mSpotLights[i].light->mAmbient);
+            FlatColoredShader.setVec3("spotLights["+ number + "].diffuse", mSpotLights[i].light->mDiffuse);
+            FlatColoredShader.setVec3("spotLights["+ number + "].specular", mSpotLights[i].light->mSpecular);
+            FlatColoredShader.setFloat("spotLights["+ number + "].cutOff", mSpotLights[i].light->mCutOff);
+            FlatColoredShader.setFloat("spotLights["+ number + "].outerCutOff", mSpotLights[i].light->mOuterCutOff);
+            FlatColoredShader.setFloat("spotLights["+ number + "].constant", mSpotLights[i].light->mConstant);
+            FlatColoredShader.setFloat("spotLights["+ number + "].linear", mSpotLights[i].light->mLinear);
+            FlatColoredShader.setFloat("spotLights["+ number + "].quadratic", mSpotLights[i].light->mQuadratic);
+            FlatColoredShader.setBool("spotLights["+ number + "].on",mSpotLights[i].light->mOn);	
+        }
         FlatColoredShader.setVec3("viewPos", scene.GetCameraHandler().getViewPos());
         FlatColoredShader.setMat4("projection", scene.GetCameraHandler().getProjection());
         FlatColoredShader.setMat4("view", scene.GetCameraHandler().getViewMatrix());
@@ -114,8 +130,20 @@ namespace Journey {
             PhongColoredShader.setFloat("pointLights["+ number + "].linear", mPointLights[i].second->mLinear);
             PhongColoredShader.setFloat("pointLights["+ number + "].quadratic", mPointLights[i].second->mQuadratic);
             PhongColoredShader.setBool("pointLights["+ number + "].on", mPointLights[i].second->mOn);
-            //std::cout << "Point Light: " << mPointLights[i].first.x << ", " << mPointLights[i].first.y <<
-            //", " << mPointLights[i].first.z << std::endl;
+        }
+        for (int i = 0; i < mSpotLights.size(); i++) {
+            std::string number = std::to_string(i);
+            PhongColoredShader.setVec3("spotLights["+ number + "].position", mSpotLights[i].position);
+            PhongColoredShader.setVec3("spotLights["+ number + "].direction", mSpotLights[i].direction);
+            PhongColoredShader.setVec3("spotLights["+ number + "].ambient", mSpotLights[i].light->mAmbient);
+            PhongColoredShader.setVec3("spotLights["+ number + "].diffuse", mSpotLights[i].light->mDiffuse);
+            PhongColoredShader.setVec3("spotLights["+ number + "].specular", mSpotLights[i].light->mSpecular);
+            PhongColoredShader.setFloat("spotLights["+ number + "].cutOff", mSpotLights[i].light->mCutOff);
+            PhongColoredShader.setFloat("spotLights["+ number + "].outerCutOff", mSpotLights[i].light->mOuterCutOff);
+            PhongColoredShader.setFloat("spotLights["+ number + "].constant", mSpotLights[i].light->mConstant);
+            PhongColoredShader.setFloat("spotLights["+ number + "].linear", mSpotLights[i].light->mLinear);
+            PhongColoredShader.setFloat("spotLights["+ number + "].quadratic", mSpotLights[i].light->mQuadratic);
+            PhongColoredShader.setBool("spotLights["+ number + "].on",mSpotLights[i].light->mOn);	
         }
         PhongColoredShader.setVec3("viewPos", scene.GetCameraHandler().getViewPos());
         PhongColoredShader.setMat4("projection", scene.GetCameraHandler().getProjection());
@@ -155,6 +183,20 @@ namespace Journey {
             FlatTexturedShader.setFloat("pointLights["+ number + "].quadratic", mPointLights[i].second->mQuadratic);
             FlatTexturedShader.setBool("pointLights["+ number + "].on", mPointLights[i].second->mOn);
         }
+        for (int i = 0; i < mSpotLights.size(); i++) {
+            std::string number = std::to_string(i);
+            FlatTexturedShader.setVec3("spotLights["+ number + "].position", mSpotLights[i].position);
+            FlatTexturedShader.setVec3("spotLights["+ number + "].direction", mSpotLights[i].direction);
+            FlatTexturedShader.setVec3("spotLights["+ number + "].ambient", mSpotLights[i].light->mAmbient);
+            FlatTexturedShader.setVec3("spotLights["+ number + "].diffuse", mSpotLights[i].light->mDiffuse);
+            FlatTexturedShader.setVec3("spotLights["+ number + "].specular", mSpotLights[i].light->mSpecular);
+            FlatTexturedShader.setFloat("spotLights["+ number + "].cutOff", mSpotLights[i].light->mCutOff);
+            FlatTexturedShader.setFloat("spotLights["+ number + "].outerCutOff", mSpotLights[i].light->mOuterCutOff);
+            FlatTexturedShader.setFloat("spotLights["+ number + "].constant", mSpotLights[i].light->mConstant);
+            FlatTexturedShader.setFloat("spotLights["+ number + "].linear", mSpotLights[i].light->mLinear);
+            FlatTexturedShader.setFloat("spotLights["+ number + "].quadratic", mSpotLights[i].light->mQuadratic);
+            FlatTexturedShader.setBool("spotLights["+ number + "].on",mSpotLights[i].light->mOn);	
+        }
         FlatTexturedShader.setVec3("viewPos", scene.GetCameraHandler().getViewPos());
         FlatTexturedShader.setMat4("projection", scene.GetCameraHandler().getProjection());
         FlatTexturedShader.setMat4("view", scene.GetCameraHandler().getViewMatrix());
@@ -180,6 +222,20 @@ namespace Journey {
             PhongTexturedShader.setFloat("pointLights["+ number + "].linear", mPointLights[i].second->mLinear);
             PhongTexturedShader.setFloat("pointLights["+ number + "].quadratic", mPointLights[i].second->mQuadratic);
             PhongTexturedShader.setBool("pointLights["+ number + "].on", mPointLights[i].second->mOn);
+        }
+        for (int i = 0; i < mSpotLights.size(); i++) {
+            std::string number = std::to_string(i);
+            PhongTexturedShader.setVec3("spotLights["+ number + "].position", mSpotLights[i].position);
+            PhongTexturedShader.setVec3("spotLights["+ number + "].direction", mSpotLights[i].direction);
+            PhongTexturedShader.setVec3("spotLights["+ number + "].ambient", mSpotLights[i].light->mAmbient);
+            PhongTexturedShader.setVec3("spotLights["+ number + "].diffuse", mSpotLights[i].light->mDiffuse);
+            PhongTexturedShader.setVec3("spotLights["+ number + "].specular", mSpotLights[i].light->mSpecular);
+            PhongTexturedShader.setFloat("spotLights["+ number + "].cutOff", mSpotLights[i].light->mCutOff);
+            PhongTexturedShader.setFloat("spotLights["+ number + "].outerCutOff", mSpotLights[i].light->mOuterCutOff);
+            PhongTexturedShader.setFloat("spotLights["+ number + "].constant", mSpotLights[i].light->mConstant);
+            PhongTexturedShader.setFloat("spotLights["+ number + "].linear", mSpotLights[i].light->mLinear);
+            PhongTexturedShader.setFloat("spotLights["+ number + "].quadratic", mSpotLights[i].light->mQuadratic);
+            PhongTexturedShader.setBool("spotLights["+ number + "].on",mSpotLights[i].light->mOn);	
         }
         PhongTexturedShader.setVec3("viewPos", scene.GetCameraHandler().getViewPos());
         PhongTexturedShader.setMat4("projection", scene.GetCameraHandler().getProjection());
@@ -244,6 +300,16 @@ namespace Journey {
     void RenderManager::AddPointLightToRender(glm::vec3 pos, PointLightComponent* light)
     {
         mPointLights.push_back(std::make_pair(pos, light));
+    }
+
+
+    void RenderManager::AddSpotLightToRender(glm::vec3 pos, glm::vec3 dir, SpotLightComponent* light) 
+    {   
+        SpotLightInfo info;
+        info.position = pos;
+        info.direction = dir;
+        info.light = light;
+        mSpotLights.push_back(info);
     }
 
     void RenderManager::CreateDebugObjects()

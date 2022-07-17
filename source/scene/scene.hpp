@@ -23,7 +23,7 @@
 namespace Journey {
     class Engine;
     class PointLightComponent;
-
+    class SpotLightComponent;
 
     class Scene {
     
@@ -47,6 +47,7 @@ namespace Journey {
             void ToggleDrawMode();
 
             std::shared_ptr<PointLightComponent> AddPointLightComponent(std::shared_ptr<Entity> entity);
+            std::shared_ptr<SpotLightComponent> AddSpotLightComponent(std::shared_ptr<Entity> entity);
 
         private:
             Scene(Application& app);
@@ -54,6 +55,7 @@ namespace Journey {
             void StartMainLoop();
             void Update(const float deltaTime);
             void deletePointLight();
+            void deleteSpotLight();
 
             InputController mInputController;
             Window mWindow;
