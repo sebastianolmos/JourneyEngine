@@ -5,13 +5,16 @@
 #include "../component/pointLight.hpp"
 #include "../component/spotLight.hpp"
 #include "skybox.hpp"
+#include "bloom.hpp"
 
 
 namespace Journey {
     
     RenderManager::RenderManager() {}
 
-    void RenderManager::StartUp() {
+    void RenderManager::StartUp(glm::ivec2 dim) {
+        mScreenWidth = dim.x;
+        mScreenHeight = dim.y;
         SimpleColoredShader.StartUp("../../../source/rendering/shaders/SimpleColoredShader.vs", 
                         "../../../source/rendering/shaders/SimpleColoredShader.fs");
         SimpleTexturedShader.StartUp("../../../source/rendering/shaders/SimpleTexturedShader.vs", 
@@ -24,10 +27,23 @@ namespace Journey {
                         "../../../source/rendering/shaders/PhongColoredShader.fs", MaxPointLights, MaxSpotLights);
         PhongTexturedShader.StartUp("../../../source/rendering/shaders/PhongTexturedShader.vs", 
                         "../../../source/rendering/shaders/PhongTexturedShader.fs", MaxPointLights, MaxSpotLights);
+        bloomFinalShader.StartUp("../../../source/rendering/shaders/BloomFinalCalShader.vs", 
+                        "../../../source/rendering/shaders/BloomFinalCalShader.fs");
         // other shaders
         CleanRenderInfo();
 
-            //Enabling transparencies
+        ConfigureFloatingPointFrameBuffer();
+        CreateAndAttachDepthBuffer();
+
+        // shader configuration
+        bloomFinalShader.use();
+        bloomFinalShader.setInt("scene", 0);
+        bloomFinalShader.setInt("bloomBlur", 1);
+
+        mBloomRenderer = new BloomRenderer();
+        mBloomRenderer->Init(mScreenWidth, mScreenHeight);
+
+        //Enabling transparencies
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_DEPTH_TEST);  
@@ -61,7 +77,19 @@ namespace Journey {
         else
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-          
+        // ------- 1. RENDER SCENE INTO FLOATING POINT FRAMEBUFFER  ----------
+        //Enabling transparencies
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        
+
+        glBindFramebuffer(GL_FRAMEBUFFER, mHdrFBO);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
+
+        if (mSkybox != nullptr){
+            mSkybox->Draw(scene.GetCameraHandler().getViewMatrix(), scene.GetCameraHandler().getProjection());
+        }
+
         // Drawing Guide lines for the Debug mode
         if (scene.InDebugMode())
             DrawDebugObjects(SimpleColoredShader, scene);
@@ -263,10 +291,29 @@ namespace Journey {
             mTransparentObjects.pop();
         }
 
-        if (mSkybox != nullptr){
-            mSkybox->Draw(scene.GetCameraHandler().getViewMatrix(), scene.GetCameraHandler().getProjection());
-        }
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+        // ------- 2. IS BLOOM IS ENABLED USE UNTHRESHOLDED BLOOM WITH PROGRESSIVE DOWNSAMPLE/UPSAMPLING ----------
+        if (mBloom)
+            mBloomRenderer->RenderBloomTexture(mColorBuffers[1], mBloomFilterRadius);
+
+
+        // ------- 3. NOW RENDER FLOATING POINT COLOR BUFFER TO 2D QUAD AND TONEMAP HDR COLORS TO DEFAULT'S FRAMEBUFFERS'S (CLAMPED) COLOR RANGE  ----------
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        bloomFinalShader.use();
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, mColorBuffers[0]);
+        glActiveTexture(GL_TEXTURE1);
+        if (mBloom)
+            glBindTexture(GL_TEXTURE_2D, mBloomRenderer->BloomTexture());
+        else 
+            glBindTexture(GL_TEXTURE_2D, 0); // trick to bind invalid texture "0", we don't care either way!
+        bloomFinalShader.setInt("programChoice", mBloom?2:1);
+        bloomFinalShader.setInt("hdr", mHDR);
+        bloomFinalShader.setFloat("exposure", mExposure);
+        bloomFinalShader.setFloat("gamma", mGamma);
+        bloomFinalShader.setFloat("bloomStrength", mBloomStrength);
+        mBloomRenderer->renderQuad();
     }
     
 
@@ -322,6 +369,103 @@ namespace Journey {
     {
         mSkybox = new Skybox(faces);
     }
+
+    void RenderManager::ConfigureFloatingPointFrameBuffer()
+    {
+        glGenFramebuffers(1, &mHdrFBO);
+        glBindFramebuffer(GL_FRAMEBUFFER, mHdrFBO);
+        // create 2 floating point color buffers (1 for normal rendering, other for brightness threshold values)
+        glGenTextures(2, mColorBuffers);
+        for (unsigned int i = 0; i < 2; i++)
+        {
+            glBindTexture(GL_TEXTURE_2D, mColorBuffers[i]);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, mScreenWidth, mScreenHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);  // we clamp to the edge as the blur filter would otherwise sample repeated texture values!
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            // attach texture to framebuffer
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, mColorBuffers[i], 0);
+        }
+    }
+
+    void RenderManager::CreateAndAttachDepthBuffer() 
+    {
+        glGenRenderbuffers(1, &mRboDepth);
+        glBindRenderbuffer(GL_RENDERBUFFER, mRboDepth);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, mScreenWidth, mScreenHeight);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mRboDepth);
+        // tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
+        unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+        glDrawBuffers(2, attachments);
+        // finally check if framebuffer is complete
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+            std::cout << "Framebuffer not complete!" << std::endl;
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+
+    bool RenderManager::isHDREnabled() 
+    {
+        return mHDR;
+    }
+
+    bool RenderManager::isBloomEnabled() 
+    {
+        return mBloom;
+    }
+
+    float RenderManager::getGammaValue()
+    {
+        return mGamma;
+    }
+
+
+    float RenderManager::getExposureValue()
+    {
+        return mExposure;
+    }
+
+    float RenderManager::getBloomFilterRadius()
+    {
+        return mBloomFilterRadius;
+    }
+
+    float RenderManager::getBloomStrength()
+    {
+        return mBloomStrength;
+    }
+
+    void RenderManager::setHDREnabled(bool value)
+    {
+        mHDR = value;
+    }
+
+    void RenderManager::setBloomEnabled(bool value)
+    {
+        mBloom = value;
+    }
+
+    void RenderManager::setGammaValue(float value)
+    {
+        mGamma = value;
+    }
+
+    void RenderManager::setExposureValue(float value)
+    {
+        mExposure = value;
+    }   
+
+    void RenderManager::setBloomFilterRadius(float value)
+    {
+        mBloomFilterRadius = value;
+    }
+
+    void RenderManager::setBloomStrength(float value)
+    {
+        mBloomStrength = value;
+    }
+
 
     void RenderManager::CreateDebugObjects()
     {

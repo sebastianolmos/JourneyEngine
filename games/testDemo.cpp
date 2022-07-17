@@ -348,7 +348,7 @@ public:
                                 glm::vec3(2.0f, 2.0f, 2.0f)
                                 );
         Journey::SimpleColoredMaterial* cylinder1Mat = new Journey::SimpleColoredMaterial;
-        cylinder1Mat->color = glm::vec3(0.5f, 1.0f, 0.0f);
+        cylinder1Mat->color = glm::vec3(7.0f, 6.0f, 1.0f);
         meshManager.AddMeshComponent(cylinder1, std::shared_ptr<Journey::Material>(cylinder1Mat), "cylinder1");
         scene.AddEntity(nullptr, cylinder1);
 

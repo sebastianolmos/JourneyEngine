@@ -2,7 +2,7 @@
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aNormal;
 
-out vec4 VertexColor;
+out vec3 VertexColor;
 
 struct Material {
     vec3 ambient;
@@ -72,7 +72,7 @@ void main()
         result += spotLights[i].on ? CalcSpotLight(spotLights[i], norm, vertexPos, viewDir) : vec3(0.0, 0.0, 0.0);
 
     vec3 resultFinal = result * shapeColor;
-    VertexColor = vec4(resultFinal, 1.0);
+    VertexColor = resultFinal;
 }
 
 

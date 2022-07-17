@@ -15,6 +15,7 @@ namespace Journey {
     class PointLightComponent;
     class SpotLightComponent;
     class Skybox;
+    class BloomRenderer;
 
     struct RenderInfo{
         std::shared_ptr<Model> modelObject;
@@ -61,7 +62,7 @@ namespace Journey {
             friend class Scene;
             RenderManager();
 
-            void StartUp();
+            void StartUp(glm::ivec2 dim);
             void ShutDown();
             void CleanRenderInfo();
 
@@ -73,6 +74,19 @@ namespace Journey {
             void AddSpotLightToRender(glm::vec3 pos, glm::vec3 dir, SpotLightComponent* light);
             void AddSkyBox(std::vector<std::string> faces);
 
+            bool isHDREnabled();
+            bool isBloomEnabled();
+            float getGammaValue();
+            float getExposureValue();
+            float getBloomFilterRadius();
+            float getBloomStrength();
+            void setHDREnabled(bool value);
+            void setBloomEnabled(bool value);
+            void setGammaValue(float value);
+            void setExposureValue(float value);
+            void setBloomFilterRadius(float value);
+            void setBloomStrength(float value);
+
         private:	
             Shader SimpleColoredShader;
             Shader SimpleTexturedShader;
@@ -80,6 +94,7 @@ namespace Journey {
             Shader PhongColoredShader;
             Shader FlatTexturedShader;
             Shader PhongTexturedShader;
+            Shader bloomFinalShader;
 
             std::vector<RenderInfo> mSimpleColoredObjects;
             std::vector<RenderInfo> mSimpleTexturedObjects;
@@ -91,10 +106,6 @@ namespace Journey {
 
             unsigned int mDrawLines = false;
             std::vector<RenderDebugInfo> mDebugObjects;
-            void CreateDebugObjects();
-            void CreateDebugFrustrumObject();
-            void CreateDebugAxisObject();
-            void DrawDebugObjects(Shader shaderProgram, Scene& scene);
             
             const unsigned int MaxPointLights = 16;
             int currentPointLights = 0;
@@ -105,6 +116,25 @@ namespace Journey {
             std::vector<SpotLightInfo> mSpotLights;
 
             Skybox* mSkybox = nullptr;
+
+            unsigned int mHdrFBO;
+            unsigned int mColorBuffers[2];
+            unsigned int mRboDepth;
+            unsigned int mScreenWidth, mScreenHeight;
+            BloomRenderer* mBloomRenderer;
+            bool mHDR = true;
+            bool mBloom = true;
+            float mGamma = 2.0;
+            float mExposure = 1.2f;
+            float mBloomFilterRadius = 0.009f;
+            float mBloomStrength = 0.108f;
+
+            void ConfigureFloatingPointFrameBuffer();
+            void CreateAndAttachDepthBuffer();
+            void CreateDebugObjects();
+            void CreateDebugFrustrumObject();
+            void CreateDebugAxisObject();
+            void DrawDebugObjects(Shader shaderProgram, Scene& scene);
     };
 
 }

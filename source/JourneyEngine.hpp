@@ -10,6 +10,7 @@
 #include "scene/scene.hpp"
 #include "rendering/meshManager.hpp"
 #include "rendering/textureManager.hpp"
+#include "rendering/renderManager.hpp"
 #include "component/audioSource.hpp"
 #include "component/pointLight.hpp"
 #include "component/spotLight.hpp"

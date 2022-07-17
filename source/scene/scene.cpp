@@ -17,7 +17,7 @@ namespace Journey {
         mWindow.StartUp(mApplication.GetName(), mApplication.GetWindowWith(), mApplication.GetWindowHeight());
         mInputController.StartUp(mWindow.mWindowHandle);
         mEntityManager->StartUp();
-        mRenderManager.StartUp();
+        mRenderManager.StartUp(mWindow.GetWindowDimensions());
         mAudioManager.StartUp();
 
         mApplication.StartUp(*this);
