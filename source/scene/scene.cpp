@@ -19,6 +19,7 @@ namespace Journey {
         mEntityManager->StartUp();
         mRenderManager.StartUp(mWindow.GetWindowDimensions());
         mAudioManager.StartUp();
+        mSkeletalManager.StartUp();
 
         mApplication.StartUp(*this);
     }
@@ -30,6 +31,7 @@ namespace Journey {
         mRenderManager.ShutDown();
         mEntityManager->ShutDown();
         mAudioManager.ShutDown();
+        mSkeletalManager.ShutDown();
 		// ShotDown the Input Controller
         mWindow.ShutDown();
     }
@@ -57,9 +59,11 @@ namespace Journey {
         if (!InDebugMode()) {
             mRenderManager.CleanRenderInfo();
             mAudioManager.cleanBatch();
+            mSkeletalManager.cleanBatch();
             mEntityManager->UpdateEntities(*this, deltaTime);
             mApplication.UserUpdate(*this, deltaTime);
             mEntityManager->DeleteEntities();
+            mSkeletalManager.updateAnimators(*this, deltaTime);
         }
         mAudioManager.updateListener(*this, deltaTime);
         mAudioManager.updateSources(deltaTime);
@@ -171,6 +175,11 @@ namespace Journey {
     void Scene::AddSkybox(std::vector<std::string> faces)
     {
         mRenderManager.AddSkyBox(faces);
+    }
+
+    SkeletalManager& Scene::GetSkeletalManager()
+    {
+        return mSkeletalManager;
     }
 
 }

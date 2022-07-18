@@ -1,7 +1,7 @@
 #pragma once
 
 #include "component.hpp"
-#include "../rendering/material.hpp"
+#include <glm/glm.hpp>
 #include <memory>
 
 namespace Journey {
@@ -13,16 +13,13 @@ namespace Journey {
             SkeletalMeshComponent() = default;
 
             std::shared_ptr<SkeletalModel> model;
-            std::shared_ptr<Material> material;
+            // For now, these meshes doesnt have lighting
+            glm::vec3 color;
 
             virtual EComponentType GetType() override { return EComponentType::SkeletalMeshComponent; }
 
             std::shared_ptr<Animator> getAnimator();
-            
-            //virtual void UpdateRenderInfo(RenderInfo& rInfo) override {
-            //    rInfo.modelObject = meshModel;
-            //    material->fillRenderInfo(rInfo);
-            //}
+
     };
 
 }

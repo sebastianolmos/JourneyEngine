@@ -3,14 +3,24 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <iostream>
 
-#include "bone.hpp"
 #include <functional>
 #include "animdata.hpp"
 #include "skeletalModel.hpp"
 #include "assimp_glm_helpers.hpp"
 
 namespace Journey {
+
+	Animation::Animation(aiNode* rootNode, aiAnimation* rawAnimation, SkeletalModel* model)
+	{
+		m_Duration = rawAnimation->mDuration;
+		m_TicksPerSecond = rawAnimation->mTicksPerSecond;
+		aiMatrix4x4 globalTransformation = rootNode->mTransformation;
+		globalTransformation = globalTransformation.Inverse();
+		ReadHeirarchyData(m_RootNode, rootNode);
+		ReadMissingBones(rawAnimation, *model);
+	}
 
     Animation::Animation(const std::string& animationPath, SkeletalModel* model)
     {

@@ -19,6 +19,7 @@ set(JOURNEY_HEADERS
         component/audioSource.hpp
         component/pointLight.hpp
         component/spotLight.hpp
+        component/skeletalMesh.hpp
         rendering/material.hpp
         rendering/meshManager.hpp
         rendering/renderManager.hpp
@@ -30,6 +31,14 @@ set(JOURNEY_HEADERS
         rendering/importedModel.hpp
         rendering/skybox.hpp
         rendering/bloom.hpp
+        skeletal/animdata.hpp
+        skeletal/assimp_glm_helpers.hpp
+        skeletal/bone.hpp
+        skeletal/skeletalMesh.hpp
+        skeletal/skeletalModel.hpp
+        skeletal/animation.hpp
+        skeletal/animator.hpp
+        skeletal/skeletalManager.hpp
         audio/audioBuffer.hpp
         audio/audioManager.hpp
         scene/scene.hpp
@@ -59,6 +68,12 @@ set(JOURNEY_SOURCES
         rendering/importedModel.cpp
         rendering/skybox.cpp
         rendering/bloom.cpp
+        skeletal/bone.cpp
+        skeletal/skeletalMesh.cpp
+        skeletal/skeletalModel.cpp
+        skeletal/animation.cpp
+        skeletal/animator.cpp
+        skeletal/skeletalManager.cpp
         audio/audioBuffer.cpp
         audio/audioManager.cpp)
 

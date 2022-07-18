@@ -3,8 +3,14 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <memory>
+#include <unordered_map>
 
-struct aiNode;
+
+#include <assimp/scene.h>
+#include "skeletalMesh.hpp"
+#include "animdata.hpp"
+
 struct aiScene;
 struct aiMesh;
 struct aiMaterial;
@@ -12,10 +18,13 @@ enum aiTextureType;
 
 namespace Journey {
     class skTexture;
-    class SkeletalMesh;
     class Shader;
-    struct BoneInfo;
     struct skVertex;
+    class Animator;
+    class SkeletalManager;
+    class Animation;
+
+
 
     class SkeletalModel {
     public:
@@ -30,10 +39,30 @@ namespace Journey {
         auto& GetBoneInfoMap() { return m_BoneInfoMap; }
 	    int& GetBoneCount() { return m_BoneCounter; }
 
+        void LoadAnimation(unsigned int index, std::string name, bool loop = false);
+        void PlayAnimation(std::string name);
+        void PauseCurrentAnimation();
+        void StopCurrentAnimation();
+        bool IsPlayingCurrentAnimation();
+        bool IsPausedCurrentAnimation();
+        bool IsFinishedCurrentAnimation();
+        bool IsLoopingCurrentAnimation();
+        void SetLoopingCurrentAnimation(bool value);
+
     private:
+        friend SkeletalManager;
         std::map<std::string, BoneInfo> m_BoneInfoMap;
 	    int m_BoneCounter = 0;
+        // Animation Handler
+        Animator* mAnimator;
+        std::hash<std::string> mHasher;
+        std::unordered_map<std::size_t, std::shared_ptr<Animation> > mAnimationRecord;
+        aiNode* mRootNode;
+        aiAnimation** mRawAnimations;
+        std::string mPath;
+        std::shared_ptr<Animation> lastAnimation;
 
+        void UpdateAnimator(float deltaTime);
         void loadModel(std::string const &path);
         void processNode(aiNode *node, const aiScene *scene);
         void SetVertexBoneDataToDefault(skVertex& vertex);

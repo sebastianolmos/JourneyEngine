@@ -5,12 +5,13 @@
 #include <glm/glm.hpp>
 #include <string>
 
+#include "bone.hpp"
+
 struct aiAnimation;
 struct aiNode;
 
 namespace Journey {
     class SkeletalModel;
-    class Bone;
     struct BoneInfo;
 
     struct AssimpNodeData
@@ -24,6 +25,7 @@ namespace Journey {
     class Animation {
     public:
         Animation() = default;
+        Animation(aiNode* rootNode, aiAnimation* rawAnimation, SkeletalModel* model);
         Animation(const std::string& animationPath, SkeletalModel* model);
         Animation(const std::string& animationPath, SkeletalModel* model, unsigned int index);
         ~Animation()

@@ -6,28 +6,32 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <stb_image.h>
 #include <assimp/Importer.hpp>
-#include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include "SkeletalMesh.hpp"
 #include "../rendering/shaders/shader.hpp"
+#include "animator.hpp"
+#include "animation.hpp"
 
 #include <fstream>
 #include <sstream>
 #include <iostream>
 
 #include "assimp_glm_helpers.hpp"
-#include "animdata.hpp"
 
 namespace Journey {
 
     SkeletalModel::SkeletalModel(std::string const &path, bool gamma) : gammaCorrection(gamma)
     {
         loadModel(path);
+        mAnimator = new Animator();
     }
 
     void SkeletalModel::Draw(Shader &shader)
     {
+        auto transforms = mAnimator->GetFinalBoneMatrices();
+		for (int i = 0; i < transforms.size(); ++i)
+			shader.setMat4("finalBonesMatrices[" + std::to_string(i) + "]", transforms[i]);
+
         for(unsigned int i = 0; i < meshes.size(); i++)
             meshes[i].Draw(shader);
     }
@@ -36,7 +40,7 @@ namespace Journey {
     {
         // read file via ASSIMP
         Assimp::Importer importer;
-        const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace);
+        const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
         // check for errors
         if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
         {
@@ -45,6 +49,10 @@ namespace Journey {
         }
         // retrieve the directory path of the filepath
         directory = path.substr(0, path.find_last_of('/'));
+
+        mRootNode = scene->mRootNode;
+        mRawAnimations = scene->mAnimations;
+        mPath = path;
 
         // process ASSIMP's root node recursively
         processNode(scene->mRootNode, scene);
@@ -254,5 +262,82 @@ namespace Journey {
         return textures;
     }
 
+    void SkeletalModel::LoadAnimation(unsigned int index, std::string name, bool loop)
+    {
+        std::size_t hashedName = mHasher(name);
+        if (mAnimationRecord.count(hashedName) != 0)
+            return;
+        std::shared_ptr<Animation> anim = std::make_shared<Animation>(mPath, this, index);
+        anim->setLooping(loop);
+        mAnimationRecord.insert({hashedName, anim});
+    }
+
+    void SkeletalModel::PlayAnimation(std::string name)
+    {
+        std::size_t hashedName = mHasher(name);
+        if (mAnimationRecord.count(hashedName) == 0){
+            std::cout << name << " animación no registrada"<< std::endl;
+            return;
+        }
+        lastAnimation = mAnimator->m_CurrentAnimation;
+        mAnimator->m_Playing = true;
+        mAnimator->m_Finished = false;
+        mAnimator->PlayAnimation(mAnimationRecord[hashedName]);
+    }
+    
+    void SkeletalModel::PauseCurrentAnimation()
+    {
+        mAnimator->m_Playing = false;
+        mAnimator->m_Finished = false;
+    }
+    
+    void SkeletalModel::StopCurrentAnimation()
+    {
+        mAnimator->m_Playing = false;
+        mAnimator->m_Finished = true;
+        mAnimator->m_CurrentTime = 0.0f;
+    }
+    
+    bool SkeletalModel::IsPlayingCurrentAnimation()
+    {
+        return mAnimator->m_Playing;
+    }
+    
+    
+    bool SkeletalModel::IsPausedCurrentAnimation()
+    {
+        return !mAnimator->m_Playing && !mAnimator->m_Finished;
+    }
+
+    bool SkeletalModel::IsFinishedCurrentAnimation()
+    {
+        return mAnimator->m_Finished;
+    }
+
+    bool SkeletalModel::IsLoopingCurrentAnimation()
+    {
+        if (mAnimator->m_CurrentAnimation)
+            return mAnimator->m_CurrentAnimation->isLooping();
+    }
+    
+    void SkeletalModel::SetLoopingCurrentAnimation(bool value)
+    {
+        if (mAnimator->m_CurrentAnimation)
+            mAnimator->m_CurrentAnimation->setLooping(value);
+    }
+    
+    void SkeletalModel::UpdateAnimator(float deltaTime)
+    {
+        bool finished = mAnimator->UpdateAnimation(deltaTime);
+        if (finished) {
+            auto tempAnim = mAnimator->m_CurrentAnimation;
+            if (lastAnimation != nullptr) {
+                mAnimator->m_Playing = true;
+                mAnimator->m_Finished = false;
+                mAnimator->PlayAnimation(lastAnimation);
+                lastAnimation = tempAnim;
+            }
+        }
+    }
     
 }

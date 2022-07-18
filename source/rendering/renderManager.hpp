@@ -16,6 +16,7 @@ namespace Journey {
     class SpotLightComponent;
     class Skybox;
     class BloomRenderer;
+    class SkeletalModel;
 
     struct RenderInfo{
         std::shared_ptr<Model> modelObject;
@@ -53,6 +54,12 @@ namespace Journey {
         SpotLightComponent* light;
     };
 
+    struct AnimRenderInfo {
+        glm::vec3 color;
+        glm::mat4 transform;
+        std::shared_ptr<SkeletalModel> model;
+    };
+
     typedef std::pair<float, RenderInfo> TransparentInfo;
     typedef std::pair<glm::vec3, PointLightComponent* > PointLightInfo;
     class Scene;
@@ -73,6 +80,7 @@ namespace Journey {
             void AddPointLightToRender(glm::vec3 pos, PointLightComponent* light);
             void AddSpotLightToRender(glm::vec3 pos, glm::vec3 dir, SpotLightComponent* light);
             void AddSkyBox(std::vector<std::string> faces);
+            void AddSkeletalObjectToRender(glm::vec3 color, glm::mat4 transform, std::shared_ptr<SkeletalModel> model);
 
             bool isHDREnabled();
             bool isBloomEnabled();
@@ -95,6 +103,7 @@ namespace Journey {
             Shader FlatTexturedShader;
             Shader PhongTexturedShader;
             Shader bloomFinalShader;
+            Shader skeletalShader;
 
             std::vector<RenderInfo> mSimpleColoredObjects;
             std::vector<RenderInfo> mSimpleTexturedObjects;
@@ -103,6 +112,7 @@ namespace Journey {
             std::vector<RenderInfo> mFlatTexturedObjects;
             std::vector<RenderInfo> mPhongTexturedObjects;
             std::priority_queue<TransparentInfo> mTransparentObjects;
+            std::vector<AnimRenderInfo> mSkeletalObjects;
 
             unsigned int mDrawLines = false;
             std::vector<RenderDebugInfo> mDebugObjects;

@@ -3,6 +3,8 @@
 void RegisterInputs(Journey::InputController& input) {
     input.RegisterKeyAction("Test", JOURNEY_KEY_SPACE);
     input.RegisterKeyAction("Run", JOURNEY_KEY_LEFT_SHIFT);
+    input.RegisterKeyAction("mas", JOURNEY_KEY_K);
+    input.RegisterKeyAction("menos", JOURNEY_KEY_J);
     input.RegisterGamepadAxis("MoveX", JOURNEY_GAMEPAD_AXIS_LEFT_X);
     input.RegisterGamepadAxis("MoveY", JOURNEY_GAMEPAD_AXIS_LEFT_Y);
     input.RegisterGamepadAxis("RotX", JOURNEY_GAMEPAD_AXIS_RIGHT_X);
@@ -13,7 +15,7 @@ void RegisterInputs(Journey::InputController& input) {
 void RegisterMeshes(Journey::MeshManager& manager) {
     manager.LoadPrimitiveMesh("projectile", Journey::EPrimitiveMesh::Sphere, true);
     manager.LoadPrimitiveMesh("floorMesh", Journey::EPrimitiveMesh::Cube, true);
-    manager.LoadModelMesh("backpackMesh", "../../../assets/backpack/backpack.obj");
+    manager.LoadModelMesh("backpackMesh", "../../../assets/bob/bob_the_robot.fbx");
     manager.LoadPrimitiveMesh("plane1", Journey::EPrimitiveMesh::Plane);
     manager.LoadPrimitiveMesh("plane2", Journey::EPrimitiveMesh::Plane, true);
     manager.LoadPrimitiveMesh("cube1", Journey::EPrimitiveMesh::Cube);
@@ -142,6 +144,8 @@ public:
         RegisterTextures(Journey::TextureManager::getInstance());
         
         scene.GetInputController().BindActionOnPressed("Test", [&]() {this->testo();});
+        scene.GetInputController().BindActionOnPressed("mas", [&]() {this->mas();});
+        scene.GetInputController().BindActionOnPressed("menos", [&]() {this->menos();});
         scene.GetInputController().BindActionToggle("Run", [&](bool v) {this->changeRunState(v);});
 
         // Floor entity
@@ -248,11 +252,40 @@ public:
         };
         scene.AddSkybox(faces);
 
+        // Add a skeletal mesh with animations
+        std::shared_ptr<Journey::Entity> bob = std::make_shared<Journey::Entity>();
+        bob->getTransform().Set(glm::vec3(-2.0f, 2.0f, 1.2f),
+                                glm::vec3(glm::radians(90.0f), 0.0f, 0.0f),
+                                glm::vec3(0.01)
+                                );
+        skComp = scene.GetSkeletalManager().AddSkeletalMeshComponent(bob, "../../../assets/bob/bob_the_robot.fbx", glm::vec3(1.0f));
+        scene.AddEntity(nullptr, bob);
+        if (skComp->model){
+            skComp->model->LoadAnimation(0, "0", false);
+            skComp->model->LoadAnimation(1, "1", false);
+            skComp->model->LoadAnimation(2, "2", false);
+            skComp->model->LoadAnimation(3, "3", false);
+            skComp->model->LoadAnimation(4, "4", false);
+            skComp->model->LoadAnimation(5, "5", false);
+            skComp->model->LoadAnimation(6, "6", false);
+            skComp->model->LoadAnimation(7, "7", false);
+            skComp->model->LoadAnimation(8, "8", false);
+            skComp->model->LoadAnimation(9, "9", false);
+            skComp->model->LoadAnimation(10, "10", false);
+            skComp->model->LoadAnimation(11, "11", false);
+            skComp->model->LoadAnimation(12, "12", false);
+            skComp->model->LoadAnimation(13, "13", false);
+            skComp->model->LoadAnimation(14, "14", false);
+            skComp->model->LoadAnimation(15, "15", false);
+            skComp->model->PlayAnimation("0");
+        }
+        
+
         //backpack test
         std::shared_ptr<Journey::Entity> backpack = std::make_shared<Journey::Entity>();
         backpack->getTransform().Set(glm::vec3(0.0f, -0.5f, 1.2f),
-                                glm::vec3(0.0f, glm::radians(90.0f), 0.0f),
-                                glm::vec3(0.3f, 0.3f, 0.3f)
+                                glm::vec3(glm::radians(90.0f), 0.0f, 0.0f),
+                                glm::vec3(0.03f)
                                 );
         Journey::PhongTexturedMaterial* backpackMat = new Journey::PhongTexturedMaterial();
         backpackMat->kd = glm::vec3(0.6f, 0.6f, 0.6f);
@@ -437,6 +470,18 @@ public:
         std::cout << "Looking god!" << std::endl;
     }
 
+    void mas(){
+        anim = (anim + 1) % 16;
+        skComp->model->PlayAnimation(std::to_string(anim));
+        std::cout << "Anim playing: " << anim << std::endl;
+    }
+
+    void menos(){
+        anim = (anim - 1) % 16;
+        skComp->model->PlayAnimation(std::to_string(anim));
+        std::cout << "Anim playing: " << anim << std::endl;
+    }
+
     void changeRunState(bool state) {
         if (state)
             std::cout << "Start Running!" << std::endl;
@@ -450,6 +495,8 @@ private:
     std::shared_ptr<Journey::Entity> dog;
     std::shared_ptr<Carpincho> carpin;
     std::shared_ptr<Journey::FollowCamera> mainCamera;
+    std::shared_ptr<Journey::SkeletalMeshComponent> skComp;
+    int anim = 0;
 };
 
 int main()

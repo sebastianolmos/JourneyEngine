@@ -13,6 +13,7 @@
 #include "../rendering/material.hpp"
 #include "../rendering/renderManager.hpp"
 #include "../audio/audioManager.hpp"
+#include "../skeletal/skeletalManager.hpp"
 #include "../window/window.hpp"
 #include "../input/inputController.hpp"
 #include "../application.hpp"
@@ -34,6 +35,7 @@ namespace Journey {
             InputController& GetInputController();
             RenderManager& GetRenderManager();
             AudioManager& GetAudioManager();
+            SkeletalManager& GetSkeletalManager();
 		    Window& GetWindow();
 		    void EndApplication();
             void AddEntity(std::shared_ptr<Entity> parentEntity, std::shared_ptr<Entity> newEntity);
@@ -65,6 +67,7 @@ namespace Journey {
             std::shared_ptr<EntityManager> mEntityManager;
             RenderManager mRenderManager;
             AudioManager mAudioManager;
+            SkeletalManager mSkeletalManager;
             CameraHandler mCameraHandler;
             bool bAbleToUseDebugMode = false; 
             bool bDebugMode = false; 

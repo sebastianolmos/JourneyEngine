@@ -13,6 +13,7 @@ namespace Journey{
     class TextureManager;
     class MeshManager;
     class AudioManager;
+    class SkeletalManager;
     enum class EState {
         Active,
         PendingDestroy
@@ -62,6 +63,7 @@ namespace Journey{
             friend MeshManager;
             friend AudioManager;
             friend Scene;
+            friend SkeletalManager;
 
             void ShutDown() noexcept {mCurrentState = EState::PendingDestroy; }
 

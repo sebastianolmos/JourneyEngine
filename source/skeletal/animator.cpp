@@ -6,11 +6,19 @@
 #include "animation.hpp"
 #include "bone.hpp"
 #include "animdata.hpp"
+#include <iostream>
 
 namespace Journey 
 {
+    Animator::Animator()
+    {
+		m_FinalBoneMatrices.reserve(100);
 
-    Animator::Animator(Animation* animation)
+		for (int i = 0; i < 100; i++)
+			m_FinalBoneMatrices.push_back(glm::mat4(1.0f));
+    }
+
+    Animator::Animator(std::shared_ptr<Animation> animation)
     {
         m_CurrentTime = 0.0;
 		m_CurrentAnimation = animation;
@@ -21,21 +29,26 @@ namespace Journey
 			m_FinalBoneMatrices.push_back(glm::mat4(1.0f));
     }
 
-    void Animator::UpdateAnimation(float dt)
+    bool Animator::UpdateAnimation(float dt)
     {
         m_DeltaTime = dt;
-		if (m_CurrentAnimation)
+		if ((m_CurrentAnimation || m_Playing) && ! m_Finished)
 		{
-            
 			m_CurrentTime += m_CurrentAnimation->GetTicksPerSecond() * dt;
-            if (m_CurrentAnimation->isLooping() && m_CurrentTime > m_CurrentAnimation->GetDuration() )
-                return;
+            if (!m_CurrentAnimation->isLooping() && m_CurrentTime > m_CurrentAnimation->GetDuration() )
+            {
+                m_Finished = true;
+                m_Playing = false;
+                m_CurrentTime = 0.0f;
+                return true;
+            }
 			m_CurrentTime = fmod(m_CurrentTime, m_CurrentAnimation->GetDuration());
 			CalculateBoneTransform(&m_CurrentAnimation->GetRootNode(), glm::mat4(1.0f));
 		}
+        return false;
     }
 
-    void Animator::PlayAnimation(Animation* pAnimation)
+    void Animator::PlayAnimation(std::shared_ptr<Animation> pAnimation)
     {
         m_CurrentAnimation = pAnimation;
 		m_CurrentTime = 0.0f;

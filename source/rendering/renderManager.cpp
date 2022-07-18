@@ -6,6 +6,7 @@
 #include "../component/spotLight.hpp"
 #include "skybox.hpp"
 #include "bloom.hpp"
+#include "../skeletal/skeletalModel.hpp"
 
 
 namespace Journey {
@@ -29,6 +30,8 @@ namespace Journey {
                         "../../../source/rendering/shaders/PhongTexturedShader.fs", MaxPointLights, MaxSpotLights);
         bloomFinalShader.StartUp("../../../source/rendering/shaders/BloomFinalCalShader.vs", 
                         "../../../source/rendering/shaders/BloomFinalCalShader.fs");
+        skeletalShader.StartUp("../../../source/rendering/shaders/SkeletalTexturesShader.vs", 
+                        "../../../source/rendering/shaders/SkeletalTexturesShader.fs");
         // other shaders
         CleanRenderInfo();
 
@@ -61,6 +64,7 @@ namespace Journey {
         mPhongColoredObjects.clear();
         mFlatTexturedObjects.clear();
         mPhongTexturedObjects.clear();
+        mSkeletalObjects.clear();
         if (!mTransparentObjects.empty())
             std::cout << " Something wrong, tranaperency queue isnt empty" << std::endl;
         mPointLights.clear();
@@ -282,6 +286,17 @@ namespace Journey {
             renderInfo.modelObject->drawCall(PhongTexturedShader);
         }
 
+        // <------ SKELETAL TEXTURED SHADER ------->
+        skeletalShader.use();
+        skeletalShader.setMat4("projection", scene.GetCameraHandler().getProjection());
+        skeletalShader.setMat4("view", scene.GetCameraHandler().getViewMatrix());
+        for(auto& renderInfo: mSkeletalObjects) {
+            skeletalShader.setMat4("model", renderInfo.transform);
+            skeletalShader.setVec3("color", renderInfo.color);
+            renderInfo.model->Draw(skeletalShader);
+        }
+
+        // <------ Transparent TEXTURED SHADER ------->
         SimpleTexturedShader.use();
         SimpleTexturedShader.setMat4("projection", scene.GetCameraHandler().getProjection());
         SimpleTexturedShader.setMat4("view", scene.GetCameraHandler().getViewMatrix());
@@ -372,6 +387,16 @@ namespace Journey {
     void RenderManager::AddSkyBox(std::vector<std::string> faces)
     {
         mSkybox = new Skybox(faces);
+    }
+
+    
+    void RenderManager::AddSkeletalObjectToRender(glm::vec3 color, glm::mat4 transform, std::shared_ptr<SkeletalModel> model)
+    {
+        AnimRenderInfo info;
+        info.color = color;
+        info.transform = transform;
+        info.model = model;
+        mSkeletalObjects.push_back(info);
     }
 
     void RenderManager::ConfigureFloatingPointFrameBuffer()

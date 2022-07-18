@@ -6,8 +6,10 @@
 #include "../component/pointLight.hpp"
 #include "../component/spotLight.hpp"
 #include "../component/sprite.hpp"
+#include "../component/skeletalMesh.hpp"
 #include "../rendering/material.hpp"
 #include "../audio/audioManager.hpp"
+#include "../skeletal/skeletalManager.hpp"
 #include  <glm/gtx/norm.hpp>
 
 #include <iostream>
@@ -63,6 +65,12 @@ namespace Journey {
                 else
                     scene.GetRenderManager().AddObjectToRender(sprite->material->GetType(), rInfo);
             }
+        }
+        else if (((entity->mComponents).count(EComponentType::SkeletalMeshComponent) != 0 ))
+        {
+            SkeletalMeshComponent* skelMesh = dynamic_cast<SkeletalMeshComponent*>((entity->mComponents[EComponentType::SkeletalMeshComponent]).get());
+            scene.GetSkeletalManager().pushModelToBatch(skelMesh->model);
+            scene.GetRenderManager().AddSkeletalObjectToRender(skelMesh->color, newTransform, skelMesh->model);
         }
 
         //Check AudioSource Component
