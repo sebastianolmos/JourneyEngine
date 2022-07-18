@@ -13,4 +13,4 @@ endfunction(Add_Game)
 
 #Add_Game(LittleDemo_v0 littleDemo.cpp)
 Add_Game(CatchGame catchGame.cpp)
-Add_Game(TestDemo testDemo.cpp)
+#Add_Game(TestDemo testDemo.cpp)
