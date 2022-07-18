@@ -8,7 +8,8 @@ namespace Journey {
         SpriteComponent,
         AudioSourceComponent,
         PointLightComponent,
-        SpotLightComponent
+        SpotLightComponent,
+        SkeletalMeshComponent
 	};
 
     class Component {
