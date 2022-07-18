@@ -258,7 +258,7 @@ public:
                                 glm::vec3(glm::radians(90.0f), 0.0f, 0.0f),
                                 glm::vec3(0.01)
                                 );
-        skComp = scene.GetSkeletalManager().AddSkeletalMeshComponent(bob, "../../../assets/bob/bob_the_robot.fbx", glm::vec3(1.0f));
+        skComp = scene.GetSkeletalManager().AddSkeletalMeshComponent(bob, "../../../assets/trex/T_Rex.fbx", glm::vec3(1.0f));
         scene.AddEntity(nullptr, bob);
         if (skComp->model){
             skComp->model->LoadAnimation(0, "0", false);

@@ -35,6 +35,61 @@ void RegisterAudios(Journey::AudioManager& manager) {
     
 }
 
+class FairyEntity : public Journey::Entity{
+public:
+    FairyEntity() = default;
+    ~FairyEntity() = default;
+    virtual void UserStartUp(Journey::Scene& scene) override {
+        mRollVelocity = (rand() / static_cast<float>(RAND_MAX)) * 2.0f;
+        mPitchVelocity = (rand() / static_cast<float>(RAND_MAX)) * 2.0f;
+        mYawVelocity = (rand() / static_cast<float>(RAND_MAX)) * 2.0f;
+        mRoll = (rand() / static_cast<float>(RAND_MAX)) * 7.0f;
+        mPitch = (rand() / static_cast<float>(RAND_MAX)) * 7.0f;
+        mYaw = (rand() / static_cast<float>(RAND_MAX)) * 7.0f;
+    }
+    virtual void UserUpdate(Journey::Scene& scene, float deltaTime) override {
+        mRoll += mRollVelocity * deltaTime;
+        mPitch += mPitchVelocity * deltaTime;
+        mYaw += mYawVelocity * deltaTime;
+        getTransform().SetRotation(glm::vec3(mRoll, mPitch, mYaw));
+    }
+private:
+    float mRollVelocity, mPitchVelocity, mYawVelocity, mRoll, mPitch, mYaw;
+};
+
+class PivotEntity : public Journey::Entity {
+public:
+    PivotEntity() = default;
+    ~PivotEntity() = default;
+    virtual void UserStartUp(Journey::Scene& scene) override {
+        // Add the fairy 
+        mFairy = std::make_shared<FairyEntity>();
+        Journey::SimpleColoredMaterial* satMat = new Journey::SimpleColoredMaterial();
+        satMat->color = glm::vec3(1.0f, 1.5f, 5.0f);
+        Journey::MeshManager::getInstance().AddMeshComponent(mFairy, std::shared_ptr<Journey::Material>(satMat), "sateliteMesh");
+        mFairy->getTransform().SetTranslation(glm::vec3(0.8, 0.0, 0.0));
+        mFairy->getTransform().SetScale(glm::vec3(0.2f, 0.2f, 0.25f));
+        mManager->AddEntity(shared_from_this(), mFairy);
+        mFairyRot = 0.0f;
+
+        //light 
+        auto lComp1 = scene.AddPointLightComponent(mFairy);
+        lComp1->setAmbient(glm::vec3(0.0f));
+        lComp1->setDiffuse(glm::vec3(0.2f, 0.6f, 1.0f));
+        lComp1->setSpecular(glm::vec3(0.0f, 0.5f, 1.0f));
+        lComp1->turnOn();
+    }
+    virtual void UserUpdate(Journey::Scene& scene, float deltaTime) override {
+        mFairyRot += deltaTime*1.3f;
+        getTransform().SetRotation(glm::vec3(0.0f, 0.0f, mFairyRot));
+        mFairy->getTransform().SetTranslation(glm::vec3(1.4f, 0.0f, 1.7f + glm::sin(mFairyRot*1.3)*0.4f));
+    }
+
+private:
+    std::shared_ptr<FairyEntity> mFairy;
+    float mFairyRot;
+};
+
 class ProjectileEntity : public Journey::Entity {
 public:
     ProjectileEntity(glm::vec3 spawnPos, float timeToDelete, float speed, glm::vec3 direction, float size, float rotZ) {
@@ -85,11 +140,20 @@ public:
                                 glm::vec3(0.0f, 0.0f, 0.0f),
                                 glm::vec3(0.6f, 0.6f, 0.6f)
                                 );
-        Journey::PhongTexturedMaterial* mat = new Journey::PhongTexturedMaterial();
-        mat->kd = glm::vec3(0.6f, 0.6f, 0.6f);
-        mat->ke = glm::vec3(0.5f, 0.5f, 0.5f);
-        mat->ks = glm::vec3(0.0f, 0.0f, 0.0f);
-        Journey::MeshManager::getInstance().AddMeshComponent(shared_from_this(), std::shared_ptr<Journey::Material>(mat), "shibaMesh");
+        std::shared_ptr<Journey::Entity> bob = std::make_shared<Journey::Entity>();
+        bob->getTransform().Set(glm::vec3(0.0f, 0.0f, 0.2f),
+                                glm::vec3(glm::radians(90.0f), 0.0f, glm::radians(90.0f) ),
+                                glm::vec3(0.013)
+                                );
+        skComp = scene.GetSkeletalManager().AddSkeletalMeshComponent(bob, "../../../assets/bob/bob_the_robot.fbx", glm::vec3(1.0f));
+        scene.AddEntity(shared_from_this(), bob);
+        if (skComp->model){
+            skComp->model->LoadAnimation(1, "attack", false);
+            skComp->model->LoadAnimation(3, "jump", true);
+            skComp->model->LoadAnimation(6, "idle", true);
+            skComp->model->LoadAnimation(12, "run", true);
+            skComp->model->PlayAnimation("idle");
+        }
         // Input
         scene.GetInputController().BindAxisMap("MoveX", [&](float dx) {this->moveInX(dx);});
         scene.GetInputController().BindAxisMap("MoveY", [&](float dy) {this->moveInY(dy);});
@@ -106,10 +170,13 @@ public:
         mPos.y = -17.2f;
         // Add audio source
         scene.GetAudioManager().AddAudioSourceComponent(shared_from_this(), "bark", false, false);
+        // Add the fairy 
+        auto fairy = std::make_shared<PivotEntity>();
+        mManager->AddEntity(shared_from_this(), fairy);
     }
     void throwProjectile() {
         std::shared_ptr<ProjectileEntity> projectile = std::make_shared<ProjectileEntity>(
-            mPos + mUp * mHeight * 2.0f, 
+            mPos + mUp * mHeight * 4.0f, 
             1.5f, 
             8.0f + glm::length(mVel)*mRunSpeed, 
             glm::vec3(getFixedVel().x, getFixedVel().y, 0.0f), 
@@ -121,7 +188,34 @@ public:
             audioSrc->setVolume(1.0f);
             audioSrc->play();
         }
+        skComp->model->PlayAnimation("attack");
     }
+    virtual void UserUpdate(Journey::Scene& scene, float deltaTime) override {
+        Journey::ControlledEntity::UserUpdate(scene, deltaTime);
+        float runLimit = 0.1f;
+        if (mPos.z <= 0.0f)
+            bJumping = false;
+
+        if (mPos.z > 0.05f && !bJumping) {
+            skComp->model->PlayAnimation("jump");
+            bJumping = true;
+        }
+        else if (glm::length(mVel) > runLimit && !bRunning && !bJumping ) {
+            skComp->model->PlayAnimation("run");
+            bRunning = true;
+            bIdle = false;
+        } 
+        else if (glm::length(mVel) < runLimit && !bIdle && !bJumping){
+            skComp->model->PlayAnimation("idle");
+            bIdle = true;
+            bRunning = false;
+        }
+    }
+private:
+    std::shared_ptr<Journey::SkeletalMeshComponent> skComp;
+    bool bRunning = false;
+    bool bIdle = true;
+    bool bJumping = false;
 };
 
 class SunEntity : public Journey::Entity {
@@ -130,10 +224,20 @@ public:
     ~SunEntity() = default;
     virtual void UserStartUp(Journey::Scene& scene) override {
         Journey::SimpleColoredMaterial* mat = new Journey::SimpleColoredMaterial();
-        mat->color = glm::vec3(1.0f, 1.0f, 0.7f);
+        mat->color = glm::vec3(1.0f, 1.0f, 0.7f)*3.0f;
         Journey::MeshManager::getInstance().AddMeshComponent(shared_from_this(), std::shared_ptr<Journey::Material>(mat), "sunMesh");
-        getTransform().SetTranslation(scene.GetPointLight().getLightPos());
+        getTransform().SetTranslation(glm::vec3(20.0f, -20.0f, 10.0f));
         getTransform().SetScale(glm::vec3(3.0f));
+
+        //Add the light
+        auto lComp1 = scene.AddPointLightComponent(shared_from_this());
+        lComp1->setAmbient(glm::vec3(0.15f));
+        lComp1->setDiffuse(glm::vec3(1.0f, 1.0f, 0.7f)*1.5f);
+        lComp1->setSpecular(glm::vec3(1.0f));
+        lComp1->setConstantAttenuation(0.5f);
+        lComp1->setLinearAttenuation(0.02f);
+        lComp1->setQuadraticAttenuation(0.0022f);
+        lComp1->turnOn();
     }
     virtual void UserUpdate(Journey::Scene& scene, float deltaTime) override {
     }
@@ -189,9 +293,9 @@ public:
     virtual void UserStartUp(Journey::Scene& scene) override {
         Journey::PhongColoredMaterial* mat = new Journey::PhongColoredMaterial();
         mat->color = glm::vec3(0.828f, 0.683f, 0.214f);
-        mat->kd = glm::vec3(0.1f, 0.1f, 0.1f);
-        mat->ke = glm::vec3(0.5f, 0.5f, 0.5f);
-        mat->ks = glm::vec3(1.0f, 1.0f, 1.0f);
+        mat->kd = glm::vec3(1.2f, 0.8f, 0.3f);
+        mat->ke = glm::vec3(1.2f, 0.8f, 0.3f) * 0.2f;
+        mat->ks = glm::vec3(1.0f, 0.6f, 1.0f)*5.0f;
         Journey::MeshManager::getInstance().AddMeshComponent(shared_from_this(), std::shared_ptr<Journey::Material>(mat), "coinMesh");
     }
     virtual void UserUpdate(Journey::Scene& scene, float deltaTime) override {
@@ -377,10 +481,7 @@ public:
             audioSrc->setVolume(0.1f);
             audioSrc->play();
         }
-
-        //Set light 
-        scene.GetPointLight().setLightPos(glm::vec3(20.0f, -20.0f, 10.0f));
-
+        
         // Entity creation - method 2
         shiba = std::make_shared<Shiba>(mainCamera);
         scene.AddEntity(nullptr, shiba);
@@ -464,6 +565,37 @@ public:
                                 );
         textureManager.AddSpriteComponent(carpin4, std::shared_ptr<Journey::Material>(carpinMat), "carpincho", true);
         scene.AddEntity(nullptr, carpin4);
+
+        // Add skybox
+        std::vector<std::string> faces
+        {
+            "../../../assets/skybox/right.png",
+            "../../../assets/skybox/left.png",
+            "../../../assets/skybox/top.png",
+            "../../../assets/skybox/bottom.png",
+            "../../../assets/skybox/front.png",
+            "../../../assets/skybox/back.png"
+        };
+        scene.AddSkybox(faces);
+
+        // Cube Colored
+        std::shared_ptr<Journey::Entity> tRex = std::make_shared<Journey::Entity>();
+        tRex->getTransform().Set(glm::vec3(-9.0f, 20.0f, 0.2f),
+                                glm::vec3(glm::radians(90.0f), 0.0f, 0.0f),
+                                glm::vec3(5.0f) *0.01f
+                                );
+        auto tRexComp = scene.GetSkeletalManager().AddSkeletalMeshComponent(tRex, "../../../assets/trex/T_Rex.fbx", glm::vec3(1.0f));
+        scene.AddEntity(nullptr, tRex);
+        if (tRexComp->model){
+            tRexComp->model->LoadAnimation(3, "anim", true);
+            tRexComp->model->PlayAnimation("anim");
+        }
+
+        //Setting post rendering effects values
+        scene.GetRenderManager().setGammaValue(2.0f);
+        scene.GetRenderManager().setExposureValue(1.4f);
+        scene.GetRenderManager().setBloomStrength(0.26f);
+        scene.GetRenderManager().setBloomFilterRadius(0.010f);
 
         mInnerVar = 0;
     }

@@ -335,7 +335,7 @@ namespace Journey {
                 mAnimator->m_Playing = true;
                 mAnimator->m_Finished = false;
                 mAnimator->PlayAnimation(lastAnimation);
-                lastAnimation = tempAnim;
+                lastAnimation = nullptr;
             }
         }
     }
