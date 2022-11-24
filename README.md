@@ -1,6 +1,10 @@
 # Journey Engine
 Videogame engine created for the game engine architecture course 
 
+Video:
+
+[![Alt text for your video](https://img.youtube.com/vi/RGw9daoSWJQ/0.jpg)](https://youtu.be/RGw9daoSWJQ)
+
 ## Requisitos
 Se necesita tener Visual Studio 2019 y CMake 
 
